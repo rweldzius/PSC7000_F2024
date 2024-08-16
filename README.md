@@ -1,5 +1,3 @@
-# PSC4175_F2024
-
 # PSC 4175-01: Introduction to Data Science (Fall 2024)
 
 ## Table of Contents
