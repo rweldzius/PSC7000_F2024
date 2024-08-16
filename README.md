@@ -207,3 +207,21 @@ Villanova University makes every reasonable effort to allow members of the commu
 | 12/18/24 | Final Exam Due | |  | | |
 
 [Back to ToC](#table-of-contents)
+
+## Helpful Resources
+
+[Rstudio Cheat Sheet: Data Wrangling](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf}
+
+[Rstudio Cheat Sheet: ggplot2]([https://github.com/rstudio/cheatsheets/raw/master/data-visualization.pdf](https://hbctraining.github.io/Intro-to-R-flipped/cheatsheets/data-visualization-2.1.pdf))
+
+[R-graphics Cookbook](http://www.cookbook-r.com/Graphs/)
+
+[... And the full list of Rstudio cheat sheets](https://posit.co/resources/cheatsheets/)
+
+[Tidymodels Resources](https://www.tidymodels.org/learn/)
+
+[Back to ToC](#table-of-contents)
+
+## Acknowledgements
+
+The contents of this course and of my teaching pedagogy are influenced and inspired by Prof. James H. Bisbee, Vanderbilt University. This course is modeled on the course of the same name, taught by Professors Josh Clinton and William Doyle in the spring of 2022 at Vanderbilt University. The lectures on data science & ethics are inspired by content prepared for the Summer Institutes for Computational Social Sciences (SICSS), and by presentations on machine learning and ethics prepared by Andrew Princep (@AJPrincep). The syllabus is heavily inspired by Emily Hencken Ritter's syllabi for PSCI 3270, Politics of Human Rights.
