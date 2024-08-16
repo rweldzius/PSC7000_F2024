@@ -83,7 +83,7 @@ The final grade is calculated as a weighted average of these components with the
 See the table below for a breakdown of the percentages, points, and extra credit.
 
 | Item | Percent | Points | EC | Max |
-|:-----:|:-----:|:-----:|:-----:|:-----:|
+|:-----|:-----:|:-----:|:-----:|:-----:|
 | pset1 | 5% | 5 | 1 | 6 |
 | pset2 | 5% | 5 | 1 | 6 |
 | pset3 | 5% | 5 | 1 | 6 |
@@ -171,39 +171,39 @@ Villanova University makes every reasonable effort to allow members of the commu
 ## Syllabus
 
 | Date | Topic | Learing Goal | Materials | HW | Pset |
-|:-----:|:-------:|:-----------:|:---------:|:-----:|
-| 8/26/24 | Introduction | Scientific method, camps of analysis | | |
-| 8/28/24 | Intro to R 1 | Objects, functions, and code | | |
-| 9/2/24 | No Class | |
-| 9/4/24 | Intro to R 2 | Visualization in R | | |
-| 9/9/24 | Intro to R 3 | More visualization | | |
-| 9/11/24 | Data Wrangling | Replicability and tabular data | | |
-| 9/16/24 | Univariate Analysis | Summaries of a single variable | | |
-| 9/18/24 | Multivariate 1 | Summaries of multiple variables | | |
-| 9/23/24 | Multivariate 2 | Visualizations of multiple variables | | |
-| 9/25/24 | Multivariate 3 | Visualizations of multiple variables | | |
-| 9/30/24 | Uncertainty 1 | Uncertainty and bootstrapping | | |
-| 10/2/24 | Uncertainty 2 | Confidence statements |  | |
-| 10/7/24 | Review Session |  | | |
-| 10/9/24 | Midterm Exam |  | | |
-| 10/14/24 | Fall Break |  | | |
-| 10/16/24 | Fall Break |  |  | |
-| 10/21/24 | Regression 1 | Interpreting output and evaluating model |  | |
-| 10/23/24 | Regression 2 | Interpreting output and evaluating model | | |
-| 10/28/24 | Regression 3 | Multiple regression, categorical Xs | | |
-| 10/30/24 | Review Session | Regression | | |
-| 11/4/24 | Classification 1 | The concept of logistic regression |  | |
-| 11/6/24 | Classification 2 | Interpreting output and evaluating model | | | 
-| 11/11/24 | Classification 3 | Interpreting output and evaluating model |  | |
-| 11/13/24 | Clustering | k-means clustering |  | |
-| 11/18/24 | NLP 1 | k-means clustering on text |  | |
-| 11/20/24 | NLP 2 | Sentiment analysis |  | |
-| 11/25/24 | Review Session | Clustering |  | |
-| 11/27/24 | No Class |  |  | |
-| 12/2/24 | Ethics | The risks of rapid technological change |  | |
-| 12/4/24 | Spillover day | |  | |
-| 12/9/24 | Spillover day | |  | |
-| 12/11/24 | Review Session | Cumulative |  | |
-| 12/18/24 | Final Exam Due | |  | |
+|:-----|:-----|:-----|:-----|:-----|:-----|
+| 8/26/24 | Introduction | Scientific method, camps of analysis | | | |
+| 8/28/24 | Intro to R 1 | Objects, functions, and code | | | |
+| 9/2/24 | No Class | | |
+| 9/4/24 | Intro to R 2 | Visualization in R | | | |
+| 9/9/24 | Intro to R 3 | More visualization | | | |
+| 9/11/24 | Data Wrangling | Replicability and tabular data | | | |
+| 9/16/24 | Univariate Analysis | Summaries of a single variable | | | |
+| 9/18/24 | Multivariate 1 | Summaries of multiple variables | | | |
+| 9/23/24 | Multivariate 2 | Visualizations of multiple variables | | | |
+| 9/25/24 | Multivariate 3 | Visualizations of multiple variables | | | |
+| 9/30/24 | Uncertainty 1 | Uncertainty and bootstrapping | | | |
+| 10/2/24 | Uncertainty 2 | Confidence statements |  | | |
+| 10/7/24 | Review Session |  | | | |
+| 10/9/24 | Midterm Exam |  | | | |
+| 10/14/24 | Fall Break |  | | | |
+| 10/16/24 | Fall Break |  |  | | |
+| 10/21/24 | Regression 1 | Interpreting output and evaluating model |  | | |
+| 10/23/24 | Regression 2 | Interpreting output and evaluating model | | | |
+| 10/28/24 | Regression 3 | Multiple regression, categorical Xs | | | |
+| 10/30/24 | Review Session | Regression | | | |
+| 11/4/24 | Classification 1 | The concept of logistic regression |  | | |
+| 11/6/24 | Classification 2 | Interpreting output and evaluating model | | |  |
+| 11/11/24 | Classification 3 | Interpreting output and evaluating model |  | | |
+| 11/13/24 | Clustering | k-means clustering |  | | |
+| 11/18/24 | NLP 1 | k-means clustering on text |  |  | |
+| 11/20/24 | NLP 2 | Sentiment analysis |  | | |
+| 11/25/24 | Review Session | Clustering |  | | |
+| 11/27/24 | No Class |  |  | | |
+| 12/2/24 | Ethics | The risks of rapid technological change |  | | |
+| 12/4/24 | Spillover day | |  | | |
+| 12/9/24 | Spillover day | |  | | |
+| 12/11/24 | Review Session | Cumulative |  | | |
+| 12/18/24 | Final Exam Due | |  | | |
 
 [Back to ToC](#table-of-contents)
