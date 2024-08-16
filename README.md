@@ -182,9 +182,9 @@ Villanova University makes every reasonable effort to allow members of the commu
 | 9/18/24 | Multivariate 1 | Summaries of multiple variables | | | |
 | 9/23/24 | Multivariate 2 | Visualizations of multiple variables | | | |
 | 9/25/24 | Multivariate 3 | Visualizations of multiple variables | | | |
-| 9/30/24 | Uncertainty 1 | Uncertainty and bootstrapping | | | |
-| 10/2/24 | Uncertainty 2 | Confidence statements |  | | |
-| 10/7/24 | Review Session |  | | | |
+| 9/30/24 |  Review Session |  | | | |
+| 10/2/24 | Uncertainty 1 | Uncertainty and bootstrapping | | | |
+| 10/7/24 | Uncertainty 2 | Confidence statements |  | | |
 | 10/9/24 | Midterm Exam |  | | | |
 | 10/14/24 | Fall Break |  | | | |
 | 10/16/24 | Fall Break |  |  | | |
