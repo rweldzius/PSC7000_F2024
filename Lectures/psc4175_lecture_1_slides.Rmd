@@ -69,9 +69,9 @@ knitr::knit_hooks$set(chunk = function(x, options) {
 
 --
 
-  - PhD from NYU Politics in 2019
+  - PhD from UCLA Political Science in 2018
 
-  - Postdocs at Princeton Niehaus & NYU CSMaP
+  - Postdocs at WashU and Princeton Niehaus
   
 --
 
@@ -79,11 +79,9 @@ knitr::knit_hooks$set(chunk = function(x, options) {
 
 --
 
-  - Methods-ey: external validity [1](https://www.journals.uchicago.edu/doi/full/10.1086/691280?af=R), [2](https://www.cambridge.org/core/journals/american-political-science-review/article/testing-social-science-network-theories-with-online-network-data-an-evaluation-of-external-validity/4BF517F10F38DFB574FED4A3D805B613); measurement [3](https://www.cambridge.org/core/journals/american-political-science-review/article/barp-improving-mister-p-using-bayesian-additive-regression-trees/630866EB47F9366EDB3C22CFD951BB6F), [4](https://www.cambridge.org/core/journals/political-analysis/article/geographic-boundaries-and-local-economic-conditions-matter-for-views-of-the-economy/32C8C058B8E16CAD48374F95B2B1B3EF)
+  - Substantive: [global value chains & currency manipulation](https://onlinelibrary.wiley.com/doi/abs/10.1111/ecpo.12184); [European politics](https://link.springer.com/article/10.1007/s11558-020-09410-0); [economics of land use](https://onlinelibrary.wiley.com/doi/abs/10.1093/aepp/ppy007); [book review on currency statecraft](https://www.cambridge.org/core/journals/perspectives-on-politics/article/abs/currency-statecraft-monetary-rivalry-and-geopolitical-ambition-by-benjamin-j-cohen-chicago-university-of-chicago-press-2019-208p-7500-cloth-2500-paper/6CC4A103F963E26FE3ED08A85B95D265) 
 
-  - Substantive: economics & populism [1](https://www.tandfonline.com/doi/full/10.1080/13501763.2019.1678662); Covid-19 & U.S. politics [2](https://www.journals.uchicago.edu/doi/10.1086/716969),  [3](https://www.cambridge.org/core/journals/american-political-science-review/article/flight-to-safety-covidinduced-changes-in-the-intensity-of-status-quo-preference-and-voting-behavior/AE84D93BAF8B27284DD8F6A75DE5D18A); IPE [4](https://doi.org/10.1017/S0020818319000109); academic naval-gazing [5](https://www.cambridge.org/core/journals/perspectives-on-politics/article/abs/polisci-twitter-a-descriptive-analysis-of-how-political-scientists-use-twitter-in-2019/C8A193C3E939C1ABCD4600DFE8AEF79A?utm_source=hootsuite&utm_medium=twitter&utm_campaign=PPS_Dec20)
-
-  - Popular press: [1](https://www.washingtonpost.com/news/monkey-cage/wp/2018/04/04/losing-jobs-to-free-trade-makes-americans-more-protectionist-and-nativist/), [2](https://www.washingtonpost.com/politics/2020/04/02/sanders-was-losing-biden-anyway-he-lost-more-areas-with-coronavirus-cases/?utm_medium=social&utm_source=twitter&utm_campaign=wp_monkeycage), [Podcasts](https://www.niskanencenter.org/did-chinese-trade-competition-increase-nativism-and-elect-trump/)
+  - Policy: [2014 World Trade Report](https://www.wto.org/english/res_e/booksp_e/world_trade_report14_e.pdf); [polarization & lobbying](https://niehaus.princeton.edu/backlash-against-globalization-what’s-next)
   
 --
 
@@ -91,9 +89,9 @@ knitr::knit_hooks$set(chunk = function(x, options) {
 
 --
 
-  - World Bank / IFC
+  - World Trade Organization
   
-  - MarketCast
+  - Commercial Real Estate (2007/8 global financial crisis)
 
 ---
 
@@ -103,19 +101,19 @@ knitr::knit_hooks$set(chunk = function(x, options) {
 
 --
 
-  - .red[YouTube] + .blue[polarization]
+  - .red[Global value chains] + .blue[currency manipulation]
 
 --
 
-  - .red[Twitter] + .blue[misinformation]
+  - .red[Financial crises] + .blue[polarization]
   
 --
 
-  - .red[Telegram] + .blue[white supremacists]
+  - .red[Trade agreements] + .blue[monopolies]
   
 --
 
-  - .red[Stocks] + .blue[politicians]
+  - .red[Inequality] + .blue[economic growth]
 
 ---
 
