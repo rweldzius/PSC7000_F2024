@@ -1,8 +1,8 @@
 ---
 title: "Intro to Data Science"
 subtitle: "What `R` we doing?"
-author: "Prof. Bisbee"
-institute: "Vanderbilt University"
+author: "Prof. Weldzius"
+institute: "Villanova University"
 date: "Slides Updated: `r Sys.Date()`"
 output:
   xaringan::moon_reader:
