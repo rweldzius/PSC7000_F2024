@@ -70,14 +70,15 @@ and a final project. The first is a mid-term exam that is scheduled for October 
 
 The final grade is calculated as a weighted average of these components with the following weights:
 
-  * **Problem sets**: 9 in total, only 8 of which are worth 5 points each for a total of 40 points. This effectively means you can miss a problem set without it hurting your final grade.
+  * **Problem sets**: 8 in total, only 7 of which are worth 5 points each for a total of 35 points. This effectively means you can miss a problem set without it hurting your final grade.
 
-  * **Exams**: Midterm and final. The midterm is worth 20 points and is in-class, and the final worth 15 points and is a take-home. 
+  * **Exams**: Midterm and final. The midterm is worth 20 points and is in-class, and the final worth 20 points and is a take-home. 
 
   * **Quizzes**: There are 19 quizzes over the course of the semester which can only be taken if you attend class. Each consist of several questions plus an attendance statement. 0.5 points comes from accurately answering all five questions, and 0.5 points comes from signing the attendance statement. Each quiz is worth 1 point of your final grade, and combined comprise the final 15 points, meaning that 4 are not counted toward your final grade.
+    
   *  **Final Project**: Worth 10 points (write-up 8 points, presentation 2 points). In the last week of the semester, you will present a proposal for an individual research project. The proposal will be a minimum of five pages, using two skills/methods from the first half of class and two from the second half. Your proposal (and presentation) should briefly describe your research puzzle, question, and argument, then present some data that either motivates the puzzle/question/argument or tests the argument using the methods you learned. DO NOT TRY TO PRESENT EVERYTHING FROM YOUR PROPOSAL! 1 EC point will be allocated for giving feedback (minimum of 300 words) to a classmate on a draft of their project (up to 2 EC points allowed, meaning giving feedback to two different classmates). This means you need to share your drafts early! You must submit your feedback(s) with your proposal by **Sunday 12/8/24 at 5pm**. 
 
-  * **Extra Credit**: There is one extra credit point on each problem set, and five extra credit points on the midterm and final. Thus the maximum total points you can receive in this class is 128, meaning that if you ace every problem set, the midterm, every quiz, and the final project, you will have 108 points before the final exam. Achieving a perfect score requires a lot of effort, but would theoretically allow you to skip the final exam if you so chose.
+  * **Extra Credit**: There is one extra credit point on each problem set, and five extra credit points on the midterm and final. Thus the maximum total points you can receive in this class is 128, meaning that if you ace every problem set, the midterm, every quiz, and the final project, you will have 104 points before the final exam. Achieving a perfect score requires a lot of effort, but would theoretically allow you to skip the final exam if you so chose.
 
 See the table below for a breakdown of the percentages, points, and extra credit.
 
@@ -90,13 +91,12 @@ See the table below for a breakdown of the percentages, points, and extra credit
 | pset5 | 5% | 5 | 1 | 6 |
 | pset6 | 5% | 5 | 1 | 6 |
 | pset7 | 5% | 5 | 1 | 6 |
-| pset8 | 5% | 5 | 1 | 6 |
-| pset9 | 0% | 0 | 6 | 6 |
+| pset8 | 0% | 0 | 6 | 6 |
 | Midterm | 20% | 20 | 5 | 25 |
-| Final project | 10% | 10 | 2 | 22 |
-| Final | 15% | 15 | 3 | 18 |
+| Final project | 10% | 10 | 2 | 12 |
+| Final | 20% | 20 | 5 | 25 |
 | Quizzes | 15% | 15 | 4 | 19 |
-| **Totals** | **100%** | **100** | **28** | **128** |
+| **Totals** | **100%** | **100** | **22** | **128** |
 
 Letter grades are determined as per the standard Villanova grading system, reproduced below:
 
