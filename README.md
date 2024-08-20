@@ -41,11 +41,11 @@ Here is the list of channels you should see upon joining the Campuswire workspac
 
   * #general: A space for you to share and discuss stories you've seen in the news or on social media that are relevant to our class.
 
-  * Calendar: A calendar containing all lectures, due dates, office hours, and labs.
+  * Calendar: Not used. See [Syllabus](#syllabus) below. 
 
-  * Files: A space for course materials (NOT USED. VISIT BLACKBOARD INSTEAD.)
+  * Files: Not used. See [Syllabus](#syllabus) below. 
 
-  * Grades: A space for grades (NOT USED. VISIT BLACKBOARD INSTEAD.)
+  * Grades: Not used. See Blackboard. 
 
 ### GitHub
 
