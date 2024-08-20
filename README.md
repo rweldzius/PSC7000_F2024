@@ -172,31 +172,31 @@ Villanova University makes every reasonable effort to allow members of the commu
 
 | Date | Topic | Learing Goal | Materials | HW | Pset |
 |:-----|:-----|:-----|:-----|:-----|:-----|
-| 8/26/24 | Introduction | Scientific method, camps of analysis | | | |
-| 8/28/24 | Intro to R 1 | Objects, functions, and code | | | |
-| 9/2/24 | No Class | | |
-| 9/4/24 | Intro to R 2 | Visualization in R | | | |
-| 9/9/24 | Intro to R 3 | More visualization | | | |
-| 9/11/24 | Data Wrangling | Replicability and tabular data | | | |
-| 9/16/24 | Univariate Analysis | Summaries of a single variable | | | |
-| 9/18/24 | Multivariate 1 | Summaries of multiple variables | | | |
-| 9/23/24 | Multivariate 2 | Visualizations of multiple variables | | | |
-| 9/25/24 | Multivariate 3 | Visualizations of multiple variables | | | |
-| 9/30/24 |  Review Session |  | | | |
-| 10/2/24 | Uncertainty 1 | Uncertainty and bootstrapping | | | |
-| 10/7/24 | Uncertainty 2 | Confidence statements |  | | |
+| 8/26/24 | Introduction | Scientific method, camps of analysis | | HW1 | PS 0 |
+| 8/28/24 | Intro to R 1 | Objects, functions, and code | | HW 2 | |
+| 9/2/24 | No Class | | | | PS 1 |
+| 9/4/24 | Intro to R 2 | Visualization in R | | HW 3 | |
+| 9/9/24 | Intro to R 3 | More visualization | | HW 4 | PS 2 |
+| 9/11/24 | Data Wrangling | Replicability and tabular data | | HW 5 | |
+| 9/16/24 | Univariate Analysis | Summaries of a single variable | | HW 6 | PS 3 |
+| 9/18/24 | Multivariate 1 | Summaries of multiple variables | | HW 7 |  |
+| 9/23/24 | Multivariate 2 | Visualizations of multiple variables | | HW 8 | PS 4 |
+| 9/25/24 | Multivariate 3 | Visualizations of multiple variables | | HW 9 | |
+| 9/30/24 |  Review Session |  | | | PS 5 |
+| 10/2/24 | Uncertainty 1 | Uncertainty and bootstrapping | | HW 10 | |
+| 10/7/24 | Uncertainty 2 | Confidence statements |  | HW 11 | |
 | 10/9/24 | Midterm Exam |  | | | |
 | 10/14/24 | Fall Break |  | | | |
 | 10/16/24 | Fall Break |  |  | | |
-| 10/21/24 | Regression 1 | Interpreting output and evaluating model |  | | |
-| 10/23/24 | Regression 2 | Interpreting output and evaluating model | | | |
-| 10/28/24 | Regression 3 | Multiple regression, categorical Xs | | | |
-| 10/30/24 | Review Session | Regression | | | |
-| 11/4/24 | Classification 1 | The concept of logistic regression |  | | |
-| 11/6/24 | Classification 2 | Interpreting output and evaluating model | | |  |
-| 11/11/24 | Classification 3 | Interpreting output and evaluating model |  | | |
-| 11/13/24 | Clustering | k-means clustering |  | | |
-| 11/18/24 | NLP 1 | k-means clustering on text |  |  | |
+| 10/21/24 | Regression 1 | Interpreting output and evaluating model |  | HW 12 | PS 6 |
+| 10/23/24 | Regression 2 | Interpreting output and evaluating model | | HW 13 | |
+| 10/28/24 | Regression 3 | Multiple regression, categorical Xs | | HW 14 |  |
+| 10/30/24 | Review Session | Regression | |  | |
+| 11/4/24 | Classification 1 | The concept of logistic regression |  | HW 15 | PS 7 |
+| 11/6/24 | Classification 2 | Interpreting output and evaluating model | | HW 16 |  |
+| 11/11/24 | Classification 3 | Interpreting output and evaluating model |  | HW 17 |  |
+| 11/13/24 | Clustering | k-means clustering |  | HW 18 | |
+| 11/18/24 | NLP 1 | k-means clustering on text |  | HW 19 | PS 8 |
 | 11/20/24 | NLP 2 | Sentiment analysis |  | | |
 | 11/25/24 | Review Session | Clustering |  | | |
 | 11/27/24 | No Class |  |  | | |
