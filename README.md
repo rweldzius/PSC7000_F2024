@@ -171,7 +171,7 @@ Villanova University makes every reasonable effort to allow members of the commu
 ## Syllabus
 
 | Date | Topic | Learing Goal | Materials | HW | Pset |
-|:-----|:-----|:-----|:-----|:-----|:-----|
+|:-----|:------|:------|:------|:------|:------|
 | 8/26/24 | Introduction | Scientific method, camps of analysis | | HW1 | PS 0 |
 | 8/28/24 | Intro to R 1 | Objects, functions, and code | | HW 2 | |
 | 9/2/24 | No Class | | | | PS 1 |
