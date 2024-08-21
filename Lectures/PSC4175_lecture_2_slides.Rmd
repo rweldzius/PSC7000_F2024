@@ -1,8 +1,8 @@
 ---
 title: "Intro to `R`"
 subtitle: "Part 1: A Microcosm of Data Science"
-author: "Prof. Bisbee"
-institute: "Vanderbilt University"
+author: "Prof. Weldzius"
+institute: "Villanova University"
 date: "Lecture Date: Slides Updated: `r Sys.Date()`"
 output:
   xaringan::moon_reader:
@@ -205,7 +205,7 @@ This is plain text.
 # How to type in `.Rmd`
 
 ```{verbatim, lang = "markdown"}
-**Bold font**, *italic font*, `code font`
+ **Bold font**, *italic font*, `code font`
 ```
 --
 
@@ -590,7 +590,7 @@ require(tidyverse)
 
 --
 
-- You can save it locally from the course  [github page](https://github.com/jbisbee1/DS1000_F2024/blob/main/data/sc_debt.Rds) and then load it from your computer
+- You can save it locally from the course  [github page](https://github.com/rweldzius/PSC4175_F2024/raw/main/Data/sc_debt.Rds) and then load it from your computer
   
 --
 
@@ -607,9 +607,8 @@ require(tidyverse)
 --
 
 ```{r}
-df <- read_rds('https://github.com/jbisbee1/DS1000_F2024/raw/main/data/sc_debt.Rds')
+df<-read_rds("https://github.com/rweldzius/PSC4175_F2024/raw/main/Data/sc_debt.Rds") 
 ```
-
 
 ---
 
@@ -693,7 +692,7 @@ defs %>%
 
 --
 
-  - Where is `Vanderbilt University`?
+  - Where is `Villanova University`?
   
 --
 
@@ -750,7 +749,7 @@ object %>%  # This is the object
 
 # Manipulating: `filter()`
 
-- So let's look at Vandy
+- So let's look at Villanova
 
 --
 
@@ -760,7 +759,7 @@ object %>%  # This is the object
 
 ```{r}
 df %>%
-  filter(instnm == "Vanderbilt University") # Only select rows with Vandy
+  filter(instnm == "Villanova University") # Only select rows with Villanova
 ```
 
 ---
@@ -779,7 +778,7 @@ df %>%
 
 ```{r}
 df %>%
-  filter(instnm == "Vanderbilt University") %>%
+  filter(instnm == "Villanova University") %>%
   select(instnm,adm_rate,sat_avg,md_earn_wne_p6) # Only select four columns
 ```
 
@@ -787,7 +786,7 @@ df %>%
 
 # Manipulating: `arrange()`
 
-- How does Vandy compare...?
+- How does Villanova compare...?
 
 --
 
@@ -811,7 +810,7 @@ df %>%
 
 # Manipulating: `arrange()`
 
-- Vandy is not in the bottom 10 schools
+- Villanova is not in the bottom 10 schools
 
 ```{r}
 df %>%
@@ -823,7 +822,7 @@ df %>%
 
 # Manipulating: `arrange()`
 
-- Use `desc()` to order in descending values...Vandy not in top 10 either
+- Use `desc()` to order in descending Villanova not in top 10 either
 
 ```{r}
 df %>%
@@ -849,7 +848,7 @@ df %>%
 
 ---
 
-# How does Vandy compare?
+# How does Villanova compare?
 
 --
 
@@ -1119,7 +1118,7 @@ df %>%
 
 # Quiz & Homework
 
-- Go to Brightspace and take the **1st** quiz
+- Go to Blackboard and take the **1st** quiz
 
 --
 
@@ -1131,6 +1130,6 @@ df %>%
 
 --
   
-  1. Work through ds1000_hw_2.Rmd
+  1. Work through psc4175_hw_2.Rmd
 
-  2. Problem set 1 due Friday by midnight
+  2. Problem set 1 will be posted next Monday (Labor Day); due next Friday by midnight
