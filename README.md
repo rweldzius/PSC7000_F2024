@@ -224,4 +224,4 @@ Villanova University makes every reasonable effort to allow members of the commu
 
 ## Acknowledgements
 
-The contents of this course are influenced and inspired by Prof. James H. Bisbee who teaches a similar course at Vanderbilt University. 
+The contents of this course are influenced by and often come directly from Prof. James H. Bisbee who teaches a similar course at Vanderbilt University. I am indebted to him for making his course materials available. 
