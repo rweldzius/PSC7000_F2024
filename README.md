@@ -31,7 +31,7 @@ This is the course management software used at Villanova University to support c
 
 ### Campuswire
 
-I have set up a Campuswire workspace for our use this semester to help us better communicate with each other. You will need to create an account and join our workspace by following [this link](https://campuswire.com/p/G45092D3C). The secret PIN can be found on the first announcement on Blackboard. You are encouraged to adopt these [Slack etiquette tips](https://slack.com/blog/collaboration/etiquette-tips-in-slack).
+I have set up a Campuswire workspace for our use this semester to help us better communicate with each other. You will need to create an account and join our workspace by following [this link](https://campuswire.com/p/G45092D3C). The secret PIN can be found on the first announcement on Blackboard. You are encouraged to adopt these [Slack etiquette tips](https://slack.com/blog/collaboration/etiquette-tips-in-slack). Most likely, you will utilize a similar communication system at a future job, so use this time wisely as you adopt best practices. 
 
 Here is the list of channels you should see upon joining the Campuswire workspace:
 
@@ -53,7 +53,7 @@ I have created a [GitHub](https://github.com/rweldzius/PSC4175_F2024/tree/main) 
 
 You are expected to adopt the following workflow for this class:
 
-  1. Prior to each lecture, download the appropriate `.Rmd` file, open it in `RStudio`, and read through it. This is your primary homework assignment! As you work through it, try to tweak some of the code and answer the toy examples where provided. Each time you make a change, click the knit button in `RStudio` to see if everything still loads.
+  1. Prior to each lecture, download the appropriate `.Rmd` file, open it in `RStudio`, and read through it. This is your primary homework assignment (ungraded). As you work through it, try to tweak some of the code and answer the toy examples where provided. Each time you make a change, click the knit button in `RStudio` to see if everything still loads.
 
   2. During each lecture, create a new `.Rmd` file to take notes in. As with the homework, you should be tweaking and adjusting things on your own, extending your learning beyond what is covered in lecture.
 
@@ -63,22 +63,23 @@ You are expected to adopt the following workflow for this class:
 
 ## Evaluation & Responsibilities  
 
-Given the nature of the material, participation is not part of your grade. Instead, you will be assigned weekly problem sets beginning with Topic 3 which will test your ability to apply what you've learned in class, and to think creatively about your own data science ideas. These problem sets are assigned on the Monday of each week and are due by **11:59PM Villanova time the following Friday**. You are welcome to collaborate on these problem sets, and are encouraged to ask questions on the Class feed on Campuswire.
+As with learning any new topic or language, the best strategy is to put in a little effort every day. To this end, you will be assigned homework assignments for each class (see "workflow" above) that correspond with readings from the text. I recommend you read through the book first to get an overview of the topic and then attack the homework. 
 
-There are also two exams. The first is a midterm exam that is scheduled for the Wednesday before Fall break (10/09/2024) and will take place in class. The second exam is a cumulative final that is scheduled for December 18th. 
-and a final project. The first is a mid-term exam that is scheduled for October 8th (Tuesday before fall break) and will take place in class. The second exam is a cumulative take-home final that is scheduled to be due December 18th.
+In class, as we work through the lecture material, please ask questions. Participation is key for your learning, but it will not be a part of your grade. Instead, you will be assigned weekly problem sets that will test your ability to apply what you've learned in class, and to think creatively about your own data science ideas. These problem sets are assigned on the Monday of each week and are due by **11:59PM Villanova time the following Friday**. You are welcome to collaborate on these problem sets, and are encouraged to ask questions on the Class feed on Campuswire.
+
+There are also two exams and a final project. The first exam is a midterm exam that is scheduled for the Wednesday before Fall break (10/09/2024) and will take place in class. The second exam is a cumulative final that is scheduled for December 18th; note that you can opt of this exam if you are happy with your grade as it stands on the last day of class. The final project will allow you to use the skills you learned in this class to address an interesting research question of your choosing.
 
 The final grade is calculated as a weighted average of these components with the following weights:
 
-  * **Problem sets**: 8 in total, only 7 of which are worth 5 points each for a total of 35 points. This effectively means you can miss a problem set without it hurting your final grade.
+  * **Problem sets**: 8 in total, only 7 of which are worth 5 points each for a total of 35 points. This means you can miss a problem set without it hurting your final grade.
 
   * **Exams**: Midterm and final. The midterm is worth 20 points and is in-class, and the final worth 20 points and is a take-home. 
 
   * **Quizzes**: There are 19 quizzes over the course of the semester which can only be taken if you attend class. Each consist of several questions plus an attendance statement. 0.5 points comes from accurately answering all five questions, and 0.5 points comes from signing the attendance statement. Each quiz is worth 1 point of your final grade, and combined comprise the final 15 points, meaning that 4 are not counted toward your final grade.
     
-  *  **Final Project**: Worth 10 points (write-up 8 points, presentation 2 points). In the last week of the semester, you will present a proposal for an individual research project. The proposal will be a minimum of five pages, using two skills/methods from the first half of class and two from the second half. Your proposal (and presentation) should briefly describe your research puzzle, question, and argument, then present some data that either motivates the puzzle/question/argument or tests the argument using the methods you learned. DO NOT TRY TO PRESENT EVERYTHING FROM YOUR PROPOSAL! 1 EC point will be allocated for giving feedback (minimum of 300 words) to a classmate on a draft of their project (up to 2 EC points allowed, meaning giving feedback to two different classmates). This means you need to share your drafts early! You must submit your feedback(s) with your proposal by **Sunday 12/8/24 at 5pm**. 
+  *  **Final Project**: Worth 10 points (write-up 8 points, presentation 2 points). In the last week of the semester, you will present a proposal for an individual research project. The proposal will be a minimum of five pages, using two skills/methods from the first half of class and two from the second half. Your proposal (and presentation) should briefly describe your research puzzle, question, and argument, then present some data that either motivates the puzzle/question/argument or tests the argument using the methods you learned. DO NOT TRY TO PRESENT EVERYTHING FROM YOUR PROPOSAL! 1 EC point will be allocated for giving feedback (minimum of 300 words) to a classmate on a draft of their project (up to 2 EC points allowed by giving feedback to two different classmates). This means you need to share your drafts early! You must submit your feedback(s) with your proposal by **Sunday 12/8/24 at 5pm**. 
 
-  * **Extra Credit**: There is one extra credit point on each problem set, and five extra credit points on the midterm and final. Thus the maximum total points you can receive in this class is 128, meaning that if you ace every problem set, the midterm, every quiz, and the final project, you will have 104 points before the final exam. Achieving a perfect score requires a lot of effort, but would theoretically allow you to skip the final exam if you so chose.
+  * **Extra Credit**: There is one extra credit point on each problem set, and five extra credit points on the midterm and final. Thus the maximum total points you can receive in this class is 128, meaning that if you ace every problem set, the midterm, every quiz, and the final project, you will have 104 points before the final exam. Achieving a perfect score requires a lot of effort, but would allow you to skip the final exam if you so chose.
 
 See the table below for a breakdown of the percentages, points, and extra credit.
 
@@ -98,7 +99,7 @@ See the table below for a breakdown of the percentages, points, and extra credit
 | Quizzes | 15% | 15 | 4 | 19 |
 | **Totals** | **100%** | **100** | **22** | **128** |
 
-Letter grades are determined as per the standard Villanova grading system, reproduced below:
+Letter grades are determined as per the standard Villanova grading system:
 
   * A: 94+
   * A-: 90-93
@@ -130,7 +131,7 @@ Quizzes will not be excused due to an absence (excused or unexcused). Remember y
 
 ### Late Assignments
 
-Every problem set is assigned on a Monday, and due on Blackboard by **11:59PM Villanova time on the following Friday**. Problem sets should be submitted via Blackboard. The problem sets are designed to require no more than two hours in total to complete. Late submissions will be **penalized 1 point off for each day late**. After three days, problem sets will no longer be accepted and will be scored 0. (But also remember that your lowest scoring problem set will not be counted toward your final grade, effectively giving you one "freebie".) Answer keys for the preceding week's problem set are posted on Wednesdays after class.
+Every problem set is assigned on a Monday and due on Blackboard by **11:59PM Villanova time on the following Friday**. Problem sets should be submitted via Blackboard. The problem sets are designed to require no more than two hours in total to complete. Late submissions will be **penalized 1 point off for each day late**. After three days, problem sets will no longer be accepted and will be scored 0. Remember that your lowest scoring problem set will not be counted toward your final grade, effectively giving you one "freebie;" use it wisely! Answer keys for the preceding week's problem set are posted on Wednesdays after class.
 
 ### Cell Phones, Laptops, Tablets, etc.
 
@@ -146,9 +147,7 @@ If a student is found responsible for an academic integrity violation, which res
 
 Collaboration is the heart of data science, but your work on your assignments should be your own. Please be careful not to plagiarize. The above link is a very helpful guide to understanding plagiarism. In particular, while students are invited to work on problem sets together, collaboration is prohibited on the midterm and final exams.
 
-Academic misconduct includes, but is not limited to, cheating, fabrication, plagiarism, altering graded examinations for additional credit, having another person take an examination for you, falsification of results, or facilitating academic dishonesty or as further specified in the university policy found at the website above. These and other forms of cheating are all potentially grounds for penalties including failure of the assignment or the course, as well as program- or university-level disciplinary action.
-
-ChatGPT and related Large Language Models (LLMs) are essential tools in the data scientist's toolkit, and acceptable resources for completing the assignments and learning concepts at a deeper level. However, graded assignments cannot be generated purely by these tools. All assignments must include a log of the ChatGPT prompts and resulting output used to complete the assignment.
+Copilot and related Large Language Models (LLMs) are essential tools in the data scientist's toolkit, and acceptable resources for completing the assignments and learning concepts at a deeper level. However, graded assignments cannot be generated purely by these tools. All assignments must include a log of the Copilot prompts and resulting output used to complete the assignment.
 
 ### Office for Access & Disability Services (ADS) and Learning Support Services (LSS)
 
@@ -224,4 +223,4 @@ Villanova University makes every reasonable effort to allow members of the commu
 
 ## Acknowledgements
 
-The contents of this course are influenced and inspired by Prof. James H. Bisbee who teaches a similar course at Vanderbilt University. 
+The contents of this course are influenced by and often come directly from Prof. James H. Bisbee who teaches a similar course at Vanderbilt University. I am indebted to him for making his course materials available. 
