@@ -509,7 +509,7 @@ data.frame(step = c('Observation','Question','Theory','Hypothesis','Data Collect
 
 --
 
-- **H1:** *YouTube's recommendation algorithm should suggested liberal content to liberals and conservative content to conservatives.*
+- **H1:** *YouTube's recommendation algorithm should suggest liberal content to liberals and conservative content to conservatives.*
 
 
 ---
@@ -1046,11 +1046,13 @@ data.frame(step = c('Observation','Question','Theory','Hypothesis','Data Collect
   
 --
 
-- Posted to **Brightspace** on Mondays at noon
+- Posted to **GitHub** on Mondays at noon
 
 --
 
 - Due **Friday by midnight**
+
+  - Submit/Upload to **Blackboard**
 
   - Each day late is -1 point
 
@@ -1070,15 +1072,27 @@ data.frame(step = c('Observation','Question','Theory','Hypothesis','Data Collect
   
 ---
 
+# Grades: Final Project
+
+- Final project is 25 points 
+  
+  - 20 points for final submission
+  - 5 points for presentation in final week (5-8 minutes) 
+  - 5 EC points: 1 point for each classmate you give feedback to after the presentations, max. 5 points (submit via Campuswire)
+
+- Task: create a report that takes a dataset of your choice and uses
+the skills you learn in this class to tell us something about it. Use at least two skills from first half, two skills from second half. Minimum 8 pages, double-spaced, 12pt font.
+
+
+---
+
 # Grades: Exams
 
-- 2 in total: midterm on October 8th, final on December 10th
+- 1 in total: midterm on October 9th
 
 --
 
 - Midterm is 20 points + 5 EC
-
-- Final (cumulative) is 25 points + 5 EC
 
 
 ---
@@ -1133,7 +1147,7 @@ data.frame(step = c('Observation','Question','Theory','Hypothesis','Data Collect
 
 --
 
-- Students are assumed to have read and agreed with the [Vanderbilt University Academic Honesty policy](https://www.vanderbilt.edu/student_handbook/the-honor-system/)
+- Students are assumed to have read and agreed with the [Villanova University Academic Integrity policy](https://www.vanderbilt.edu/student_handbook/the-honor-system/)
 
 --
 
@@ -1173,7 +1187,7 @@ data.frame(step = c('Observation','Question','Theory','Hypothesis','Data Collect
   
 --
 
-- Brightspace (place for **submissions**)
+- Blackboard (place for **submissions**)
 
   - Submit problem sets, quizzes, and exams
   
@@ -1184,8 +1198,6 @@ data.frame(step = c('Observation','Question','Theory','Hypothesis','Data Collect
   - Find all in-class materials
   
 --
-
-- TA recitations / labs (place for **hands-on help**)
 
 - Office hours (place for **hands-on help**)
   
@@ -1223,13 +1235,6 @@ data.frame(step = c('Observation','Question','Theory','Hypothesis','Data Collect
 
 ---
 
-# Previous Semester
-
-<center><img src="figs/grades_semester.png" width="100%"></center>
-
-
----
-
 # Conclusion
 
 - Let's have a great semester!
@@ -1240,8 +1245,8 @@ data.frame(step = c('Observation','Question','Theory','Hypothesis','Data Collect
 
 --
 
-  1. Work through ds1000_hw_1.Rmd
+  1. Work through psc4175_hw_1.Rmd
   
-  2. Complete Problem Set 0 (on Brightspace)
+  2. Complete Problem Set 0 (on Blackboard)
   
-  3. Create an OpenAI account (https://platform.openai.com/signup)
+  3. Create a Copilot account (https://platform.openai.com/signup)
