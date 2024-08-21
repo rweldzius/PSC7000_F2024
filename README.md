@@ -17,6 +17,12 @@ This graduate-level course delves into the foundational concepts and advanced te
 
 In the second half of the course, students will get an introduction to quantitative methods. The use of large, quantitative data sets is increasingly central in social science.  Whether one seeks to understand political behavior, economic outcomes, or violent conflict, the availability of large quantities of data has changed the study of social phenomena. Our main focus will be on the computational tools of data science. Students will leave the course with the ability to acquire, clean, analyze, visualize, and analyze various types of political data using the statistical programming language R, which will set them up for success in future statistical courses (as well as the post-graduation job market). 
 
+Learning Outcomes: By the end of this course, students will be able to:
+  - Critically evaluate qualitative and quantitative research designs and methodologies.
+  - Conduct rigorous research projects.
+  - Analyze and interpret data effectively.
+  - Apply ethical principles in social science research.
+
 The contents of this repository represent a work-in-progress and revisions and edits are likely frequent.
 
 The main texts for the course are [*Designing Social Inquiry*](https://press.princeton.edu/books/hardcover/9780691224633/designing-social-inquiry?srsltid=AfmBOopwysQS7rAU4Cmd9uTW_uQvUrExL6ESjrgQ0sYB5d6h82MAUeIL) which can be purchased at the Villanova bookstore and "R For Data Science" which can be assessed free online [here](https://r4ds.hadley.nz).
