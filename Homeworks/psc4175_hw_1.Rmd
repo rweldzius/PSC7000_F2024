@@ -67,7 +67,7 @@ Finally, replace the default code in your R Markdown file with the copied code f
 
 If viewing this as an html file, you can view this gif for more help!
 
-<center><img src="../Lectures/figs/rmarkdown_example.gif" width = 70%></center>
+<center><img src="../Lectures/figs/Rmd_how_to.gif" width = 70%></center>
 
 ## .Rmd Files
 .Rmd files will be the only file format we work in this class. .Rmd files contain three basic elements:
