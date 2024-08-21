@@ -3,7 +3,7 @@ title: "Intro to Data Science"
 subtitle: "What R we doing?"
 author: "Prof. Weldzius"
 institute: "Villanova University"
-date: "Due Date: 2024-01-16"
+date: "Due Date: 2024-08-26"
 output: html_document
 ---
 
@@ -113,7 +113,7 @@ https://github.com/rweldzius/PSC4175_F2024/blob/main/Data/sc_debt.Rds) data fram
 `tidyverse` includes a `read_rds()` function that can read data directly from the internet.
 
 ```{r}
-df <- read_rds('https://github.com/rweldzius/PSC4175_F2024/blob/main/Data/sc_debt.Rds')
+df <- read_rds('https://github.com/rweldzius/PSC4175_F2024/raw/main/Data/sc_debt.Rds')
 ```
 
 You'll notice that the code above starts with `df`. This is just an arbitrary name for an object. You could name it `dat` or `raw` or `debt` or whatever you want. Then there's an arrow `<-`. This is an assignment operator. Then there's a  function, `readRDS`, with parentheses, and an argument "sc_debt.Rds". Here's how to think about this.
@@ -234,9 +234,9 @@ And one last operation: all colleges that admit between 20 and 30 percent of stu
 ```{r}
 df%>%
   filter(adm_rate>.2&adm_rate<.3)%>%
-  select(instnm,sat_avg,grad_debt_mdn,stabbr)%>%
+  select(instnm,sat_avg,md_earn_wne_p6,stabbr)%>%
   arrange(stabbr,-sat_avg)%>%
-  print(n=20)
+  print(n=40)
 ```
 
 *Quick Exercise* Choose a different college and two different things about that college. Have R print the output.
