@@ -29,6 +29,8 @@ The main texts for the course are [*Designing Social Inquiry*](https://press.pri
 
 Villanova has an enterprise site license for Microsoft’s Copilot chat application, which is built off of Open A.I.  Copilot is available to all faculty, staff, and students [here](https://copilot.microsoft.com).
 
+Class time and location: Mondays, 7:30-9:30pm in Bartley 126. 
+
 [Back to ToC](#table-of-contents)
 
 ## Required Applications
@@ -183,7 +185,7 @@ Villanova University makes every reasonable effort to allow members of the commu
 | Date | Topic | Learning Goal | Materials | HW | Pset |
 |:-----|:------|:------|:------|:------|:------|
 | 8/26/24 | Introduction | Scientific method | KKV 1 |  |  |
-| 9/2/24 | No Class | Schedule office hour appt. | | Research topic | |
+| 9/2/24 | No Class | Schedule office hour appt. before 10/7 | | Research topic | |
 | 9/9/24 | Descriptive Inference |  | KKV 2 | Memo 1 |  |
 | 9/16/24 | Causality | Causality & Causal Inference | KKV 3 | Memo 2|  |
 | 9/23/24 | Observe/avoid | Determining/understanding what to observe/avoid | KKV 4-5 | Memo 3 |  |
