@@ -35,11 +35,11 @@ Villanova has an enterprise site license for Microsoft’s Copilot chat applicat
 
 ### Blackboard
 
-This is the course management software used at Villanova University to support course learning. It is clunky, not user-friendly, and is thankfully on its way out soon. For these reasons, I will only utilize Blackboard to post course materials (e.g., additional readings), for you to submit your assignments, and to see your grades.
+This is the course management software used at Villanova University to support course learning. It is clunky, not user-friendly, and is thankfully on its way out soon. For these reasons, I will only utilize Blackboard to post course materials (e.g., problem set answer keys, additional readings), for you to submit your assignments, and to see your grades.
 
 ### Campuswire
 
-I have set up a Campuswire workspace for our use this semester to help us better communicate with each other. You will need to create an account and join our workspace by following [this link](https://campuswire.com/p/G45092D3C). The secret PIN can be found on the first announcement on Blackboard. You are encouraged to adopt these [Slack etiquette tips](https://slack.com/blog/collaboration/etiquette-tips-in-slack). Most likely, you will utilize a similar communication system at a future job, so use this time wisely as you adopt best practices. 
+I have set up a Campuswire workspace for our use this semester to help us better communicate with each other. You will need to create an account and join our workspace by following [this link](https://campuswire.com/p/GF31CB0D2). The secret PIN can be found on the first announcement on Blackboard. You are encouraged to adopt these [Slack etiquette tips](https://slack.com/blog/collaboration/etiquette-tips-in-slack). Most likely, you will utilize a similar communication system at a future job, so use this time wisely as you adopt best practices. 
 
 Here is the list of channels you should see upon joining the Campuswire workspace:
 
@@ -57,9 +57,9 @@ Here is the list of channels you should see upon joining the Campuswire workspac
 
 ### GitHub
 
-I have created a [GitHub](https://github.com/rweldzius/PSC4175_F2024/tree/main) repository to prepare and share all course-related content. This very syllabus is available as the repository's README and all links below are connected to the appropriate folders, sub-folders, and files in this repository.
+I have created a [GitHub](https://github.com/rweldzius/PSC7000_F2024/tree/main) repository to prepare and share all course-related content. This very syllabus is available as the repository's README and all links below are connected to the appropriate folders, sub-folders, and files in this repository.
 
-You are expected to adopt the following workflow for this class:
+Starting the week of October 21, you are expected to adopt the following workflow for this class:
 
   1. Prior to each lecture, download the appropriate `.Rmd` file, open it in `RStudio`, and read through it. This is your primary homework assignment (ungraded). As you work through it, try to tweak some of the code and answer the toy examples where provided. Each time you make a change, click the knit button in `RStudio` to see if everything still loads.
 
@@ -71,40 +71,43 @@ You are expected to adopt the following workflow for this class:
 
 ## Evaluation & Responsibilities  
 
-As with learning any new topic or language, the best strategy is to put in a little effort every day. To this end, you will be assigned homework assignments for each class (see "workflow" above) that correspond with readings from the text. I recommend you read through the book first to get an overview of the topic and then attack the homework. 
+As with learning any new topic or language, the best strategy is to put in a little effort every day. I recommend you review your notes on a daily basis in order to fully absorb the languague of political science research. 
 
-In class, as we work through the lecture material, please ask questions. Participation is key for your learning, but it will not be a part of your grade. Instead, you will be assigned weekly problem sets that will test your ability to apply what you've learned in class, and to think creatively about your own data science ideas. These problem sets are assigned on the Monday of each week and are due by **11:59PM Villanova time the following Friday**. You are welcome to collaborate on these problem sets, and are encouraged to ask questions on the Class feed on Campuswire.
+In the first half of the course, you will each work on building a research project that you can then test in the second half of the course. To this end, in weeks 1-7 you will begin to build your research project by identifying a puzzle in the field, develop a testable research question and argument, and plan a qualitative method for testing your argument. Each week, you will find and read a scholarly political science article that discusses, uses, or describes a topic from that week ([Google Scholar](https://scholar.google.com) will be helpful in this exercise). You will then summarize the article in a one-page memo that identifies the puzzle the author(s) seek to address, the research question, the argument, the method for testing the argument, and brief (1-2 sentences) overview of the findings. You should choose articles that are related to your own research project as this exercise will help you in building your literature review (or what will constitute as the "gap in the literature" for your project). Each week I will choose (at random) three of you to present your memo to the class. Thus, along with your memos, you should prepare three slides for each of the topics from your memo (Slide 1: puzzle; Slide 2: question and argument; Slide 3: method and result).  
 
-There are also two exams and a final project. The first exam is a midterm exam that is scheduled for the Wednesday before Fall break (10/09/2024) and will take place in class. The second exam is a cumulative final that is scheduled for December 18th; note that you can opt of this exam if you are happy with your grade as it stands on the last day of class. The final project will allow you to use the skills you learned in this class to address an interesting research question of your choosing.
+In the week before fall break, we will hold a mini-conference in which each of you will present your research project proposals, which will include (not surprisingly) the puzzle, question, argument, and method for testing. You will use the feedback from the mini-conference to complete your proposals by the end of the week. 
+
+In the second half of the course, you will use quantitative data to test your argument and/or motivate/describe your research puzzle. 
+In class, as we work through the lecture material, please ask questions. Participation is key for your learning, but it will not be a part of your grade in this second half of class. Instead, you will be assigned weekly problem sets that will test your ability to apply what you've learned in class, and to think creatively about your own data science ideas. These problem sets are assigned on the Monday of each week and are due by **11:59PM Villanova time the following Friday**. You are welcome to collaborate on these problem sets, and are encouraged to ask questions on the Class feed on Campuswire.
+
+Similar to the mini-conference in Week 7, in the final two weeks of class we will host a proper conference during class. Each student will present their project for approximately 8-10 minutes and then in the remaining 10 minutes they will take commments from the class. This is meant to help you as you continue to finish your project, which will be due on **December 16th by 12pm Villanova time**.  
 
 The final grade is calculated as a weighted average of these components with the following weights:
 
-  * **Problem sets**: 8 in total, only 7 of which are worth 5 points each for a total of 35 points. This means you can miss a problem set without it hurting your final grade.
+  * **Weekly Memos**: 4 in total, worth 2 points each. Your presentation will be worth 2 points, for a total of 10 points.
+  
+  * **Problem sets**: 6 in total, only 5 of which are worth 5 points each for a total of 25 points. This means you can miss a problem set without it hurting your final grade.
 
-  * **Exams**: Midterm and final. The midterm is worth 20 points and is in-class, and the final worth 20 points and is a take-home. 
+  * **Midterm Project**: The project is worth 20 points (5 points for the presentation).
 
-  * **Quizzes**: There are 19 quizzes over the course of the semester which can only be taken if you attend class. Each consist of several questions plus an attendance statement. 0.5 points comes from accurately answering all five questions, and 0.5 points comes from signing the attendance statement. Each quiz is worth 1 point of your final grade, and combined comprise the final 15 points, meaning that 4 are not counted toward your final grade.
-    
-  *  **Final Project**: Worth 10 points (write-up 8 points, presentation 2 points). In the last week of the semester, you will present a proposal for an individual research project. The proposal will be a minimum of five pages, using two skills/methods from the first half of class and two from the second half. Your proposal (and presentation) should briefly describe your research puzzle, question, and argument, then present some data that either motivates the puzzle/question/argument or tests the argument using the methods you learned. DO NOT TRY TO PRESENT EVERYTHING FROM YOUR PROPOSAL! 1 EC point will be allocated for giving feedback (minimum of 300 words) to a classmate on a draft of their project (up to 2 EC points allowed by giving feedback to two different classmates). This means you need to share your drafts early! You must submit your feedback(s) with your proposal by **Sunday 12/8/24 at 5pm**. 
+  * **Final Project**: The project is worth 35 points (10 points for the presentation).
 
-  * **Extra Credit**: There is one extra credit point on each problem set, and five extra credit points on the midterm and final. Thus the maximum total points you can receive in this class is 128, meaning that if you ace every problem set, the midterm, every quiz, and the final project, you will have 104 points before the final exam. Achieving a perfect score requires a lot of effort, but would allow you to skip the final exam if you so chose.
+  * **Participation**: Your participation during the first half of the course, as well as during the class presentations will be worth 10 points. 
 
 See the table below for a breakdown of the percentages, points, and extra credit.
 
-| Item | Percent | Points | EC | Max |
-|:-----|:-----:|:-----:|:-----:|:-----:|
-| pset1 | 5% | 5 | 1 | 6 |
-| pset2 | 5% | 5 | 1 | 6 |
-| pset3 | 5% | 5 | 1 | 6 |
-| pset4 | 5% | 5 | 1 | 6 |
-| pset5 | 5% | 5 | 1 | 6 |
-| pset6 | 5% | 5 | 1 | 6 |
-| pset7 | 5% | 5 | 1 | 6 |
-| pset8 | 0% | 0 | 6 | 6 |
-| Midterm | 20% | 20 | 5 | 25 |
-| Final project | 10% | 10 | 2 | 12 |
-| Final | 20% | 20 | 5 | 25 |
-| Quizzes | 15% | 15 | 4 | 19 |
+| Item | Percent | Points |
+|:-----|:-----:|:-----:|
+| pset1 | 5% | 5 |
+| pset2 | 5% | 5 |
+| pset3 | 5% | 5 |
+| pset4 | 5% | 5 |
+| pset5 | 5% | 5 |
+| pset6 | 0% | 0 |
+| Weekly Memos | 10% | 10 |
+| Participation | 10% | 10 |
+| Midterm Project | 20% | 20 |
+| Final Project | 35% | 35 |
 | **Totals** | **100%** | **100** | **22** | **128** |
 
 Letter grades are determined as per the standard Villanova grading system:
@@ -135,11 +138,11 @@ Students are entitled to one excused absence for any reason that may contribute 
 
 A Personal Day does not grant an automatic extension for items due. Students remain responsible for all assignments, exams, presentations, etc. due on that date. It is in the instructor’s discretion to determine whether any extension is appropriate given individual circumstances.
 
-Quizzes will not be excused due to an absence (excused or unexcused). Remember you have four "freebies" so use these wisely. 
-
 ### Late Assignments
 
-Every problem set is assigned on a Monday and due on Blackboard by **11:59PM Villanova time on the following Friday**. Problem sets should be submitted via Blackboard. The problem sets are designed to require no more than two hours in total to complete. Late submissions will be **penalized 1 point off for each day late**. After three days, problem sets will no longer be accepted and will be scored 0. Remember that your lowest scoring problem set will not be counted toward your final grade, effectively giving you one "freebie;" use it wisely! Answer keys for the preceding week's problem set are posted on Wednesdays after class.
+Weekly memos (and slides) are due on Blackboard by **12pm Villanova time on the day of class**. Late submissions will be **penalized 1 point off for each day late**. After two days, memos will no longer be accepted and will be scored 0. 
+
+Every problem set is assigned on a Monday and due on Blackboard by **11:59PM Villanova time on the following Friday**. Problem sets should be submitted via Blackboard. The problem sets are designed to require no more than 2-3 hours in total to complete. Late submissions will be **penalized 1 point off for each day late**. After three days, problem sets will no longer be accepted and will be scored 0. Remember that your lowest scoring problem set will not be counted toward your final grade, effectively giving you one "freebie;" use it wisely! Answer keys for the preceding week's problem set are posted on Wednesdays after class.
 
 ### Cell Phones, Laptops, Tablets, etc.
 
@@ -179,39 +182,23 @@ Villanova University makes every reasonable effort to allow members of the commu
 
 | Date | Topic | Learing Goal | Materials | HW | Pset |
 |:-----|:------|:------|:------|:------|:------|
-| 8/26/24 | Introduction | Scientific method, camps of analysis | | [HW 1](https://github.com/rweldzius/PSC4175_F2024/blob/main/Homeworks/psc4175_hw_1.Rmd) | [PS 0](https://github.com/rweldzius/PSC4175_F2024/blob/main/Psets/psc4175_pset_0.Rmd) |
-| 8/28/24 | Intro to R 1 | Objects, functions, and code | | [HW 2](https://github.com/rweldzius/PSC4175_F2024/blob/main/Homeworks/psc4175_hw_2.Rmd) | |
-| 9/2/24 | No Class | | | | PS 1 |
-| 9/4/24 | Intro to R 2 | Visualization in R | | HW 3 | |
-| 9/9/24 | Intro to R 3 | More visualization | | HW 4 | PS 2 |
-| 9/11/24 | Data Wrangling | Replicability and tabular data | | HW 5 | |
-| 9/16/24 | Univariate Analysis | Summaries of a single variable | | HW 6 | PS 3 |
-| 9/18/24 | Multivariate 1 | Summaries of multiple variables | | HW 7 |  |
-| 9/23/24 | Multivariate 2 | Visualizations of multiple variables | | HW 8 | PS 4 |
-| 9/25/24 | Multivariate 3 | Visualizations of multiple variables | | HW 9 | |
-| 9/30/24 |  Review Session |  | | | PS 5 |
-| 10/2/24 | Uncertainty 1 | Uncertainty and bootstrapping | | HW 10 | |
-| 10/7/24 | Uncertainty 2 | Confidence statements |  | HW 11 | |
-| 10/9/24 | Midterm Exam |  | | | |
+| 8/26/24 | Introduction | Scientific method | KKV 1 |  |  |
+| 9/2/24 | No Class | | | Research topic | |
+| 9/9/24 | Descriptive Inference |  | KKV 2 | Memo 1 |  |
+| 9/16/24 | Causality | Causality & Causal Inference | KKV 3 | Memo 2|  |
+| 9/23/24 | Observe/avoid | Determining/understanding what to observe/avoid | KKV 4-5 | Memo 3 |  |
+| 9/30/24 | Observations | Increasing the number of observations | KKV 6 | Memo 4 | |
+| 10/7/24 | Mini-conference |  | | | |
 | 10/14/24 | Fall Break |  | | | |
-| 10/16/24 | Fall Break |  |  | | |
-| 10/21/24 | Regression 1 | Interpreting output and evaluating model |  | HW 12 | PS 6 |
-| 10/23/24 | Regression 2 | Interpreting output and evaluating model | | HW 13 | |
-| 10/28/24 | Regression 3 | Multiple regression, categorical Xs | | HW 14 |  |
-| 10/30/24 | Review Session | Regression | |  | |
-| 11/4/24 | Classification 1 | The concept of logistic regression |  | HW 15 | PS 7 |
-| 11/6/24 | Classification 2 | Interpreting output and evaluating model | | HW 16 |  |
-| 11/11/24 | Classification 3 | Interpreting output and evaluating model |  | HW 17 |  |
-| 11/13/24 | Clustering | k-means clustering |  | HW 18 | |
-| 11/18/24 | NLP 1 | k-means clustering on text |  | HW 19 | PS 8 |
-| 11/20/24 | NLP 2 | Sentiment analysis |  | | |
-| 11/25/24 | Review Session | Clustering |  | | |
-| 11/27/24 | No Class |  |  | | |
-| 12/2/24 | Ethics | The risks of rapid technological change |  | | |
-| 12/4/24 | Discuss final projects | |  | | |
-| 12/9/24 | Final project presentations | |  | | |
-| 12/11/24 | Final project presentations |  |  | | |
-| 12/18/24 | Final Exam Due | |  | | |
+| 10/21/24 | Intro to R | Objects, functions, code, visualization | | HW 1 | PS 1 |
+| 10/28/24 | Data Wrangling & Univariate Analysis |  | | HW 2 | PS 2 |
+| 11/4/24 | Multivariate Analysis & Uncertainty |  | | HW 3 | PS 3 |
+| 11/11/24 | Regression |  | | HW 4 | PS 4 |
+| 11/18/24 | Classification & Clustering |  | | HW 5 | PS 5 |
+| 11/25/24 | Natural language processing |  | | HW 6 | PS 6 |
+| 12/2/24 | Conference |  | | | |
+| 12/9/24 | Conference |  | | | |
+| 12/16/24 | Final Projects Due | |  | | |
 
 [Back to ToC](#table-of-contents)
 
