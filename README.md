@@ -169,7 +169,7 @@ Villanova University makes every reasonable effort to allow members of the commu
 
 ## Syllabus
 
-| Date | Topic | Learing Goal | Materials | HW | Pset |
+| Date | Topic | Learning Goal | Materials | HW | Pset |
 |:-----|:------|:------|:------|:------|:------|
 | 8/26/24 | Introduction | Scientific method, camps of analysis | | [HW 1](https://github.com/rweldzius/PSC4175_F2024/blob/main/Homeworks/psc4175_hw_1.Rmd) | [PS 0](https://github.com/rweldzius/PSC4175_F2024/blob/main/Psets/psc4175_pset_0.Rmd) |
 | 8/28/24 | Intro to R 1 | Objects, functions, and code | | [HW 2](https://github.com/rweldzius/PSC4175_F2024/blob/main/Homeworks/psc4175_hw_2.Rmd) | |
