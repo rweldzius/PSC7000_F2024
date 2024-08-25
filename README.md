@@ -29,7 +29,7 @@ The main texts for the course are [*Designing Social Inquiry*](https://press.pri
 
 Villanova has an enterprise site license for Microsoft’s Copilot chat application, which is built off of Open A.I.  Copilot is available to all faculty, staff, and students [here](https://copilot.microsoft.com).
 
-Class time and location: Mondays, 7:30-9:30pm in Bartley 126. 
+Class time and location: Mondays, 7:30-9:30pm in Bartley Hall 2046. 
 
 [Back to ToC](#table-of-contents)
 
