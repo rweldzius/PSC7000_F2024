@@ -223,11 +223,6 @@ background-size: contain
 
 ---
 
-# The Two Camps
-
-<center><img src="figs/camps3.png" width="80%"></center>
-
----
 
 # .blue[Research] Camp
 
@@ -335,7 +330,7 @@ data.frame(step = c('Observation','Question','Theory','Hypothesis','Data Collect
 
 --
 
-<center><img src="figs/brown_et_al.png" width=80%></center>
+<center><img src="figs/weldzius2021.png" width=80%></center>
 
 ---
 
@@ -349,7 +344,7 @@ data.frame(step = c('Observation','Question','Theory','Hypothesis','Data Collect
 
 --
 
-<img src="figs/transparency_tube.png" width="100%">
+<img src="figs/bergsten2019_1.png" width="100%">
 
 ---
 
@@ -359,7 +354,7 @@ data.frame(step = c('Observation','Question','Theory','Hypothesis','Data Collect
 
   - Observation is facilitated by .red[data] (Descriptive analysis)
 
-<img src="figs/recs_example_1.png" width="100%">
+<img src="figs/bergsten2019_2.png" width="100%">
 
 
 ---
@@ -369,8 +364,10 @@ data.frame(step = c('Observation','Question','Theory','Hypothesis','Data Collect
 1. **.red[Observation]** &rarr; **.blue[Question]**
 
   - Observation is facilitated by .red[data] (Descriptive analysis)
+  
+  - Number of currency manipulators per year according to Bergsten-Gagnon criteria
 
-<img src="figs/recs_example_2.png" width="100%">
+<img src="figs/weldzius2021_manip.png" width="90%">
 
 
 ---
@@ -383,134 +380,35 @@ data.frame(step = c('Observation','Question','Theory','Hypothesis','Data Collect
   
 --
 
-  - I.e., does YouTube's algorithm put users into "echo chambers"?
+  - I.e., why have countries stopped (or attenuated) currency manipulation?
 
---
-
-<center><img src="figs/echo_chamber.png" width="60%"></center>
+<center><img src="figs/currencywar.jpeg" width="80%"></center>
 
 ---
 
 # .blue[Research] Camp
 
-<ol start = 2>
-
-<li> **.blue[Theory]** &rarr; **.blue[Hypothesis]**
+2. **.blue[Theory]** &rarr; **.blue[Hypothesis]**
   
 --
 
   - Theorizing requires abstraction & simplification
-
-  - I.e., people (in general) avoid conflict
-
---
-
-<center><img src="figs/utility_1.png" width="60%"></center>
-
----
-
-# .blue[Research] Camp
-
-<ol start = 2>
-
-<li> **.blue[Theory]** &rarr; **.blue[Hypothesis]**
-
-  - Theorizing requires abstraction & simplification
-
-  - I.e., people (in general) avoid conflict
-
-<center><img src="figs/utility_2.png" width="60%"></center>
-
----
-
-# .blue[Research] Camp
-
-<ol start = 2>
-
-<li> **.blue[Theory]** &rarr; **.blue[Hypothesis]**
-
-  - Theorizing requires abstraction & simplification
-
-  - I.e., people (in general) avoid conflict
-
-<center><img src="figs/utility_3.png" width="60%"></center>
-
----
-
-# .blue[Research] Camp
-
-<ol start = 2>
-
-<li> **.blue[Theory]** &rarr; **.blue[Hypothesis]**
-
-  - Theorizing requires abstraction & simplification
-
-  - I.e., people (in general) avoid conflict
-
-<center><img src="figs/utility_4.png" width="60%"></center>
-
-
----
-
-# .blue[Research] Camp
-
-<ol start = 2>
-
-<li> **.blue[Theory]** &rarr; **.blue[Hypothesis]**
-
-  - Theorizing requires abstraction & simplification
-
-  - I.e., people (in general) avoid conflict
-
-<center><img src="figs/utility_5.png" width="60%"></center>
-
----
-
-# .blue[Research] Camp
-
-<ol start = 2>
-
-<li> **.blue[Theory]** &rarr; **.blue[Hypothesis]**
-
-  - Theorizing requires abstraction & simplification
-
-  - I.e., people (in general) avoid conflict
   
-  - YouTube wants users to watch more videos
-
 --
 
-.leftcol[
-<img src="figs/covington_et_al_2016.png" width="100%">
-]
-
---
-
-.rightcol[
-<img src="figs/yt_rec_algo.png" width="100%">
-]
-
-
----
-
-# .blue[Research] Camp
-
-<ol start = 2>
-
-<li> **.blue[Theory]** &rarr; **.blue[Hypothesis]**
-
-  - Theorizing requires abstraction & simplification
-
-  - I.e., people (in general) avoid conflict
+  - I.e., trade has changed and therefore exchange rate preferences have changed
   
-  - YouTube wants users to watch more videos
-
-- Hypotheses fall out naturally from well-done theory
-
 --
 
-- **H1:** *YouTube's recommendation algorithm should suggest liberal content to liberals and conservative content to conservatives.*
-
+  - Global value chains now account for 70% of global trade (~50% in 1990s)
+  
+--
+  
+  - Hypotheses fall out naturally from well-done theory
+  
+--
+  
+  - **H1**: *global value chain trade should moderate the relationship between export dependence and currency manipulation*
 
 ---
 
@@ -523,68 +421,156 @@ data.frame(step = c('Observation','Question','Theory','Hypothesis','Data Collect
   - Data collection separates "Data Science"...
   
   - ...from "Science, with data"
+
+--
   
-<center><img src="figs/data_collection_1.png" width="90%"></center>
+  - collect national input-output tables (matrices) & estimate global value chain linkages
+
 
 ---
 
-# .blue[Research] Camp
-
-<ol start = 3>
-
-<li> **.red[Data Collection / Wrangling]** &rarr; **.red[Analysis]**
-
-  - Data collection separates "Data Science"...
-  
-  - ...from "Science, with data"
-  
-<center><img src="figs/data_collection_2.png" width="90%"></center>
-
----
-
-# .blue[Research] Camp
-
-<ol start = 3>
-
-<li> **.red[Data Collection / Wrangling]** &rarr; **.red[Analysis]**
-
-  - Data collection separates "Data Science"...
-  
-  - ...from "Science, with data"
-  
-<center><img src="figs/data_collection_3.png" width="90%"></center>
-
----
-
-# .blue[Research] Camp
-
-<ol start = 3>
-
-<li> **.red[Data Collection / Wrangling]** &rarr; **.red[Analysis]**
-
-  - Data collection separates "Data Science"...
-  
-  - ...from "Science, with data"
-  
-<center><img src="figs/data_collection_4.png" width="90%"></center>
-
----
-
-# .blue[Research] Camp
-
-<ol start = 3>
-
-<li> **.red[Data Collection / Wrangling]** &rarr; **.red[Analysis]**
+background-image: url(./figs/plot11_empty1.png)
+background-size: contain
 
 --
 
-- Analysis is informed by the .red[data] you have collected...
-
-- ...and the .blue[hypotheses] you have generated
+background-image: url(./figs/plot11_empty2.png)
+background-size: contain
 
 --
 
-<center><img src="figs/emptrav_1.png" width="90%"></center>
+background-image: url(./figs/plot11_empty3.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_1995.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_1996.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_1997.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_1998.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_1999.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_2000.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_2001.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_2002.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_2003.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_2004.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_2005.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_2006.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_2007.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_2008.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_2009.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_2010.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_2011.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_2012.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_2013.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_2014.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_2015.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_2016.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_2017.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_2018.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_2019.png)
+background-size: contain
+
+--
+
+background-image: url(./figs/plot11_2020.png)
+background-size: contain
 
 ---
 
@@ -598,7 +584,7 @@ data.frame(step = c('Observation','Question','Theory','Hypothesis','Data Collect
 
 - ...and the .blue[hypotheses] you have generated
 
-<center><img src="figs/emptrav_2.png" width="90%"></center>
+<center><img src="figs/figure2a.png" width="60%"></center>
 
 ---
 
@@ -612,162 +598,7 @@ data.frame(step = c('Observation','Question','Theory','Hypothesis','Data Collect
 
 - ...and the .blue[hypotheses] you have generated
 
-<center><img src="figs/emptrav_3.png" width="90%"></center>
-
----
-
-# .blue[Research] Camp
-
-<ol start = 3>
-
-<li> **.red[Data Collection / Wrangling]** &rarr; **.red[Analysis]**
-
-- Analysis is informed by the .red[data] you have collected...
-
-- ...and the .blue[hypotheses] you have generated
-
-<center><img src="figs/emptrav_4.png" width="90%"></center>
-
----
-
-# .blue[Research] Camp
-
-<ol start = 3>
-
-<li> **.red[Data Collection / Wrangling]** &rarr; **.red[Analysis]**
-
-- Analysis is informed by the .red[data] you have collected...
-
-- ...and the .blue[hypotheses] you have generated
-
-<center><img src="figs/emptrav_5.png" width="90%"></center>
-
----
-
-# .blue[Research] Camp
-
-<ol start = 3>
-
-<li> **.red[Data Collection / Wrangling]** &rarr; **.red[Analysis]**
-
-- Analysis is informed by the .red[data] you have collected...
-
-- ...and the .blue[hypotheses] you have generated
-
-<center><img src="figs/emptrav_6.png" width="90%"></center>
-
----
-
-# .blue[Research] Camp
-
-<ol start = 3>
-
-<li> **.red[Data Collection / Wrangling]** &rarr; **.red[Analysis]**
-
-- Analysis is informed by the .red[data] you have collected...
-
-- ...and the .blue[hypotheses] you have generated
-
-<center><img src="figs/emptrav_7.png" width="90%"></center>
-
----
-
-# .blue[Research] Camp
-
-<ol start = 3>
-
-<li> **.red[Data Collection / Wrangling]** &rarr; **.red[Analysis]**
-
-- Analysis is informed by the .red[data] you have collected...
-
-- ...and the .blue[hypotheses] you have generated
-
-<center><img src="figs/emptrav_8.png" width="90%"></center>
-
----
-
-# .blue[Research] Camp
-
-<ol start = 3>
-
-<li> **.red[Data Collection / Wrangling]** &rarr; **.red[Analysis]**
-
-- Analysis is informed by the .red[data] you have collected...
-
-- ...and the .blue[hypotheses] you have generated
-
-<center><img src="figs/emptrav_9.png" width="90%"></center>
-
----
-
-# .blue[Research] Camp
-
-<ol start = 3>
-
-<li> **.red[Data Collection / Wrangling]** &rarr; **.red[Analysis]**
-
-- Analysis is informed by the .red[data] you have collected...
-
-- ...and the .blue[hypotheses] you have generated
-
-<center><img src="figs/emptrav_10.png" width="90%"></center>
-
----
-
-# .blue[Research] Camp
-
-<ol start = 3>
-
-<li> **.red[Data Collection / Wrangling]** &rarr; **.red[Analysis]**
-
-- Analysis is informed by the .red[data] you have collected...
-
-- ...and the .blue[hypotheses] you have generated
-
-<center><img src="figs/emptrav_11.png" width="90%"></center>
-
----
-
-# .blue[Research] Camp
-
-<ol start = 3>
-
-<li> **.red[Data Collection / Wrangling]** &rarr; **.red[Analysis]**
-
-- Analysis is informed by the .red[data] you have collected...
-
-- ...and the .blue[hypotheses] you have generated
-
-<center><img src="figs/emptrav_12.png" width="90%"></center>
-
----
-
-# .blue[Research] Camp
-
-<ol start = 3>
-
-<li> **.red[Data Collection / Wrangling]** &rarr; **.red[Analysis]**
-
-- Analysis is informed by the .red[data] you have collected...
-
-- ...and the .blue[hypotheses] you have generated
-
-<center><img src="figs/emptrav_13.png" width="90%"></center>
-
----
-
-# .blue[Research] Camp
-
-<ol start = 3>
-
-<li> **.red[Data Collection / Wrangling]** &rarr; **.red[Analysis]**
-
-- Analysis is informed by the .red[data] you have collected...
-
-- ...and the .blue[hypotheses] you have generated
-
-<center><img src="figs/emptrav_14.png" width="90%"></center>
-
+<center><img src="figs/figure2b.png" width="60%"></center>
 
 ---
 
@@ -783,7 +614,7 @@ data.frame(step = c('Observation','Question','Theory','Hypothesis','Data Collect
   
   - ...to draw conclusions
 
-<center><img src="figs/ideo_dist_2.png" width="80%"></center>
+<center><img src="figs/plot13c.png" width=70%"></center>
 
 ---
 
@@ -799,109 +630,29 @@ data.frame(step = c('Observation','Question','Theory','Hypothesis','Data Collect
   
   - ...to draw conclusions
 
-<center><img src="figs/ideo_dist_3.png" width="80%"></center>
+<center><img src="figs/plot14c.png" width="60%"></center>
+
+---
+
+# .blue[Research] Camp
+
+<ol start = 4>
+
+<li> **.red[Results]** &rarr; **.blue[Conclusion]**
+
+  - Results fall out naturally from the analysis...
+  
+  - ...and must be interpreted in terms of the theory and hypotheses...
+  
+  - ...to draw conclusions
+
+<center><img src="figs/plot15c.png" width="60%"></center>
 
 ---
 
 # The Two Camps
 
-<center><img src="figs/camps3.png" width="80%"></center>
-
----
-
-# .red[Prediction] Camp
-
-- **Goal/Problem/Challenge**: Measure the ideology of a YouTube video
-
----
-
-# .red[Prediction] Camp
-
-- **Data Wrangling**: Get matrix of links shared on political subreddits
-
---
-
-<center><img src="figs/hard_data_2.png" width="100%"></center>
-
----
-
-#.red[Prediction] Camp
-
-- **Data Wrangling**: Get matrix of links shared on political subreddits
-
-<center><img src="figs/hard_data_3.png" width="100%"></center>
-
----
-
-#.red[Prediction] Camp
-
-- **Data Wrangling**: Get matrix of links shared on political subreddits
-
-<center><img src="figs/hard_data_4.png" width="100%"></center>
-
----
-
-#.red[Prediction] Camp
-
-- **Data Wrangling**: Correspondence Analysis to estimate ideology scores for subreddits
-
-<center><img src="figs/hard_data_5.png" width="100%"></center>
-
----
-
-#.red[Prediction] Camp
-
-- **Data Wrangling**: Get matrix of YouTube videos shared on scored subreddits
-
-<center><img src="figs/hard_data_6.png" width="100%"></center>
-
----
-
-#.red[Prediction] Camp
-
-- **Data Wrangling**: Get matrix of YouTube videos shared on scored subreddits
-
-<center><img src="figs/hard_data_7.png" width="100%"></center>
-
----
-
-#.red[Prediction] Camp
-
-- **Data Wrangling**: Get matrix of YouTube videos shared on scored subreddits
-
-<center><img src="figs/hard_data_8.png" width="100%"></center>
-
----
-
-#.red[Prediction] Camp
-
-- **Data Wrangling**: Get matrix of 60k YouTube videos shared on scored subreddits
-
-<center><img src="figs/hard_data_9.png" width="100%"></center>
-
----
-
-#.red[Prediction] Camp
-
-- **Data Wrangling**: Calculate video ideology as weighted mean of subreddits
-
-<center><img src="figs/hard_data_10.png" width="100%"></center>
-
----
-
-#.red[Prediction] Camp
-
-- **Model Training**: BERT transformer trained on 60k videos
-
-<center><img src="figs/hard_data_12.png" width="100%"></center>
-
----
-
-#.red[Prediction] Camp
-
-- **Prediction**: Measure the ideology of a YouTube video
-
-<center><img src="figs/hard_data_13.png" width="100%"></center>
+<center><img src="figs/camps2.png" width="80%"></center>
 
 
 ---
@@ -1028,7 +779,7 @@ data.frame(step = c('Observation','Question','Theory','Hypothesis','Data Collect
 
 # Grades
 
-<center><img src="figs/rubric.png" width="40%"></center>
+<center><img src="figs/grade_rubric.png" width="40%"></center>
 
 ---
 
@@ -1074,11 +825,11 @@ data.frame(step = c('Observation','Question','Theory','Hypothesis','Data Collect
 
 # Grades: Final Project
 
-- Final project is 25 points 
+- Final project is 10 points 
   
-  - 20 points for final submission
-  - 5 points for presentation in final week (5-8 minutes) 
-  - 5 EC points: 1 point for each classmate you give feedback to after the presentations, max. 5 points (submit via Campuswire)
+  - 8 points for final submission
+  - 2 points for presentation in final week (5-8 minutes) 
+  - 2 EC points: 1 point for each classmate you give feedback to after the presentations, max. 2 points (submit via Campuswire)
 
 - Task: create a report that takes a dataset of your choice and uses
 the skills you learn in this class to tell us something about it. Use at least two skills from first half, two skills from second half. Minimum 8 pages, double-spaced, 12pt font.
@@ -1092,7 +843,11 @@ the skills you learn in this class to tell us something about it. Use at least t
 
 --
 
-- Midterm is 20 points + 5 EC
+- Midterm is 20 points + 2 EC
+
+--
+
+- Final is 20 points + 2 EC (may opt out of exam!)
 
 
 ---
