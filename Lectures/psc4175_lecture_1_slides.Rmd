@@ -1002,6 +1002,6 @@ the skills you learn in this class to tell us something about it. Use at least t
 
   1. Work through psc4175_hw_1.Rmd
   
-  2. Complete Problem Set 0 (on Blackboard)
+  2. Complete Problem Set 0 (on GitHub)
   
-  3. Create a Copilot account (https://platform.openai.com/signup)
+  3. Create a Copilot account (https://copilot.microsoft.com/)
