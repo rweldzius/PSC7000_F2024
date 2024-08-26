@@ -21,6 +21,8 @@ The main text for the course is "R For Data Science" which can be assessed free 
 
 Villanova has an enterprise site license for Microsoft’s Copilot chat application, which is built off of Open A.I.  Copilot is available to all faculty, staff, and students [here](https://copilot.microsoft.com).
 
+**Class time and location**: M/W 3:20-4:35 in St. Mary's 163C.
+
 [Back to ToC](#table-of-contents)
 
 ## Required Applications
@@ -79,7 +81,7 @@ The final grade is calculated as a weighted average of these components with the
     
   *  **Final Project**: Worth 10 points (write-up 8 points, presentation 2 points). In the last week of the semester, you will present a proposal for an individual research project. The proposal will be a minimum of five pages, using two skills/methods from the first half of class and two from the second half. Your proposal (and presentation) should briefly describe your research puzzle, question, and argument, then present some data that either motivates the puzzle/question/argument or tests the argument using the methods you learned. DO NOT TRY TO PRESENT EVERYTHING FROM YOUR PROPOSAL! 1 EC point will be allocated for giving feedback (minimum of 300 words) to a classmate on a draft of their project (up to 2 EC points allowed by giving feedback to two different classmates). This means you need to share your drafts early! You must submit your feedback(s) with your proposal by **Sunday 12/8/24 at 5pm**. 
 
-  * **Extra Credit**: There is one extra credit point on each problem set, and five extra credit points on the midterm and final. Thus the maximum total points you can receive in this class is 128, meaning that if you ace every problem set, the midterm, every quiz, and the final project, you will have 104 points before the final exam. Achieving a perfect score requires a lot of effort, but would allow you to skip the final exam if you so chose.
+  * **Extra Credit**: There is one extra credit point on each problem set, two extra credit points on the midterm and final, and two extra credit points on the final project. Thus the maximum total points you can receive in this class is 125, meaning that if you ace every problem set, the midterm, every quiz, and the final project, you will have 103 points before the final exam. Achieving a perfect score requires a lot of effort, but would allow you to skip the final exam if you so chose.
 
 See the table below for a breakdown of the percentages, points, and extra credit.
 
@@ -93,11 +95,11 @@ See the table below for a breakdown of the percentages, points, and extra credit
 | pset6 | 5% | 5 | 1 | 6 |
 | pset7 | 5% | 5 | 1 | 6 |
 | pset8 | 0% | 0 | 6 | 6 |
-| Midterm | 20% | 20 | 5 | 25 |
-| Final project | 10% | 10 | 2 | 12 |
-| Final | 20% | 20 | 5 | 25 |
 | Quizzes | 15% | 15 | 4 | 19 |
-| **Totals** | **100%** | **100** | **22** | **128** |
+| Midterm exam | 20% | 20 | 2 | 22 |
+| Final project | 10% | 10 | 2 | 12 |
+| Final exam | 20% | 20 | 2 | 22 |
+| **Totals** | **100%** | **100** | **25** | **125** |
 
 Letter grades are determined as per the standard Villanova grading system:
 
@@ -169,7 +171,7 @@ Villanova University makes every reasonable effort to allow members of the commu
 
 ## Syllabus
 
-| Date | Topic | Learing Goal | Materials | HW | Pset |
+| Date | Topic | Learning Goal | Materials | HW | Pset |
 |:-----|:------|:------|:------|:------|:------|
 | 8/26/24 | Introduction | Scientific method, camps of analysis | | [HW 1](https://github.com/rweldzius/PSC4175_F2024/blob/main/Homeworks/psc4175_hw_1.Rmd) | [PS 0](https://github.com/rweldzius/PSC4175_F2024/blob/main/Psets/psc4175_pset_0.Rmd) |
 | 8/28/24 | Intro to R 1 | Objects, functions, and code | | [HW 2](https://github.com/rweldzius/PSC4175_F2024/blob/main/Homeworks/psc4175_hw_2.Rmd) | |
