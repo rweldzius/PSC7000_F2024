@@ -35,7 +35,7 @@ output:
 ```{r,include=F}
 set.seed(123)
 options(width=60)
-knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60),tidy=TRUE,fig.align='center',fig.width=9,fig.height=5,message=F,warning=F)
+knitr::opts_chunk$set(fig.align='center',fig.width=9,fig.height=5,message=F,warning=F)
 def.chunk.hook  <- knitr::knit_hooks$get("chunk")
 knitr::knit_hooks$set(chunk = function(x, options) {
   x <- def.chunk.hook(x, options)
@@ -716,10 +716,8 @@ defs %>%
 - The code process of `tidyverse` relies on a "pipe" symbol: `%>%`
 
 --
-
-  - I don't like this name
   
-  - I think it should be called a "chain" because it **links code together**
+  - Think of it as a "chain" that **links code together**
   
   - Or maybe a "do" symbol because it tells `R` what to do
   
@@ -1037,7 +1035,7 @@ df %>%
 ```{r,eval=T}
 df %>%
   filter(adm_rate > .1) %>% # Only look at schools who accept more than 10% of applicants
-  summarise(mean_sat_GT20 = mean(sat_avg,na.rm=T)) # Calculate the average SAT score
+  summarise(mean_sat_GT10 = mean(sat_avg,na.rm=T)) # Calculate the average SAT score
 ```
 
 ---
