@@ -55,9 +55,9 @@ You will then be asked to determine a bunch of settings for this `.Rmd` document
 <center><img src="../Lectures/figs/create_rmd_2.png" width = 70%></center>
 
 ### Saving `.Rmd` file
-This will open a new `.Rmd` file! Now you should change the title of the file to "Homework Assignment 0" and the author to your name. You should then save the file in your `code` folder with the file name `[Last Name]_PS0.Rmd` by clicking `File` &rarr; `Save As...`.
+This will open a new `.Rmd` file! Now you should change the title of the file to "Problem Set 0" and the author to your name. You should then save the file in your `code` folder with the file name `[Last Name]_PS0.Rmd` by clicking `File` &rarr; `Save As...`.
 
-<center><img src="../Lectures/figs/first_rmd.png" width = 70%></center>
+<center><img src="../Lectures/figs/rmd_ps0.png" width = 70%></center>
 
 ## 5. Modify and `knit`
 Now, **delete all of the default text** in your `.Rmd` file from line 12 down to the bottom. Then write the following on line 12:
