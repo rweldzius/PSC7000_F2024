@@ -1119,11 +1119,11 @@ df %>%
 
 # Quiz & Homework
 
-- Go to Blackboard and take the **1st** quiz
+- Go to gosocrative.com and take the **1st** quiz
 
 --
 
-  - The password to take the quiz is #### <!-- `r paste(sample(1:9,size = 4,replace = T),collapse = '')` -->
+  - The room name is PSC4175
   
 --
 
