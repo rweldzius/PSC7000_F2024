@@ -138,7 +138,7 @@ df&lt;-read_rds("https://github.com/rweldzius/PSC4175_F2024/raw/main/Data/sc_deb
 
 --
 
-- These are "square" (although actually rectagular)
+- These are "square" (although actually rectangular)
 
 --
 
@@ -532,7 +532,7 @@ df %&gt;%
 
 # Manipulating the Data
 
-- Can also put `|` or `&amp;` in a single `str_detect()`
+- Can also put `|` in a single `str_detect()`
 
 
 ``` r
@@ -828,12 +828,12 @@ df %&gt;%
 ``` r
 df %&gt;%
   filter(adm_rate &gt; .1) %&gt;% # Only schools who accept &gt; 10%
-  summarise(mean_sat_GT20 = mean(sat_avg,na.rm=T)) # Average SAT
+  summarise(mean_sat_GT10 = mean(sat_avg,na.rm=T)) # Average SAT
 ```
 
 ```
 ## # A tibble: 1 × 1
-##   mean_sat_GT20
+##   mean_sat_GT10
 ##           &lt;dbl&gt;
 ## 1         1135.
 ```
@@ -928,12 +928,12 @@ df %&gt;%
 
 # Logic: `ifelse()`
 
-- Say it out loud: "Create a new variable called `sel` that records if the school is selective or not. If the admissions rate is less than 10% (0.1), record the school as `sel = 1`. Otherwise, record the school as `sel = 0`."
+- Say it out loud: "Create a new variable called `selective` that records if the school is selective or not. If the admissions rate is less than 10% (0.1), record the school as `selective = 1`. Otherwise, record the school as `selective = 0`."
 
 
 ``` r
 df %&gt;%
-  mutate(sel = ifelse(test = [LOGIC],
+  mutate(selective = ifelse(test = [LOGIC],
                       yes = [VALUE IF TRUE],
                       no = [VALUE IF FALSE]))
 ```
@@ -941,12 +941,12 @@ df %&gt;%
 
 # Logic: `ifelse()`
 
-- Say it out loud: "Create a new variable called `sel` that records if the school is selective or not. **If the admissions rate is less than 10% (0.1)**, record the school as `sel = 1`. Otherwise, record the school as `sel = 0`."
+- Say it out loud: "Create a new variable called `selective` that records if the school is selective or not. **If the admissions rate is less than 10% (0.1)**, record the school as `selective = 1`. Otherwise, record the school as `selective = 0`."
 
 
 ``` r
 df %&gt;%
-  mutate(sel = ifelse(test = `adm_rate &lt; 0.1`, # This is the logic
+  mutate(selective = ifelse(test = `adm_rate &lt; 0.1`, # This is the logic
                       yes = [VALUE IF TRUE],
                       no = [VALUE IF FALSE]))
 ```
@@ -955,12 +955,12 @@ df %&gt;%
 
 # Logic: `ifelse()`
 
-- Say it out loud: "Create a new variable called `sel` that records if the school is selective or not. If the admissions rate is less than 10% (0.1), **record the school as `sel = 1`**. Otherwise, record the school as `sel = 0`."
+- Say it out loud: "Create a new variable called `selective` that records if the school is selective or not. If the admissions rate is less than 10% (0.1), **record the school as `selective = 1`**. Otherwise, record the school as `selective = 0`."
 
 
 ``` r
 df %&gt;%
-  mutate(sel = ifelse(test = adm_rate &lt; 0.1, # This is the logic
+  mutate(selective = ifelse(test = adm_rate &lt; 0.1, # This is the logic
                       yes = `1`, # This is the value if TRUE
                       no = [VALUE IF FALSE]))
 ```
@@ -968,12 +968,12 @@ df %&gt;%
 
 # Logic: `ifelse()`
 
-- Say it out loud: "Create a new variable called `sel` that records if the school is selective or not. If the admissions rate is less than 10% (0.1), record the school as `sel = 1`. **Otherwise, record the school as `sel = 0`**."
+- Say it out loud: "Create a new variable called `selective` that records if the school is selective or not. If the admissions rate is less than 10% (0.1), record the school as `selective = 1`. **Otherwise, record the school as `selective = 0`**."
 
 
 ``` r
 df %&gt;%
-  mutate(sel = ifelse(test = adm_rate &lt; 0.1, # This is the logic
+  mutate(selective = ifelse(test = adm_rate &lt; 0.1, # This is the logic
                       yes = 1, # This is the value if TRUE
                       no = `0`)) # This is the value if FALSE
 ```
@@ -986,7 +986,7 @@ df %&gt;%
 
 ``` r
 df &lt;- df %&gt;%
-  mutate(sel = ifelse(test = adm_rate &lt; 0.1, # This is the logic
+  mutate(selective = ifelse(test = adm_rate &lt; 0.1, # This is the logic
                       yes = 1, # This is the value if TRUE
                       no = 0)) # This is the value if FALSE
 ```
@@ -1417,7 +1417,7 @@ df %&gt;%
 ```
 
 ```
-## # A tibble: 2,546 × 10
+## # A tibble: 2,546 × 9
 ##    unitid stabbr control region    preddeg  openadmp ccbasic
 ##     &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;     &lt;chr&gt;       &lt;int&gt;   &lt;int&gt;
 ##  1 100654 AL     Public  Southeast Bachelo…        2      18
@@ -1431,8 +1431,7 @@ df %&gt;%
 ##  9 100830 AL     Public  Southeast Bachelo…        2      18
 ## 10 100858 AL     Public  Southeast Bachelo…        2      15
 ## # ℹ 2,536 more rows
-## # ℹ 3 more variables: ugds &lt;int&gt;, selective &lt;dbl&gt;,
-## #   sel &lt;dbl&gt;
+## # ℹ 2 more variables: ugds &lt;int&gt;, selective &lt;dbl&gt;
 ```
 
 ---
@@ -1448,7 +1447,7 @@ df %&gt;%
 ```
 
 ```
-## # A tibble: 2,546 × 13
+## # A tibble: 2,546 × 12
 ##    unitid grad_debt_mdn openadmp adm_rate ccbasic sat_avg
 ##     &lt;int&gt;         &lt;int&gt;    &lt;int&gt;    &lt;dbl&gt;   &lt;int&gt;   &lt;int&gt;
 ##  1 100654         33375        2    0.918      18     939
@@ -1462,9 +1461,9 @@ df %&gt;%
 ##  9 100830         24826        2    0.904      18    1082
 ## 10 100858         21281        2    0.807      15    1300
 ## # ℹ 2,536 more rows
-## # ℹ 7 more variables: md_earn_wne_p6 &lt;int&gt;, ugds &lt;int&gt;,
+## # ℹ 6 more variables: md_earn_wne_p6 &lt;int&gt;, ugds &lt;int&gt;,
 ## #   costt4_a &lt;int&gt;, selective &lt;dbl&gt;, research_u &lt;dbl&gt;,
-## #   adm_rate_pct &lt;dbl&gt;, sel &lt;dbl&gt;
+## #   adm_rate_pct &lt;dbl&gt;
 ```
 
 ---
