@@ -334,7 +334,7 @@ require(labelled)
 - Load the data
 
 ```{r}
-MI_raw  <- read_rds('https://github.com/jbisbee1/DS1000_F2024/raw/main/data/MI2020_ExitPoll.rds')
+MI_raw  <- read_rds('https://github.com/rweldzius/PSC4175_F2024/raw/main/Data/MI2020_ExitPoll.rds')
 ```
 
 --
