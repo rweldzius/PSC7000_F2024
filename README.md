@@ -178,7 +178,7 @@ Villanova University makes every reasonable effort to allow members of the commu
 | 9/2/24 | No Class | | | | [PS 1](https://github.com/rweldzius/psc4175_F2024/blob/main/Psets/psc4175_pset_1.Rmd) |
 | 9/4/24 | Intro to R 2 | Visualization in R | [Lecture 3](https://rweldzius.github.io/PSC4175_F2024/Lectures/psc4175_lecture_3_slides.html) | [HW 3](https://github.com/rweldzius/PSC4175_F2024/blob/main/Homeworks/psc4175_hw_3.Rmd) | |
 | 9/9/24 | Intro to R 3 | More visualization |[Lecture 4](https://rweldzius.github.io/PSC4175_F2024/Lectures/psc4175_lecture_4_slides.html) | [HW 4](https://github.com/rweldzius/PSC4175_F2024/blob/main/Homeworks/psc4175_hw_4.Rmd) | [PS 2](https://github.com/rweldzius/psc4175_F2024/blob/main/Psets/psc4175_pset_2.Rmd) |
-| 9/11/24 | Data Wrangling | Replicability and tabular data | | HW 5 | |
+| 9/11/24 | Data Wrangling | Replicability and tabular data | [Lecture 5](https://rweldzius.github.io/PSC4175_F2024/Lectures/psc4175_lecture_5_slides.html) | [HW 5](https://github.com/rweldzius/PSC4175_F2024/blob/main/Homeworks/psc4175_hw_5.Rmd)  | |
 | 9/16/24 | Univariate Analysis | Summaries of a single variable | | HW 6 | PS 3 |
 | 9/18/24 | Multivariate 1 | Summaries of multiple variables | | HW 7 |  |
 | 9/23/24 | Multivariate 2 | Visualizations of multiple variables | | HW 8 | PS 4 |
