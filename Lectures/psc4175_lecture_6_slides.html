@@ -26,7 +26,7 @@ class: center, middle, inverse, title-slide
 ### Villanova University
 ]
 .date[
-### Slides Updated: 2024-09-15
+### Slides Updated: 2024-09-16
 ]
 
 ---
@@ -129,7 +129,9 @@ class: center, middle, inverse, title-slide
 
 &lt;center&gt;&lt;img src="figs/folders_topic5.png" width=70%&gt;&lt;/center&gt;
 
---
+---
+
+# Set-up and Load Data
 
 - Open `R` via `RStudio` and `require(tidyverse)`
 
@@ -367,6 +369,43 @@ p
 
 &lt;img src="psc4175_lecture_6_slides_files/figure-html/unnamed-chunk-11-1.png" style="display: block; margin: auto;" /&gt;
 
+
+---
+
+# Visualization
+
+- Let's add Caitlin Clark to this!
+
+
+``` r
+p &lt;- nba %&gt;%
+  ggplot(aes(x = pts)) + 
+  geom_histogram()
+
+p &lt;- p + geom_vline(xintercept = quantile(nba$pts,c(.25,.5,.75)),linetype = 'dashed',color = 'red')
+
+p &lt;- p + geom_vline(xintercept = 761,linetype = 'dashed',color = 'blue') +
+  annotate("text", x=950, y=90, label= "Caitlin Clark", color='blue')
+
+p &lt;- p + xlab('Total Points') + ylab('Number of Players')
+
+p &lt;- p + theme(panel.background = element_rect(fill = 'white'))
+
+p &lt;- p + labs(title = 'Points by Players',subtitle = '2018-2019 NBA Season')
+```
+
+---
+
+# Visualization
+
+
+``` r
+p
+```
+
+&lt;img src="psc4175_lecture_6_slides_files/figure-html/unnamed-chunk-13-1.png" style="display: block; margin: auto;" /&gt;
+
+
 ---
 
 # Visualization informs .blue[science]
@@ -428,7 +467,7 @@ nba %&gt;%
   labs(title = 'Minutes by Players',subtitle = '2018-2019 NBA Season',x = 'Minutes Played',y = 'Number of Players')
 ```
 
-&lt;img src="psc4175_lecture_6_slides_files/figure-html/unnamed-chunk-13-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="psc4175_lecture_6_slides_files/figure-html/unnamed-chunk-15-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -721,7 +760,7 @@ nba %&gt;%
   geom_density()
 ```
 
-&lt;img src="psc4175_lecture_6_slides_files/figure-html/unnamed-chunk-17-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="psc4175_lecture_6_slides_files/figure-html/unnamed-chunk-19-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -837,7 +876,7 @@ nba %&gt;%
   geom_density()
 ```
 
-&lt;img src="psc4175_lecture_6_slides_files/figure-html/unnamed-chunk-21-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="psc4175_lecture_6_slides_files/figure-html/unnamed-chunk-23-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -850,7 +889,7 @@ nba %&gt;%
   geom_bar(stat = 'count')
 ```
 
-&lt;img src="psc4175_lecture_6_slides_files/figure-html/unnamed-chunk-22-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="psc4175_lecture_6_slides_files/figure-html/unnamed-chunk-24-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1129,7 +1168,7 @@ nba %&gt;%
   
   1. Work through psc4175_hw_6.Rmd
   
-  2. Problem Set 3 due Friday by midnight
+  2. Problem Set 3 due Friday by midnight (submit PDFs only!)
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="libs/remark-latest.min.js"></script>

@@ -26,7 +26,7 @@ class: center, middle, inverse, title-slide
 ### Villanova University
 ]
 .date[
-### Slides Updated: 2024-09-12
+### Slides Updated: 2024-09-18
 ]
 
 ---
@@ -114,9 +114,19 @@ class: center, middle, inverse, title-slide
 
 --
 
-  - High wages "depend on" education &amp;rarr; education **causes** high wages
-
+  - High wages "depend on" education &amp;rarr; education **causes** high wages 
+  
 --
+
+  &lt;center&gt;&lt;img src="figs/income_unemp.png" width="90%"&gt;&lt;/center&gt;
+  
+---
+
+# What is .blue[conditional]?
+
+- "Depending on" suggests a **causal** interpretation
+
+  - High wages "depend on" education &amp;rarr; education **causes** high wages
 
   - In .blue[theory], this is reasonable: students acquire skills in school which are valued by the labor market.
   
@@ -142,7 +152,7 @@ class: center, middle, inverse, title-slide
 
 --
 
-- Download pre-wrangled data from [GitHub](https://github.com/jbisbee1/DS1000_S2023/blob/main/Lectures/4_Uni_Multivariate/data/MI2020_ExitPoll_small.rds) and save to your `data` folder.
+- Download pre-wrangled data from [GitHub](https://github.com/rweldzius/PSC4175_F2024/raw/main/Data/MI2020_ExitPoll_small.rds) and save to your `data` folder.
 
 --
 
@@ -152,7 +162,7 @@ class: center, middle, inverse, title-slide
 ``` r
 require(tidyverse)
 
-mi_ep &lt;- read_rds('https://github.com/jbisbee1/DS1000_F2024/raw/main/data/MI2020_ExitPoll_small.rds')
+mi_ep &lt;- read_rds('https://github.com/rweldzius/PSC4175_F2024/raw/main/Data/MI2020_ExitPoll_small.rds')
 ```
 
 ---
@@ -342,7 +352,9 @@ MI_final_small %&gt;%
 
 # Two-Way Conditional Means
 
-- A little hard to make comparisons
+- A little hard to make comparisons; so let's use `spread()`
+
+--
 
 
 ``` r

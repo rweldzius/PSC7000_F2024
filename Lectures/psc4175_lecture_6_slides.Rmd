@@ -336,6 +336,39 @@ p <- p + labs(title = 'Points by Players',subtitle = '2018-2019 NBA Season')
 p
 ```
 
+
+---
+
+# Visualization
+
+- Let's add Caitlin Clark to this!
+
+```{r}
+p <- nba %>%
+  ggplot(aes(x = pts)) + 
+  geom_histogram()
+
+p <- p + geom_vline(xintercept = quantile(nba$pts,c(.25,.5,.75)),linetype = 'dashed',color = 'red')
+
+p <- p + geom_vline(xintercept = 761,linetype = 'dashed',color = 'blue') +
+  annotate("text", x=950, y=90, label= "Caitlin Clark", color='blue')
+
+p <- p + xlab('Total Points') + ylab('Number of Players')
+
+p <- p + theme(panel.background = element_rect(fill = 'white'))
+
+p <- p + labs(title = 'Points by Players',subtitle = '2018-2019 NBA Season')
+```
+
+---
+
+# Visualization
+
+```{r,fig.height=6,fig.width=10,warning=F,message=F}
+p
+```
+
+
 ---
 
 # Visualization informs .blue[science]
