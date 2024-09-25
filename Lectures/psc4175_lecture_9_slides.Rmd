@@ -19,7 +19,7 @@ output:
       highlightLines: true
       countIncrementalSlides: false
       slideNumberFormat: "%current%"
-      #ratio: "16:9"
+      ratio: "16:9"
 
 ---
 
@@ -169,38 +169,40 @@ toplot <- poll %>%
 
 ---
 
-# Polls by Date (`geom_bar`)
+## Polls by Date (`geom_bar`)
 
 ```{r}
 toplot %>%
   ggplot(aes(x = StartDate)) + 
-  geom_bar() + labs(title = 'Number of 2020 Polls by Date',x = 'Start Date of Poll',y = 'Number of Polls')
+  geom_bar() + 
+  labs(title = 'Number of 2020 Polls by Date',x = 'Start Date of Poll',y = 'Number of Polls')
 ```
 
 ---
 
-# Polls by Date (`geom_histogram`)
+## Polls by Date (`geom_histogram`)
 
 ```{r}
 toplot %>%
   ggplot(aes(x = StartDate)) + 
-  geom_histogram(bins = 30,color = 'white') + labs(title = 'Number of 2020 Polls by Date',x = 'Start Date of Poll',y = 'Number of Polls')
+  geom_histogram(bins = 30,color = 'white') + 
+  labs(title = 'Number of 2020 Polls by Date',x = 'Start Date of Poll',y = 'Number of Polls')
 ```
 
 ---
 
-# Polls by Time to Election
+## Polls by Time to Election
 
 ```{r}
 toplot %>%
   ggplot(aes(x = DaysToED)) + 
-  geom_histogram(bins = 30,color = 'white') + labs(title = 'Number of 2020 Polls Over Time',x = 'Days to Election',y = 'Number of Polls') + 
-  scale_x_reverse()
+  geom_histogram(bins = 30,color = 'white') + 
+  labs(title = 'Number of 2020 Polls Over Time',x = 'Days to Election',y = 'Number of Polls') + scale_x_reverse()
 ```
 
 ---
 
-# Margin by Time to Election
+## Margin by Time to Election
 
 ```{r,fig.height = 4.5}
 toplot %>%
@@ -213,7 +215,7 @@ toplot %>%
 
 ---
 
-# Margin by Time to Election
+## Margin by Time to Election
 
 ```{r,fig.height = 4.5}
 toplot %>%
@@ -226,7 +228,7 @@ toplot %>%
 
 ---
 
-# Margin by Time to Election
+## Margin by Time to Election
 
 ```{r,fig.height = 4.5}
 toplot %>%
@@ -239,13 +241,12 @@ toplot %>%
 
 ---
 
-# Highlight Trends
+## Highlight Trends
 
 ```{r,fig.height = 4.5}
 toplot %>%
   ggplot(aes(x = DaysToED,y = margin)) + 
-  geom_point(alpha = .3) + 
-  geom_line() + #<<
+  geom_point(alpha = .3) + geom_line() + #<<
   labs(title = 'Biden Margin in 2020 Polls Over Time',
        x = 'Days to Election',y = 'Margin: Biden - Trump') + 
   scale_x_reverse() + geom_hline(yintercept = 0,linetype = 'dashed')
@@ -253,13 +254,12 @@ toplot %>%
 
 ---
 
-# Highlight Trends
+## Highlight Trends
 
 ```{r,fig.height = 4.5,message = F}
 toplot %>%
   ggplot(aes(x = DaysToED,y = margin)) + 
-  geom_point(alpha = .3) + 
-  geom_smooth() + #<<
+  geom_point(alpha = .3) + geom_smooth() + #<<
   labs(title = 'Biden Margin in 2020 Polls Over Time',
        x = 'Days to Election',y = 'Margin: Biden - Trump') + 
   scale_x_reverse() + geom_hline(yintercept = 0,linetype = 'dashed')
@@ -268,13 +268,12 @@ toplot %>%
 
 ---
 
-# Highlight Trends
+## Highlight Trends
 
 ```{r,fig.height = 4.5,message = F}
 toplot %>%
   ggplot(aes(x = DaysToED,y = margin)) + 
-  geom_point(alpha = .3) + 
-  geom_smooth(span = .1) + #<<
+  geom_point(alpha = .3) + geom_smooth(span = .1) + #<<
   labs(title = 'Biden Margin in 2020 Polls Over Time',
        x = 'Days to Election',y = 'Margin: Biden - Trump') + 
   scale_x_reverse() + geom_hline(yintercept = 0,linetype = 'dashed')
@@ -330,7 +329,7 @@ BidenTrumpplot +
 
 ---
 
-# Typing back to .blue[theory]
+# Let's go back to .blue[theory]
 
 --
 
@@ -361,8 +360,8 @@ toplot <- poll %>%
          StartDate = as.Date(StartDate, "%m/%d/%Y"),
          DaysToED = as.numeric(as.Date('11/3/2020',format = '%m/%d/%Y') - EndDate),
          margin = Biden - Trump,
-         errDem = Biden - DemCertVote / 100,
-         errRep = Trump - RepCertVote / 100)
+         errDem = Biden - DemCertVote / 100,#<<
+         errRep = Trump - RepCertVote / 100)#<<
 ```
 
 ---
@@ -420,8 +419,8 @@ pErrOverTime_Raw
 ```{r,message = F,warning = F}
 pErrOverTime_SampleSize <- toplot %>%
   group_by(StartDate) %>%
-  summarise(errDem = weighted.mean(errDem,w = SampleSize),
-            errRep = weighted.mean(errRep,w = SampleSize)) %>%
+  summarise(errDem = weighted.mean(errDem,w = SampleSize),#<<
+            errRep = weighted.mean(errRep,w = SampleSize)) %>%#<<
   ggplot(aes(x = StartDate)) + 
   geom_point(aes(y = errDem),color = 'blue') + 
   geom_point(aes(y = errRep),color = 'red') + 
@@ -439,8 +438,8 @@ pErrOverTime_SampleSize <- toplot %>%
 ```{r,message = F,warning = F}
 pErrOverTime_MoE <- toplot %>%
   group_by(StartDate) %>%
-  summarise(errDem = weighted.mean(errDem,w = 1/MoE),
-            errRep = weighted.mean(errRep,w = 1/MoE)) %>%
+  summarise(errDem = weighted.mean(errDem,w = 1/MoE),#<<
+            errRep = weighted.mean(errRep,w = 1/MoE)) %>%#<<
   ggplot(aes(x = StartDate)) + 
   geom_point(aes(y = errDem),color = 'blue') + 
   geom_point(aes(y = errRep),color = 'red') + 
@@ -545,32 +544,32 @@ pErrOverTime_Raw + pErrOverTime_SampleSize + pErrOverTime_MoE
 
 # Data Viz Misleads!
 
-<center><img src="figs/map_states.PNG" width = 90%></center>
+<center><img src="figs/map_states.PNG" width = 60%></center>
 
 ---
 
 # Data Viz Misleads!
 
-<center><img src="figs/map_counties.png" width = 90%></center>
+<center><img src="figs/map_counties.png" width = 70%></center>
 
 
 ---
 
 # Data Viz Misleads!
 
-<center><img src="figs/map_precints.png" width = 93%></center>
+<center><img src="figs/map_precints.png" width = 70%></center>
 
 ---
 
 # Data Viz Misleads!
 
-<center><img src="https://www.vividmaps.com/wp-content/uploads/2019/07/Trumpland.jpg" width = 93%></center>
+<center><img src="https://www.vividmaps.com/wp-content/uploads/2019/07/Trumpland.jpg" width = 75%></center>
 
 ---
 
 # Data Viz Misleads!
 
-<center><img src="https://www.vividmaps.com/wp-content/uploads/2019/07/Clinton.jpg" width = 93%></center>
+<center><img src="https://www.vividmaps.com/wp-content/uploads/2019/07/Clinton.jpg" width = 75%></center>
 
 ---
 
@@ -578,7 +577,7 @@ pErrOverTime_Raw + pErrOverTime_SampleSize + pErrOverTime_MoE
 
 - Fundamental challenge due to distribution of population across land
 
-<center><img src="figs/map_ec.png" width = 75%></center>
+<center><img src="figs/map_ec.png" width = 55%></center>
 
 ---
 
@@ -586,7 +585,7 @@ pErrOverTime_Raw + pErrOverTime_SampleSize + pErrOverTime_MoE
 
 - Fundamental challenge due to distribution of population across land
 
-<center><img src="figs/map_pop.png" width = 80%></center>
+<center><img src="figs/map_pop.png" width = 55%></center>
 
 
 ---
