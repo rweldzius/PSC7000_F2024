@@ -1,10 +1,12 @@
 ---
 title: "EVEN MORE conditional relationships"
-subtitle: "Homework"
 author: "Prof. Weldzius"
-institute: "Villanova University"
 date: "Due Date: 2024-09-25"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
+subtitle: Homework
+institute: Villanova University
 ---
 
 ```{r setup, include=FALSE}
