@@ -182,10 +182,10 @@ Villanova University makes every reasonable effort to allow members of the commu
 | 9/16/24 | Univariate Analysis | Summaries of a single variable | [Lecture 6](https://rweldzius.github.io/PSC4175_F2024/Lectures/psc4175_lecture_6_slides.html) | [HW 6](https://github.com/rweldzius/PSC4175_F2024/blob/main/Homeworks/psc4175_hw_6.Rmd) | [PS 3](https://github.com/rweldzius/psc4175_F2024/blob/main/Psets/psc4175_pset_3.Rmd) |
 | 9/18/24 | Multivariate 1 | Summaries of multiple variables | [Lecture 7](https://rweldzius.github.io/PSC4175_F2024/Lectures/psc4175_lecture_7_slides.html) | [HW 7](https://github.com/rweldzius/PSC4175_F2024/blob/main/Homeworks/psc4175_hw_7.Rmd)  |  |
 | 9/23/24 | Multivariate 2 | Visualizations of multiple variables | [Lecture 8](https://rweldzius.github.io/PSC4175_F2024/Lectures/psc4175_lecture_8_slides.html) | [HW 8](https://github.com/rweldzius/PSC4175_F2024/blob/main/Homeworks/psc4175_hw_8.Rmd) | [PS 4](https://github.com/rweldzius/psc4175_F2024/blob/main/Psets/psc4175_pset_4.Rmd) |
-| 9/25/24 | Multivariate 3 | Visualizations of multiple variables | | HW 9 | |
-| 9/30/24 |  Review Session |  | | | PS 5 |
-| 10/2/24 | Uncertainty 1 | Uncertainty and bootstrapping | | HW 10 | |
-| 10/7/24 | Uncertainty 2 | Confidence statements |  | HW 11 | |
+| 9/25/24 | Multivariate 3 | Visualizations of multiple variables | [Lecture 9](https://rweldzius.github.io/PSC4175_F2024/Lectures/psc4175_lecture_9_slides.html) | [HW 9](https://github.com/rweldzius/PSC4175_F2024/blob/main/Homeworks/psc4175_hw_9.Rmd) | |
+| 9/30/244 | Uncertainty 1 | Uncertainty and bootstrapping | [Lecture 10](https://rweldzius.github.io/PSC4175_F2024/Lectures/psc4175_lecture_10_slides.html) | [HW 10](https://github.com/rweldzius/PSC4175_F2024/blob/main/Homeworks/psc4175_hw_10.Rmd) | [PS 5](https://github.com/rweldzius/psc4175_F2024/blob/main/Psets/psc4175_pset_5.Rmd) |
+| 10/2/2 | Uncertainty 2 | Confidence statements |  | HW 11 | |
+| 10/7/24 |  Review Session |  | | |  |
 | 10/9/24 | Midterm Exam |  | | | |
 | 10/14/24 | Fall Break |  | | | |
 | 10/16/24 | Fall Break |  |  | | |
