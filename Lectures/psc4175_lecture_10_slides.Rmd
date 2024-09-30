@@ -53,7 +53,7 @@ knitr::knit_hooks$set(chunk = function(x, options) {
 
 ---
 
-# The Missing Ingrediant
+# The Missing Ingredient
 
 --
 
@@ -276,7 +276,7 @@ nba %>%
   
 --
 
-<center><img src="figs/no-country-for-old-men.jpg" width = 100%></center>
+<center><img src="figs/obiwan.gif" width = 100%></center>
 
 
 ---
@@ -507,7 +507,7 @@ bsSeasons %>%
 
 # Bootstrap to measure Confidence
 
-- Compare UVA and UT's FT percentages in each season
+- Compare rookie versus non-rookie turnovers each season
 
 ```{r,fig.width=9,fig.height=5}
 (conf <- bsSeasons %>%
@@ -527,9 +527,9 @@ bsSeasons %>%
 
 # Other ways to use bootstraps
 
-- Could plot the **distributions** for each school
+- Could plot the **distributions** for each group
 
-```{r,warning=F,message=F}
+```{r,warning=F,message=F,fig.height = 4, fig.width = 6}
  bsSeasons %>%
   group_by(bsSeasonNumber,isRookie) %>%
   summarise(mean_tov = mean(tov),.groups = 'drop') %>%
@@ -572,11 +572,11 @@ p
 
 --
 
-- **Then** we calculate average FT % for TN and UVA for each simulation
+- **Then** we calculate average turnover % for rookies and veterans for each simulation
 
 --
 
-- **Finally** we calculate proportion of times average is higher for TN
+- **Finally** we calculate the difference between average turnover % of veterans and rookies for each simulation
 
 --
 
@@ -610,7 +610,7 @@ bsRes %>%
 
 # Where to calculate the "estimate"
 
-```{r,warning=F,message=F}
+```{r,warning=F,message=F,fig.height = 4, fig.width = 6}
 bsRes %>%
   spread(isRookie,mean_tov) %>%
   mutate(rookieBetter = `FALSE` - `TRUE`) %>%
@@ -648,7 +648,7 @@ bsRes %>%
   
 --
 
-- What does a confidence level of 0.1 (or 10%) mean?
+- What does a confidence level of 1 mean?
 
 --
 

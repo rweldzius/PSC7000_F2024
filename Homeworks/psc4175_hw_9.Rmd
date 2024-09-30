@@ -83,7 +83,7 @@ For me, I'm most curious if the Eastern or Western conferences have different st
 
 ## Continuous by Categorical
 
-Recall that there are two conference in the NBA, eastern and western. Let's take a look at the variable that indicates which conference the payer played in that season. 
+Recall that there are two conference in the NBA, eastern and western. Let's take a look at the variable that indicates which conference the player played in that season. 
 
 ```{r}
 nba%>%select(idConference)%>%
