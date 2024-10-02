@@ -26,7 +26,7 @@ class: center, middle, inverse, title-slide
 ### Villanova University
 ]
 .date[
-### Slides Updated: 2024-09-29
+### Slides Updated: 2024-10-02
 ]
 
 ---
@@ -59,7 +59,7 @@ class: center, middle, inverse, title-slide
 
 --
 
-  - Specifically, `isRookie` and `pts`
+  - Specifically, `isRookie` and `tov`
   
   - But could try **many** other ideas
   
@@ -79,7 +79,7 @@ class: center, middle, inverse, title-slide
 
 --
 
-- Load the [`game_summary.Rds`](https://github.com/jbisbee1/DS1000_F2024/raw/main/data/game_summary.Rds) data
+- Load the [`game_summary.Rds`](https://github.com/rweldzius/PSC4175_F2024/raw/main/Data/game_summary.Rds) data
 
 
 ``` r
@@ -590,14 +590,14 @@ bsRes %&gt;%
 p  &lt;- bsRes %&gt;%
   ggplot(aes(x = avgTO,fill = isWin)) + 
   geom_density(alpha = .3) + 
-  geom_vline(data = bsRes %&gt;%
-               group_by(yearSeason,isWin) %&gt;%
-               summarise(avgTO = mean(avgTO,na.rm=T)),
-             aes(xintercept = avgTO,color = isWin),linetype = 'dashed') + 
-  geom_text(data = bsRes %&gt;%
-               group_by(yearSeason,isWin) %&gt;%
-               summarise(avgTO = mean(avgTO,na.rm=T)),
-             aes(x = avgTO,y = Inf,label = round(avgTO,1)),hjust = 1.1,vjust = 1.1,size = 3,angle = 90) + 
+* geom_vline(data = bsRes %&gt;%
+*              group_by(yearSeason,isWin) %&gt;%
+*              summarise(avgTO = mean(avgTO,na.rm=T)),
+*            aes(xintercept = avgTO,color = isWin),linetype = 'dashed') +
+* geom_text(data = bsRes %&gt;%
+*              group_by(yearSeason,isWin) %&gt;%
+*              summarise(avgTO = mean(avgTO,na.rm=T)),
+*            aes(x = avgTO,y = Inf,label = round(avgTO,1)),hjust = 1.1,vjust = 1.1,size = 3,angle = 90) +
   facet_grid(yearSeason~.)
 ```
 
@@ -717,20 +717,19 @@ toplot &lt;- bsRes %&gt;%
   mutate(TO_diff = isWin_FALSE - isWin_TRUE)
 
 tmp &lt;- density(toplot$TO_diff)
-p &lt;- data.frame(x = tmp$x,y = tmp$y,
-           area = tmp$x &gt;= 0) %&gt;%
+p &lt;- data.frame(x = tmp$x,y = tmp$y, area = tmp$x &gt;= 0) %&gt;%
   ggplot(aes(x = x,ymin = 0,ymax = y,fill = area)) + 
   geom_ribbon(alpha = .6) + 
   geom_vline(xintercept = 0,linetype = 'dashed',size = 1.1) + 
   annotate(geom = 'text',x = mean(toplot$TO_diff),y = .25,
-           label = paste0("Losing team had\nmore turnovers in\n",round(mean(toplot$TO_diff &gt; 0),3)*100,"% of\nBootstraps"),
+*          label = paste0("Losing team had\nmore turnovers in\n",round(mean(toplot$TO_diff &gt; 0),3)*100,"% of\nBootstraps"),
            hjust = .5) + 
   labs(title = 'Difference in Turnovers by Game Outcome',
        subtitle = '1,000 Bootstrapped Estimates from 2016-2019 Seasons',
        x = 'Losing Team Turnovers minus Winning Team Turnovers',
        y = 'Density of Simulated Games') + 
   scale_fill_manual(name = 'Who Had More Turnovers',
-                    values = c('grey60','gold'),labels = c('Winning Team','Losing Team')) + 
+                    values = c('grey60','slateblue'),labels = c('Winning Team','Losing Team')) + 
   theme(panel.background = element_blank(),
         legend.position = 'bottom')
 ```
@@ -768,7 +767,7 @@ p &lt;- data.frame(x = tmp$x,y = tmp$y,
 
 - **Homework:**
   
-  1. Work through psc4175_hw_11.Rmd
+  1. Work through psc4175_hw_11.Rmd (not due until AFTER fall break)
   
   2. Problem Set 5 (due on Friday by 11:59pm; submit on Blackboard)
     </textarea>

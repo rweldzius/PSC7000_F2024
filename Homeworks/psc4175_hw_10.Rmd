@@ -1,6 +1,6 @@
 ---
 title: "Confidence and Uncertainty"
-subtitle: "Homework"
+subtitle: "Homework 10"
 author: "Prof. Weldzius"
 institute: "Villanova University"
 date: "Due Date: 2024-10-02 (last HW before midterm!)"
@@ -189,7 +189,7 @@ gms_tov_rs%>%
   select(measure, value)
 ```
 
-So what this tells us is that the minimum turnovers for winners in all of the samples we drew was 11.2, the maximum was about 15  and the median was 12.9. 
+So what this tells us is that the minimum turnovers for winners in all of the samples we drew was 11.4, the maximum was about 14.5  and the median was 13.0. 
 
 And for game losers, let's look at the distribution.
 
@@ -210,7 +210,7 @@ gms_tov_rs%>%
     mutate(measure=c("Min","25th percentile","Median","75th percentile","Max"))%>%
   select(measure, value)
 ```
-For game losers, minimum turnovers for winners in all of the samples we drew was 11.6, the maximum was about 16 (!!) and the median was 13.8. 
+For game losers, minimum turnovers for winners in all of the samples we drew was 12.3, the maximum was about 16 (!!) and the median was 13.8. 
 
 
 *Quick Exercise*  Calculate the same summary, but do it for Pct of Free Throws above .8.
