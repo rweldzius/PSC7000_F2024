@@ -32,12 +32,12 @@ Download RStudio here: <https://rstudio.com/products/rstudio/download/>. You nee
 ## 3. Setting up Directories
 
 In each class, we're going to include some code and text in one file, and data in another file. You'll need 
-to download both of these files to your computer. You need to have a particular place to put these files. Computers are organized using named directories (sometimes called folders).  Don't just put the files in your Downloads directory. One common solution is to created a folder on your computer named after the class: `PSC4175`. 
+to download both of these files to your computer. You need to have a particular place to put these files. Computers are organized using named directories (sometimes called folders).  Don't just put the files in your Downloads directory. One common solution is to created a folder on your computer named after the class: `PSC7000`. 
 
-You could just throw everything related to the class into this folder. However, this will quickly get messy. I recommend you create a "sub-folder" (or "sub-directory") within `PSC4175` called `Lecture_1`. (You might also want to create similar sub-folders for `Lecture_2`.) Inside `Lecture_1`, create two additional sub-folders: `code` and `data`. When you're done, your class directory should look like this:
+You could just throw everything related to the class into this folder. However, this will quickly get messy. I recommend you create a "sub-folder" (or "sub-directory") within `PSC7000` called `Lecture_1`. (You might also want to create similar sub-folders for `Lecture_2`.) Inside `Lecture_1`, create two additional sub-folders: `code` and `data`. When you're done, your class directory should look like this:
 
 ```
-- PSC4175
+- PSC7000
   - Lecture_1
     - code
     - data
