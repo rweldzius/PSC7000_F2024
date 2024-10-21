@@ -195,7 +195,7 @@ Villanova University makes every reasonable effort to allow members of the commu
 | 9/30/24  | Observations  | Increasing the number of observations  | KKV 6  | Memo 4  |   |
 | 10/7/24  | Mini-conference  |   |   |   |   |
 | 10/14/24  | Fall Break  |   |   |   | [PS 0](https://github.com/rweldzius/PSC7000_F2024/blob/main/Psets/psc7000_pset_0.Rmd)  |
-| 10/21/24  | Intro to R  | Objects, functions, code, visualization  |   |  [HW1](https://github.com/rweldzius/PSC7000_F2024/blob/main/Homeworks/psc7000_hw_1.Rmd) |  [PS1](https://github.com/rweldzius/PSC7000_F2024/blob/main/Psets/psc7000_pset_1.Rmd)   |
+| 10/21/24  | Intro to R  | Objects, functions, code, visualization  | [Lecture 1](https://rweldzius.github.io/PSC7000_F2024/Lectures/psc7000_lecture_1_slides.html)  |  [HW1](https://github.com/rweldzius/PSC7000_F2024/blob/main/Homeworks/psc7000_hw_1.Rmd) |  [PS1](https://github.com/rweldzius/PSC7000_F2024/blob/main/Psets/psc7000_pset_1.Rmd)   |
 | 10/28/24  | Data Wrangling & Univariate Analysis  |   |   | [HW2](https://github.com/rweldzius/PSC7000_F2024/blob/main/Homeworks/psc7000_hw_2.Rmd) | [PS2](https://github.com/rweldzius/PSC7000_F2024/blob/main/Psets/psc7000_pset_2.Rmd)   |
 | 11/4/24  | Multivariate Analysis & Uncertainty  |   |   | [HW3](https://github.com/rweldzius/PSC7000_F2024/blob/main/Homeworks/psc7000_hw_3.Rmd) | [PS3](https://github.com/rweldzius/PSC7000_F2024/blob/main/Psets/psc7000_pset_3.Rmd)  |
 | 11/11/24 |  Regression  |   |   | [HW4](https://github.com/rweldzius/PSC7000_F2024/blob/main/Homeworks/psc7000_hw_4.Rmd) | [PS4](https://github.com/rweldzius/PSC7000_F2024/blob/main/Psets/psc7000_pset_4.Rmd)   |
