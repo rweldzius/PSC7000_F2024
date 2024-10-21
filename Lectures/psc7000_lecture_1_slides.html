@@ -1,0 +1,3728 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Intro to Quantitative Methods</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Prof. Weldzius" />
+    <script src="libs/header-attrs-2.27/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <script src="libs/kePrint-0.0.1/kePrint.js"></script>
+    <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/lexis.css" type="text/css" />
+    <link rel="stylesheet" href="css/lexis-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Intro to Quantitative Methods
+]
+.subtitle[
+## What <code>R</code> we doing?
+]
+.author[
+### Prof. Weldzius
+]
+.institute[
+### Villanova University
+]
+.date[
+### Slides Updated: 2024-10-21
+]
+
+---
+
+
+&lt;style type="text/css"&gt;
+.small .remark-code { /*Change made here*/
+  font-size: 85% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 50% !important;
+}
+&lt;/style&gt;
+
+
+
+# Agenda
+
+1. Motivation &amp; Expectations
+
+2. Requiring packages
+
+  - `install.packages("tidyverse")` 
+
+  - `require(tidyverse)`
+
+3. Loading and manipulating data
+
+  - `readRDS()`
+
+  - `%&gt;%`
+
+4. `tidyverse` functions
+
+  - `filter`, `select`, `summarize`, `mutate`, `group_by`
+  
+5. Plotting in `R`
+
+  - `ggplot` (`+` instead of `%&gt;%`)  
+
+---
+
+# What IS data science?
+
+- Split into two camps
+
+--
+
+1. .blue[Research] camp
+
+--
+
+  - Focused on **answering a research question**
+  
+  - Follows the "scientific method"
+  
+  - Goal: contribute to knowledge
+  
+  - Domain: academia
+  
+--
+  
+2. .red[Prediction] camp
+
+--
+
+  - Focused on **making a prediction**
+  
+  - Typically unconcerned with theory or *why* a model works
+  
+  - Goal: inform a decision / policy
+  
+  - Domain: public &amp; private sectors
+  
+---
+
+# The Two Camps
+
+&lt;center&gt;&lt;img src="figs/camps1.png" width="60%"&gt;&lt;/center&gt;
+
+---
+
+# The Two Camps
+
+&lt;center&gt;&lt;img src="figs/camps2.png" width="60%"&gt;&lt;/center&gt;
+
+---
+
+
+# .blue[Research] Camp
+
+- The scientific method
+
+  1. .red[Observation] &amp;rarr; .blue[Question]
+
+--
+
+  2. .blue[Theory] &amp;rarr; .blue[Hypothesis]
+
+--
+
+  3. .red[Data Collection / Wrangling] &amp;rarr; .red[Analysis]
+
+--
+
+  4. .red[Results] &amp;rarr; .blue[Conclusion]
+  
+--
+
+&lt;img src="psc7000_lecture_1_slides_files/figure-html/unnamed-chunk-3-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+
+# .blue[Research] Camp
+
+- The scientific method
+
+  1. .red[Observation] &amp;rarr; .blue[Question]
+
+  2. .blue[Theory] &amp;rarr; .blue[Hypothesis]
+
+  3. .red[Data Collection / Wrangling] &amp;rarr; .red[Analysis]
+
+  4. .red[Results] &amp;rarr; .blue[Conclusion]
+
+&lt;img src="psc7000_lecture_1_slides_files/figure-html/unnamed-chunk-4-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+
+# Course Objectives
+
+- The second half of the course is just the menu, not the food
+
+  - Look over many different fields, methods, and tools
+
+  - You pick those you like, and take more advanced classes to dig into them (e.g., in the spring!)
+
+--
+
+- But we are very **hands on**
+
+  - Everything will be done in `RStudio`
+  
+---
+
+# Learning goals
+
+1. Generate a sophisticated research question based on clearly described assumptions and a narrowly defined hypothesis.
+
+--
+
+2. Describe the data used to investigate this research question, including univariate and multivariate visualizations and summary statistics.
+
+--
+
+3. Apply the appropriate methods to answer the research question and evaluate the hypothesis.
+
+--
+
+4. Acknowledge limitations of method and results, and describe a superior empirical setting that would overcome these limitations.
+
+
+---
+
+# ChatGPT in the classroom
+
+- Are we at the precipice of a new era in human-computer relations?
+
+  - ChatGPT can help us achieve our learning goals
+
+  - But it needs to be used wisely...it is still a tool
+  
+--
+
+- It can make coding (the hardest part of this class) easier
+
+--
+
+- But it can also prevent you from learning
+
+--
+  - ...and it also uses a lot of energy (use sparingly)
+
+---
+
+# AI in the labor market
+
+- Is AI-assisted work the future?
+
+--
+
+  - Profound gains in productivity already
+
+--
+
+- Will this be like automation and globalization for US manufacturing?
+  
+--
+
+  - What skills will be valuable in 5 years? 10 years?
+  
+---
+
+# AI in the labor market
+
+--
+
+- My answer: prepare you for both possibilities
+
+--
+
+  - If AI is a "fad", make sure you can do this work unassisted
+  
+  - If AI is the new normal, make sure you can work with it productively
+  
+--
+
+- The one thing you **shouldn't** do
+
+--
+
+  - Take shortcuts / cheat
+  
+--
+
+- You will still have an interview in which you are asked something like the following: "How is overfitting different from underfitting, and why should we care?"
+
+--
+
+  - **You** need to know this answer
+
+
+---
+
+# Grades
+
+&lt;center&gt;&lt;img src="figs/grade_rubric.png" width="30%"&gt;&lt;/center&gt;
+
+---
+
+# Grades: PSets
+
+- 6 in total, only 5 are graded (one freebie)
+
+  - Pset 0 doesn't count
+
+  - 5 points each
+
+- Posted to **GitHub** on Mondays at noon
+
+- Due **Friday by midnight**
+
+  - Submit/Upload to **Blackboard**
+
+  - Each day late is -1 point; after 3 days, scored zero
+
+- Restrictions:
+
+  - Open book / open note / open Campuswire
+
+  - Can collaborate but submissions must be your own
+
+- **Must submit a record of ChatGPT work with the problem set**
+  
+---
+
+# Grades: Final Project
+
+- Final project is 35 points 
+  
+  - 25 points for final submission
+  - 10 points for presentation in final weeks (max. 10 minutes)
+  - 3 EC points: 1 point for each classmate you give feedback to after the presentations, max. 3 points (submit via Campuswire)
+
+---
+
+# Not Graded: HW
+
+- You should work through the homeworks prior to each lecture
+
+- Open the `.Rmd` file and Knit it
+
+- Read the output and try and answer the prompts
+
+- **Not graded**, but enormously helpful in preparing you to keep up with lectures
+
+---
+
+# Resources
+
+- Campuswire (place for **questions**)
+
+  - Post questions on the class feed
+
+
+- Blackboard (place for **submissions**)
+
+  - Submit problem sets
+
+- GitHub (place for **materials**)
+
+  - Find all in-class materials
+
+- Office hours (place for **hands-on help**)
+  
+---
+
+# Teaching Philosophy
+
+&lt;center&gt;&lt;img src="figs/responsibilities_teacher_student.png" width="90%"&gt;&lt;/center&gt;
+
+---
+
+# Teaching Philosophy
+
+- This part of the course is **inherently** hard
+
+  - Learning `R` is challenging
+
+- But the goal is to **encourage** you to pursue more knowledge in quantitative methods
+
+- As such, the **nature** of the material is at odds with the **goal** of the class
+
+- My solution: grade leniently
+
+---
+
+# Let's get started! 
+
+--
+
+- Folder structure + `setwd()`
+
+--
+
+  - Concept: keep everything together...
+  
+--
+
+  - ...and **related**
+
+--
+
+.center[&lt;img src="figs/directory_1.png" width = "75%"&gt;]
+
+
+---
+
+# Let's get started! 
+
+- Folder structure + `setwd()`
+
+  - Concept: keep everything together...
+
+  - ...and **related**
+
+.center[&lt;img src="figs/directory_2.png" width = "75%"&gt;]
+
+
+
+---
+
+# Installing software
+
+--
+
+- [`R: https://cran.r-project.org/`](https://cran.r-project.org/)
+
+  - Accept all defaults
+  
+--
+
+- [`RStudio: https://rstudio.com/products/rstudio/download/`](https://rstudio.com/products/rstudio/download/)
+
+  - Download the version for your OS
+  
+--
+
+- Open `RStudio` and create a new rmarkdown (`.Rmd`) file
+
+--
+
+  - Accept defaults, give it a sensible name, delete the default text, then save it to your folder (again with a sensible name)
+  
+--
+
+  - You should follow along with the lecture in this file! Take notes here! Try code here!
+
+---
+
+# How to type in `.Rmd`
+
+``` markdown
+# This is a header
+
+## This is a subheader
+
+### This is a subsubheader
+
+This is plain text.
+```
+--
+
+# This is a header
+
+## This is a subheader
+
+### This is a subsubheader
+
+This is plain text.
+
+
+---
+
+# How to type in `.Rmd`
+
+``` markdown
+- This is
+
+- a bulleted
+
+  - List
+
+1. This is
+
+2. a numbered list
+```
+
+--
+
+- This is
+
+- a bulleted
+
+  - List
+
+1. This is
+
+2. a numbered list
+
+---
+
+# How to type in `.Rmd`
+
+
+``` markdown
+ **Bold font**, *italic font*, `code font`
+```
+--
+
+**Bold font**, *italic font*, `code font`
+
+--
+
+- Most Importantly! `R` code!
+
+
+```` markdown
+```{r}
+2+2
+```
+````
+
+--
+
+
+``` r
+2+2
+```
+
+```
+## [1] 4
+```
+
+---
+
+# How `R` Works
+
+--
+
+- **O**bject **O**riented **L**anguage (**OOL**)
+
+--
+
+  - Objects are created with the `&lt;-` command
+  
+--
+
+  - You *can* run code directly...
+  
+
+
+``` r
+2+2
+```
+
+```
+## [1] 4
+```
+
+---
+
+# How `R` Works
+
+
+- **O**bject **O**riented **L**anguage (**OOL**)
+
+  - Objects are created with the `&lt;-` command
+
+  - ...but most of what we'll do involves objects
+  
+
+
+``` r
+object1 &lt;- 2+2
+```
+
+--
+
+- Object assignment operator **saves** the output
+
+- It **does not print** the output
+
+--
+
+- To see, just call the object
+
+
+``` r
+object1
+```
+
+```
+## [1] 4
+```
+
+---
+
+# How `R` Works
+
+
+- **O**bject **O**riented **L**anguage (**OOL**)
+
+  - Objects are created with the `&lt;-` command
+
+  - They can be named anything (so be intuitive!)
+  
+
+
+``` r
+two_plus_two &lt;- 2+2
+two_plus_two
+```
+
+```
+## [1] 4
+```
+
+---
+
+# How `R` Works
+
+- **O**bject **O**riented **L**anguage (**OOL**)
+
+  - Objects are created with the `&lt;-` command
+
+  - Objects can store many different things
+  
+
+``` r
+an_element &lt;- 2+2
+a_vector &lt;- c(1,2,3)
+a_list &lt;- list('element1' = 2+2,
+               'element2' = "hello world!",
+               'element3' = runif(n = 10,min = 0,max = 10))
+a_function &lt;- function(x) {
+  avg_of_x &lt;- sum(x) / length(x)
+  return(avg_of_x)
+}
+```
+
+---
+
+# How `R` Works
+
+- Objects **persist!**
+
+``` r
+an_element # This object stores 2+2
+```
+
+```
+## [1] 4
+```
+
+``` r
+a_vector   # This object stores the integers 1, 2, and 3
+```
+
+```
+## [1] 1 2 3
+```
+
+``` r
+an_element*a_vector
+```
+
+```
+## [1]  4  8 12
+```
+
+``` r
+an_element-a_vector
+```
+
+```
+## [1] 3 2 1
+```
+
+---
+
+# A comment on comments
+
+- If you use a # sign inside a code chunk, you can write a comment
+
+
+``` r
+# This is a comment. If I compile the code, nothing will happen.
+
+# This is another comment. These are helpful for annotating my code.
+```
+
+---
+
+# How `R` Works
+
+- Objects **persist!**
+
+``` r
+# This object stores:
+  # 1) 2+2 (named "element1")
+  # 2) the text "hello world!" (named "element2")
+  # 3) 10 numbers randomly drawn between 0 and 10
+a_list
+```
+
+```
+## $element1
+## [1] 4
+## 
+## $element2
+## [1] "hello world!"
+## 
+## $element3
+##  [1] 2.875775 7.883051 4.089769 8.830174 9.404673 0.455565
+##  [7] 5.281055 8.924190 5.514350 4.566147
+```
+
+---
+
+# How `R` Works
+
+- Objects **persist!**
+
+``` r
+# Let's apply our function ("a_function") to "element3" in "a_list"
+a_function(x = a_list[['element3']])
+```
+
+```
+## [1] 5.782475
+```
+
+--
+
+- We could also call `element3` from `a_list` with a dollar sign
+
+
+``` r
+# This does the same thing as the previous slide...it just accesses element3 differently.
+a_function(x = a_list$element3)
+```
+
+```
+## [1] 5.782475
+```
+
+---
+
+# How `RStudio` Works
+
+--
+
+- `RStudio` is a powerful way to interact with `R`
+
+--
+
+- In base `R`, you interact with the program via the "command line"
+
+--
+
+  - For example...
+  
+--
+
+- But to save your work, you can write "scripts"
+
+--
+
+  - For example...
+  
+--
+
+- *This is all cumbersome!*
+
+--
+
+- Enter, `RStudio`
+
+---
+
+# How `RStudio` Works
+
+--
+
+- `RStudio` allows us to:
+
+--
+
+  1. Write scripts
+  2. Run scripts
+  3. See results
+
+--
+
+- It is **deeply interactive**
+
+--
+
+  - We can highlight a line and press `ctrl+enter` / `cmd+enter` and see the result
+  
+--
+
+  - **We can even do this with single objects!**
+  
+---
+
+# Give it a try
+
+- Comment **everything**
+
+--
+
+- Create two objects
+
+  - `a` contains the product of 3 and 5 (`3*5`)
+  
+  - `b` contains five numbers `c(10,21,43,87,175)`
+  
+--
+
+- Now create object `c` which is `a - b`
+
+
+``` r
+# INSERT CODE HERE
+```
+
+---
+
+# Functions &amp; Packages
+
+--
+
+- What are `packages`?
+
+--
+
+  - Basically, **functions** that someone else wrote
+  
+--
+
+- `R` has many functions already installed
+
+--
+
+  - These are known as "base `R`" and contain many useful functions
+
+--
+
+  - For example, `sum()` will add up a vector of numbers
+
+--
+
+
+``` r
+sum(object1)
+```
+  
+--
+
+  - Quiz: What does the `mean()` function do? The `median()`? The `range()`?
+  
+--
+
+- Other base `R` functions interact with other files
+
+--
+
+  - For example, `read.csv()` will load a `.csv` file
+  
+--
+
+- And there are MANY **MANY** more
+
+---
+
+# Installing Packages
+
+--
+
+- In addition to the functions included in base `R`, we want more
+
+--
+
+- For this class, we want one called `tidyverse`
+
+--
+
+  - `tidyverse` contains many (hundreds?) of functions that make `R` easier
+  
+--
+
+  - But it is NOT included in the base `R` set of functions
+  
+--
+
+  - Therefore, we need to add it
+  
+--
+
+- Use the base `R` function `install.packages("[PACKAGE NAME]")`
+
+--
+
+  - Specifically, `install.packages("tidyverse")`
+  
+---
+
+# Requiring Packages
+
+--
+
+- Once installed, a package will live somewhere on your computer
+
+--
+
+- However, any new *instance* of `R` will not automatically load the packages
+
+--
+
+- We need to `require()` them to tell `R` to load them
+
+--
+
+  - Alternatively, we can use `library()` (but it's the same result)
+  
+--
+
+- So load the `tidyverse` package with `require(tidyverse)`
+
+
+
+--
+
+  - NB: you need quotes for the `install.packages()` function...
+  
+--
+
+    - i.e., `install.packages("tidyverse")`
+    
+--
+
+  - but NOT for the `require()` function
+  
+--
+
+    - i.e., `require(tidyverse)`
+  
+---
+
+# Loading Data
+
+--
+
+- So you should be using `R` via `RStudio` with the `tidyverse` package loaded
+
+--
+
+- Now let's load some data
+
+--
+
+- You can save it locally from the course  [github page](https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/sc_debt.Rds) and then load it from your computer
+  
+--
+
+- Or you can load it directly from the internet with the `read_rds()` function from `tidyverse`
+
+--
+
+  - NB: `R` is an "object-oriented language" (OOL)
+
+--
+
+  - We **create** an "object" to store the data using a left-arrow: `&lt;-`
+
+--
+
+
+``` r
+df&lt;-read_rds("https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/sc_debt.Rds")
+```
+
+--
+
+  - url: https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/sc_debt.Rds
+---
+
+# Loading Data
+
+--
+
+- We now have the contents of `sc_debt.Rds` stored in the object `df`
+
+--
+
+  - This is a "tabular data frame", aka a `tibble`
+  
+  - **Rows** are observations
+  
+  - **Columns** are values
+
+--
+
+- We can look at this object directly
+
+
+``` r
+df
+```
+
+```
+## # A tibble: 2,546 × 16
+##    unitid instnm stabbr grad_debt_mdn control region preddeg
+##     &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;          &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;  
+##  1 100654 Alaba… AL             33375 Public  South… Bachel…
+##  2 100663 Unive… AL             22500 Public  South… Bachel…
+##  3 100690 Amrid… AL             27334 Private South… Associ…
+##  4 100706 Unive… AL             21607 Public  South… Bachel…
+##  5 100724 Alaba… AL             32000 Public  South… Bachel…
+##  6 100751 The U… AL             23250 Public  South… Bachel…
+##  7 100760 Centr… AL             12500 Public  South… Associ…
+##  8 100812 Athen… AL             19500 Public  South… Bachel…
+##  9 100830 Aubur… AL             24826 Public  South… Bachel…
+## 10 100858 Aubur… AL             21281 Public  South… Bachel…
+## # ℹ 2,536 more rows
+## # ℹ 9 more variables: openadmp &lt;int&gt;, adm_rate &lt;dbl&gt;,
+## #   ccbasic &lt;int&gt;, sat_avg &lt;int&gt;, md_earn_wne_p6 &lt;int&gt;,
+## #   ugds &lt;int&gt;, costt4_a &lt;int&gt;, selective &lt;dbl&gt;,
+## #   research_u &lt;dbl&gt;
+```
+
+---
+
+# Loading Data
+
+--
+
+- Or we can look at its columns
+
+
+``` r
+names(df)
+```
+
+```
+##  [1] "unitid"         "instnm"         "stabbr"        
+##  [4] "grad_debt_mdn"  "control"        "region"        
+##  [7] "preddeg"        "openadmp"       "adm_rate"      
+## [10] "ccbasic"        "sat_avg"        "md_earn_wne_p6"
+## [13] "ugds"           "costt4_a"       "selective"     
+## [16] "research_u"
+```
+
+---
+
+# Loading Data
+
+--
+
+
+
+&lt;table class=" lightable-paper lightable-hover" style='font-size: 12px; color: black; font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Name &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Definition &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; unitid &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Unit ID &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; instnm &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Institution Name &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; stabbr &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; State Abbreviation &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; grad_debt_mdn &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Median Debt of Graduates &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; control &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Control Public or Private &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; region &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Census Region &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; preddeg &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Predominant Degree Offered: Assocates or Bachelors &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; openadmp &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Open Admissions Policy: 1=Yes, 2=No, 3=No 1st time students &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; adm_rate &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Admissions Rate: proportion of applications accepted &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; ccbasic &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Type of institution* &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; sat_avg &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Average SAT scores &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; md_earn_wne_p6 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Average Earnings of Recent Graduates &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; ugds &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Number of undergraduates &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; costt4_a &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Average cost of attendance (tuition-grants) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; selective &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Institution admits fewer than 10% of applications, 1=Yes, 0=No &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; research_u &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Institution is a research university, 1=Yes, 0=No &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&amp;ast;&lt;font size="2"&gt;See [here](https://data.ed.gov/dataset/9dc70e6b-8426-4d71-b9d5-70ce6094a3f4/resource/658b5b83-ac9f-4e41-913e-9ba9411d7967/download/collegescorecarddatadictionary_01192021.xlsx)&lt;/font&gt;
+
+---
+
+# Manipulating the Data
+
+--
+
+- These data are cool!
+
+--
+
+- But TMI at first
+
+--
+
+- I want to know...
+
+--
+
+  - Where is `Villanova University`?
+  
+--
+
+  - Which school is the most selective?
+  
+--
+
+  - Which schools produce the richest grads?
+  
+--
+
+- There are `tidyverse` functions to answer all of these questions
+
+---
+
+# Manipulating with `tidyverse`
+
+- The code process of `tidyverse` relies on a "pipe" symbol: `%&gt;%`
+
+--
+  
+  - Think of it as a "chain" that **links code together**
+  
+  - Or maybe a "do" symbol because it tells `R` what to do
+  
+--
+
+- The basic grammar of `R` is: object, `%&gt;%`, verb
+
+
+``` r
+object %&gt;%  # This is the object
+   function() # This is the verb
+```
+
+---
+
+# Manipulating with `tidyverse`
+
+- `tidyverse` has many useful "verbs" (i.e., functions)
+
+  - `filter()`: subsets **rows**
+  
+  - `select()`: subsets **columns**
+  
+  - `arrange()`: sorts **rows** based on **columns**
+  
+  - `summarise()`: collapses **rows**
+  
+  - `group_by()`: groups **rows** by **columns**
+  
+---
+
+# Manipulating: `filter()`
+
+- So let's look at Villanova
+
+--
+
+- `filter` will select **rows** of the data based on some criteria
+
+--
+
+
+``` r
+df %&gt;%
+  filter(instnm == "Villanova University") # Only select rows with Villanova
+```
+
+```
+## # A tibble: 1 × 16
+##   unitid instnm  stabbr grad_debt_mdn control region preddeg
+##    &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;          &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;  
+## 1 216597 Villan… PA             26000 Private North… Bachel…
+## # ℹ 9 more variables: openadmp &lt;int&gt;, adm_rate &lt;dbl&gt;,
+## #   ccbasic &lt;int&gt;, sat_avg &lt;int&gt;, md_earn_wne_p6 &lt;int&gt;,
+## #   ugds &lt;int&gt;, costt4_a &lt;int&gt;, selective &lt;dbl&gt;,
+## #   research_u &lt;dbl&gt;
+```
+
+---
+
+# Manipulating: `select()`
+
+- Still TMI!
+
+--
+
+- I only care about the admissions rate (`adm_rate`), the SAT scores (`sat_avg`), and the future earnings (`md_earn_wne_p6`)
+
+--
+
+- `select` will select **columns**
+
+
+``` r
+df %&gt;%
+  filter(instnm == "Villanova University") %&gt;%
+  select(instnm,adm_rate,sat_avg,md_earn_wne_p6) # Only select four columns
+```
+
+```
+## # A tibble: 1 × 4
+##   instnm               adm_rate sat_avg md_earn_wne_p6
+##   &lt;chr&gt;                   &lt;dbl&gt;   &lt;int&gt;          &lt;int&gt;
+## 1 Villanova University    0.282    1422          62600
+```
+
+---
+
+# Manipulating: `arrange()`
+
+- How does Villanova compare...?
+
+--
+
+  - to other schools in terms of SAT scores?
+  
+  - to other schools in terms of future earnings?
+  
+  - to other schools in terms of admissions rates?
+
+--
+
+- `arrange` will sort the data based on a column (ascending!)
+
+
+``` r
+df %&gt;%
+  arrange(sat_avg) %&gt;% # Sort data by SAT scores
+  select(instnm,sat_avg) # Only look at name and SAT scores
+```
+
+```
+## # A tibble: 2,546 × 2
+##    instnm                        sat_avg
+##    &lt;chr&gt;                           &lt;int&gt;
+##  1 Morgan State University           737
+##  2 Saint Augustine's University      847
+##  3 Albany State University           849
+##  4 Holy Names University             851
+##  5 Livingstone College               854
+##  6 Virginia Union University         855
+##  7 Manor College                     861
+##  8 Saint Louis Christian College     865
+##  9 Bacone College                    875
+## 10 Paine College                     876
+## # ℹ 2,536 more rows
+```
+
+---
+
+# Manipulating: `arrange()`
+
+- Villanova is not in the bottom 10 schools
+
+
+``` r
+df %&gt;%
+  arrange(sat_avg) %&gt;% # Sort data by SAT scores
+  select(instnm,sat_avg) # Only look at name and SAT scores
+```
+
+```
+## # A tibble: 2,546 × 2
+##    instnm                        sat_avg
+##    &lt;chr&gt;                           &lt;int&gt;
+##  1 Morgan State University           737
+##  2 Saint Augustine's University      847
+##  3 Albany State University           849
+##  4 Holy Names University             851
+##  5 Livingstone College               854
+##  6 Virginia Union University         855
+##  7 Manor College                     861
+##  8 Saint Louis Christian College     865
+##  9 Bacone College                    875
+## 10 Paine College                     876
+## # ℹ 2,536 more rows
+```
+
+---
+
+# Manipulating: `arrange()`
+
+- Use `desc()` to order in descending Villanova not in top 10 either
+
+
+``` r
+df %&gt;%
+  arrange(desc(sat_avg)) %&gt;% # Sort data by SAT scores (descending)
+  select(instnm,sat_avg) # Only look at name and SAT scores
+```
+
+```
+## # A tibble: 2,546 × 2
+##    instnm                                 sat_avg
+##    &lt;chr&gt;                                    &lt;int&gt;
+##  1 California Institute of Technology        1557
+##  2 Massachusetts Institute of Technology     1547
+##  3 University of Chicago                     1528
+##  4 Harvey Mudd College                       1526
+##  5 Duke University                           1522
+##  6 Franklin W Olin College of Engineering    1522
+##  7 Washington University in St Louis         1520
+##  8 Rice University                           1520
+##  9 Yale University                           1517
+## 10 Harvard University                        1517
+## # ℹ 2,536 more rows
+```
+
+---
+
+# Manipulating: `arrange()`
+
+- What if we look only at "selective" schools (i.e., those who accept less than 10% of applicants)?
+
+--
+
+
+``` r
+df %&gt;%
+  filter(adm_rate &lt; .1) %&gt;% # Only look at schools who accept less than 10%
+  arrange(sat_avg,adm_rate) %&gt;% # Sort data by SAT scores AND THEN admissions rates (breaks ties)
+  select(instnm,adm_rate,sat_avg) # Only look at name, admissions rate, and SAT scores
+```
+
+```
+## # A tibble: 25 × 3
+##    instnm                                   adm_rate sat_avg
+##    &lt;chr&gt;                                       &lt;dbl&gt;   &lt;int&gt;
+##  1 Colby College                              0.0967    1456
+##  2 Swarthmore College                         0.0893    1469
+##  3 Pomona College                             0.074     1480
+##  4 Dartmouth College                          0.0793    1500
+##  5 Stanford University                        0.0434    1503
+##  6 Northwestern University                    0.0905    1506
+##  7 Columbia University in the City of New …   0.0545    1511
+##  8 Brown University                           0.0707    1511
+##  9 University of Pennsylvania                 0.0766    1511
+## 10 Vanderbilt University                      0.0912    1515
+## # ℹ 15 more rows
+```
+
+
+---
+
+# How does Villanova compare?
+
+--
+
+- `arrange` in descending order
+
+
+``` r
+df %&gt;%
+  filter(adm_rate &lt; .1) %&gt;%
+  arrange(desc(sat_avg),adm_rate) %&gt;%
+  select(instnm,adm_rate,sat_avg)
+```
+
+```
+## # A tibble: 25 × 3
+##    instnm                                   adm_rate sat_avg
+##    &lt;chr&gt;                                       &lt;dbl&gt;   &lt;int&gt;
+##  1 California Institute of Technology         0.0642    1557
+##  2 Massachusetts Institute of Technology      0.067     1547
+##  3 University of Chicago                      0.0617    1528
+##  4 Duke University                            0.076     1522
+##  5 Rice University                            0.0872    1520
+##  6 Harvard University                         0.0464    1517
+##  7 Princeton University                       0.0578    1517
+##  8 Yale University                            0.0608    1517
+##  9 Vanderbilt University                      0.0912    1515
+## 10 Columbia University in the City of New …   0.0545    1511
+## # ℹ 15 more rows
+```
+
+
+
+---
+
+# More complicated? More `%&gt;%`!
+
+--
+
+- Less selective schools by SAT with debt and state
+
+
+``` r
+df %&gt;%
+  filter(adm_rate &gt; .2 &amp; adm_rate &lt; .3) %&gt;% # Less selective schools (accept between 20% and 30%)
+  arrange(stabbr,desc(sat_avg)) %&gt;% # Sort by state name, then by SAT scores
+  select(instnm,sat_avg,grad_debt_mdn,stabbr) # Only look at some columns
+```
+
+```
+## # A tibble: 37 × 4
+##    instnm                       sat_avg grad_debt_mdn stabbr
+##    &lt;chr&gt;                          &lt;int&gt;         &lt;int&gt; &lt;chr&gt; 
+##  1 Heritage Christian Universi…      NA            NA AL    
+##  2 University of California-Sa…    1370         15000 CA    
+##  3 California Polytechnic Stat…    1342         19501 CA    
+##  4 University of California-Ir…    1306         15488 CA    
+##  5 California Institute of the…      NA         27000 CA    
+##  6 University of Miami             1371         17125 FL    
+##  7 Georgia Institute of Techno…    1418         23000 GA    
+##  8 Point University                 986         26000 GA    
+##  9 Grinnell College                1457         17500 IA    
+## 10 St Luke's College                 NA         17750 IA    
+## # ℹ 27 more rows
+```
+
+---
+
+# A quick aside on missingness
+
+--
+
+- Some rows have `NA` in some columns
+
+--
+
+  - `NA` is the standard code for **missing data** in `R`
+  
+  - Data can be missing for many different reasons (i.e., some schools don't require SAT scores or record them)
+  
+  - We can use a base `R` function called `is.na()` which will be `TRUE` if the value is `NA` or `FALSE` otherwise
+  
+--
+
+  - And we can combine `is.na()` with the `filter()` function from `tidyverse`
+
+--
+
+- How many schools don't report SAT scores?
+
+---
+
+# A quick aside on missingness
+
+
+``` r
+df %&gt;%
+  filter(is.na(sat_avg)) %&gt;% # Only look at schools that DON'T report SATs
+  select(instnm,stabbr) # Only look at the name and the state
+```
+
+```
+## # A tibble: 1,317 × 2
+##    instnm                                         stabbr
+##    &lt;chr&gt;                                          &lt;chr&gt; 
+##  1 Amridge University                             AL    
+##  2 Central Alabama Community College              AL    
+##  3 Athens State University                        AL    
+##  4 Chattahoochee Valley Community College         AL    
+##  5 Coastal Alabama Community College              AL    
+##  6 Gadsden State Community College                AL    
+##  7 George C Wallace State Community College-Selma AL    
+##  8 Heritage Christian University                  AL    
+##  9 Jefferson State Community College              AL    
+## 10 Lurleen B Wallace Community College            AL    
+## # ℹ 1,307 more rows
+```
+
+
+---
+
+# Stepping back
+
+--
+
+- Thus far, lots of .red[data]
+
+--
+
+- Not a lot of .blue[science]
+
+--
+
+- But remember the .blue[Research] camp!
+
+--
+
+  1. .red[Observation] &amp;rarr; .blue[Question]
+
+  2. .blue[Theory] &amp;rarr; .blue[Hypothesis]
+
+  3. .red[Data Collection / Wrangling] &amp;rarr; .red[Analysis]
+
+  4. .red[Results] &amp;rarr; .blue[Conclusion]
+  
+--
+
+- We have been doing lots of .red[Observation]!
+
+--
+
+- Do we have any good .blue[Research questions]?
+
+---
+
+# Stepping back
+
+- .blue[RQ]: How might admissions and SAT scores be **related**?
+
+--
+
+  - .blue[Theory]: selective schools have stricter criteria
+  
+--
+
+  - .blue[Hypothesis]: admissions and SAT scores should be **negatively** related
+  
+--
+
+- How can we test this hypothesis?
+
+
+---
+
+# Summarizing Data: `summarise()` + `mean()`
+
+--
+
+- We can combine base `R` functions with `tidyverse` functions!
+
+--
+
+  - Base `R`: `mean()`
+  
+  - `tidyverse`: `summarise()` (aka `summarize()`)
+  
+- Overall average SAT scores
+
+
+``` r
+df %&gt;%
+  summarise(mean_sat = mean(sat_avg,na.rm=T)) # Average SAT scores for entire data
+```
+
+```
+## # A tibble: 1 × 1
+##   mean_sat
+##      &lt;dbl&gt;
+## 1    1141.
+```
+
+---
+
+# Summarizing Data
+
+--
+
+- Let's unpack this
+
+
+``` r
+df %&gt;%
+  summarise(mean_sat = mean(sat_avg,na.rm=T))
+```
+
+--
+
+  - Create new variable `mean_sat` that contains the `mean()` of every school's average SAT score
+  
+--
+
+  - `na.rm=T` means we want to ignore missing data. If not?
+  
+--
+  
+
+``` r
+df %&gt;%
+  summarise(mean_sat = mean(sat_avg))
+```
+
+```
+## # A tibble: 1 × 1
+##   mean_sat
+##      &lt;dbl&gt;
+## 1       NA
+```
+
+---
+
+# Summarizing Data
+
+--
+
+- Recall we want see if more selective schools have higher SAT scores
+
+--
+
+
+``` r
+df %&gt;%
+  filter(adm_rate &lt; .1) %&gt;% # Look at schools who accept &lt; 10% of applicants
+  summarise(mean_sat_LT10 = mean(sat_avg,na.rm=T)) # Calculate the average SAT score
+```
+
+```
+## # A tibble: 1 × 1
+##   mean_sat_LT10
+##           &lt;dbl&gt;
+## 1         1510.
+```
+
+--
+
+
+``` r
+df %&gt;%
+  filter(adm_rate &gt; .1) %&gt;% # Look at schools who accept &gt; 10% of applicants
+  summarise(mean_sat_GT10 = mean(sat_avg,na.rm=T)) # Calculate the average SAT score
+```
+
+```
+## # A tibble: 1 × 1
+##   mean_sat_GT10
+##           &lt;dbl&gt;
+## 1         1135.
+```
+
+---
+
+# Summarizing Data: `group_by()`
+
+--
+
+- One final `tidyverse` function: `group_by()`
+
+--
+
+- There is a column called `selective` which is either 1 or 0
+
+--
+
+  - 1: the admissions rate is less than 10%
+  
+  - 0: otherwise
+  
+--
+
+
+``` r
+df %&gt;%
+  select(instnm,selective,adm_rate)
+```
+
+```
+## # A tibble: 2,546 × 3
+##    instnm                              selective adm_rate
+##    &lt;chr&gt;                                   &lt;dbl&gt;    &lt;dbl&gt;
+##  1 Alabama A &amp; M University                    0    0.918
+##  2 University of Alabama at Birmingham         0    0.737
+##  3 Amridge University                         NA   NA    
+##  4 University of Alabama in Huntsville         0    0.826
+##  5 Alabama State University                    0    0.969
+##  6 The University of Alabama                   0    0.827
+##  7 Central Alabama Community College          NA   NA    
+##  8 Athens State University                    NA   NA    
+##  9 Auburn University at Montgomery             0    0.904
+## 10 Auburn University                           0    0.807
+## # ℹ 2,536 more rows
+```
+
+---
+
+# Summarizing Data: `group_by()`
+
+- Instead of running two separate `filter()` commands, use `group_by()`
+
+--
+
+
+``` r
+df %&gt;%
+  group_by(selective) %&gt;% # Group the data by selective (either 1 or 0)
+  summarise(mean_sat = mean(sat_avg,na.rm=T)) # Calculate average SAT for each group
+```
+
+```
+## # A tibble: 3 × 2
+##   selective mean_sat
+##       &lt;dbl&gt;    &lt;dbl&gt;
+## 1         0    1135.
+## 2         1    1510.
+## 3        NA     NaN
+```
+
+---
+
+# Results
+
+- Do more selective schools have higher SAT scores?
+
+--
+
+  - Yes
+
+--
+
+- This .red[Result] **confirms** our .blue[Hypothesis] and **answers** our .blue[Research Question]
+
+---
+
+# Summary
+
+--
+
+- What we've done so far is a microcosm of data science
+
+--
+
+  1. Opened .red[data] (`readRDS`)
+  
+--
+  
+  2. Looked at .red[data] (`tidyverse` + `select()`, `filter()`, `arrange()`)
+    
+--
+
+  3. Generated .blue[hypotheses] (Admissions versus SAT scores)
+  
+--
+
+  4. .red[Tested] .blue[hypotheses] (`summarise()` + `mean()`)
+
+
+---
+
+# Now let's take a step back and understand *Tabular Data*
+
+- Data comes in many different formats
+
+--
+
+- **Structured data**: standardized, well-defined structure, easily accessed
+
+  - I.e., tables, databases
+  
+--
+  
+- **Unstructured data**: messy, organic, disorganized, hard to use
+
+  - I.e., web pages, images, videos
+
+  
+--
+
+- In this class, we will always be working with **structured** data...specifically "tabular data frames"
+
+--
+
+- This still requires work to prepare!
+
+---
+
+# Tabular Data Frame
+
+- AKA a "tibble"
+
+--
+
+- These are "square" (although actually rectangular)
+
+--
+
+- Rows: **units of observation** (i.e., the entities we are studying)
+
+--
+
+  - People (each row is a survey respondent, athlete, etc.)
+  
+  - Places (each row is a state, county, country, etc.)
+  
+  - Things (each row is a tweet, firm, product, etc.)
+  
+--
+
+- Columns: **variables of interest** (i.e., attributes we are studying)
+
+--
+
+  - Beliefs / behaviors / etc. (i.e., where rows are people)
+  
+  - Rainfall / crimes / etc. (i.e., where rows are places)
+  
+  - Likes / profits / etc. (i.e., where rows are things)
+  
+---
+
+# Looking at Data
+
+--
+
+- We now have the contents of `sc_debt.Rds` stored in the object `df`
+
+--
+
+- We can look at this object directly
+
+
+``` r
+df
+```
+
+```
+## # A tibble: 2,546 × 16
+##    unitid instnm stabbr grad_debt_mdn control region preddeg
+##     &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;          &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;  
+##  1 100654 Alaba… AL             33375 Public  South… Bachel…
+##  2 100663 Unive… AL             22500 Public  South… Bachel…
+##  3 100690 Amrid… AL             27334 Private South… Associ…
+##  4 100706 Unive… AL             21607 Public  South… Bachel…
+##  5 100724 Alaba… AL             32000 Public  South… Bachel…
+##  6 100751 The U… AL             23250 Public  South… Bachel…
+##  7 100760 Centr… AL             12500 Public  South… Associ…
+##  8 100812 Athen… AL             19500 Public  South… Bachel…
+##  9 100830 Aubur… AL             24826 Public  South… Bachel…
+## 10 100858 Aubur… AL             21281 Public  South… Bachel…
+## # ℹ 2,536 more rows
+## # ℹ 9 more variables: openadmp &lt;int&gt;, adm_rate &lt;dbl&gt;,
+## #   ccbasic &lt;int&gt;, sat_avg &lt;int&gt;, md_earn_wne_p6 &lt;int&gt;,
+## #   ugds &lt;int&gt;, costt4_a &lt;int&gt;, selective &lt;dbl&gt;,
+## #   research_u &lt;dbl&gt;
+```
+
+---
+
+# Looking at Data
+
+- What is our **unit of observation**?
+
+--
+
+  - Academic institutions: each row is a single school
+
+--
+
+- What are our **variables of interest**?
+
+--
+
+  - Let's look!
+  
+
+``` r
+colnames(df) # Prints the variable names
+```
+
+```
+##  [1] "unitid"         "instnm"         "stabbr"        
+##  [4] "grad_debt_mdn"  "control"        "region"        
+##  [7] "preddeg"        "openadmp"       "adm_rate"      
+## [10] "ccbasic"        "sat_avg"        "md_earn_wne_p6"
+## [13] "ugds"           "costt4_a"       "selective"     
+## [16] "research_u"
+```
+
+---
+
+# Good Data has Codebooks!
+
+
+
+&lt;table class=" lightable-paper lightable-hover" style='font-size: 13px; color: black; font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Name &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Definition &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; unitid &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Unit ID &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; instnm &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Institution Name &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; stabbr &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; State Abbreviation &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; grad_debt_mdn &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Median Debt of Graduates &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; control &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Control Public or Private &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; region &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Census Region &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; preddeg &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Predominant Degree Offered: Assocates or Bachelors &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; openadmp &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Open Admissions Policy: 1=Yes, 2=No, 3=No 1st time students &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; adm_rate &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Admissions Rate: proportion of applications accepted &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; ccbasic &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Type of institution* &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; sat_avg &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Average SAT scores &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; md_earn_wne_p6 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Average Earnings of Recent Graduates &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; ugds &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Number of undergraduates &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; costt4_a &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Average cost of attendance (tuition-grants) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; selective &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Institution admits fewer than 10% of applications, 1=Yes, 0=No &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; research_u &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Institution is a research university, 1=Yes, 0=No &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&amp;ast;&lt;font size="2"&gt;See [here](https://data.ed.gov/dataset/9dc70e6b-8426-4d71-b9d5-70ce6094a3f4/resource/658b5b83-ac9f-4e41-913e-9ba9411d7967/download/collegescorecarddatadictionary_01192021.xlsx)&lt;/font&gt;
+
+---
+
+# Looking at data
+
+- Looking at data is **crucial**
+
+
+``` r
+# First 6 rows
+df %&gt;% head()
+```
+
+```
+## # A tibble: 6 × 16
+##   unitid instnm  stabbr grad_debt_mdn control region preddeg
+##    &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;          &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;  
+## 1 100654 Alabam… AL             33375 Public  South… Bachel…
+## 2 100663 Univer… AL             22500 Public  South… Bachel…
+## 3 100690 Amridg… AL             27334 Private South… Associ…
+## 4 100706 Univer… AL             21607 Public  South… Bachel…
+## 5 100724 Alabam… AL             32000 Public  South… Bachel…
+## 6 100751 The Un… AL             23250 Public  South… Bachel…
+## # ℹ 9 more variables: openadmp &lt;int&gt;, adm_rate &lt;dbl&gt;,
+## #   ccbasic &lt;int&gt;, sat_avg &lt;int&gt;, md_earn_wne_p6 &lt;int&gt;,
+## #   ugds &lt;int&gt;, costt4_a &lt;int&gt;, selective &lt;dbl&gt;,
+## #   research_u &lt;dbl&gt;
+```
+
+- (Same as `head(df)`)
+
+---
+
+# Looking at data
+
+- Looking at data is **crucial**
+
+
+``` r
+# Last 6 rows
+df %&gt;% tail()
+```
+
+```
+## # A tibble: 6 × 16
+##   unitid instnm  stabbr grad_debt_mdn control region preddeg
+##    &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;          &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;  
+## 1 493716 Yeshiv… NJ                NA Private North… Associ…
+## 2 493725 Univer… AR                NA Public  South… Bachel…
+## 3 493822 Colleg… RI                NA Private New E… Bachel…
+## 4 494630 Christ… TX                NA Private South… Bachel…
+## 5 494685 Urshan… MO                NA Private Plains Bachel…
+## 6 494737 Yeshiv… NY                NA Private North… Bachel…
+## # ℹ 9 more variables: openadmp &lt;int&gt;, adm_rate &lt;dbl&gt;,
+## #   ccbasic &lt;int&gt;, sat_avg &lt;int&gt;, md_earn_wne_p6 &lt;int&gt;,
+## #   ugds &lt;int&gt;, costt4_a &lt;int&gt;, selective &lt;dbl&gt;,
+## #   research_u &lt;dbl&gt;
+```
+
+- (Same as `tail(df)`)
+
+
+---
+
+# Manipulating the Data
+
+- Before, we wanted to know...
+
+--
+
+  1. Where is `Villanova University`?
+  
+
+``` r
+df %&gt;%
+  filter(instnm == "Villanova University") # Only select rows with Nova
+```
+
+```
+## # A tibble: 1 × 16
+##   unitid instnm  stabbr grad_debt_mdn control region preddeg
+##    &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;          &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;  
+## 1 216597 Villan… PA             26000 Private North… Bachel…
+## # ℹ 9 more variables: openadmp &lt;int&gt;, adm_rate &lt;dbl&gt;,
+## #   ccbasic &lt;int&gt;, sat_avg &lt;int&gt;, md_earn_wne_p6 &lt;int&gt;,
+## #   ugds &lt;int&gt;, costt4_a &lt;int&gt;, selective &lt;dbl&gt;,
+## #   research_u &lt;dbl&gt;
+```
+
+---
+
+# Manipulating the Data
+
+- What if we don't know precisely how Nova is spelled in these data?
+
+--
+
+- `str_detect()` and `grepl()` to the rescue!
+
+
+``` r
+df %&gt;%
+  filter(str_detect(instnm,'Vill'))
+```
+
+```
+## # A tibble: 3 × 16
+##   unitid instnm  stabbr grad_debt_mdn control region preddeg
+##    &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;          &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;  
+## 1 197142 Villa … NY             21000 Private North… Bachel…
+## 2 216597 Villan… PA             26000 Private North… Bachel…
+## 3 493707 Yeshiv… NJ                NA Private North… Associ…
+## # ℹ 9 more variables: openadmp &lt;int&gt;, adm_rate &lt;dbl&gt;,
+## #   ccbasic &lt;int&gt;, sat_avg &lt;int&gt;, md_earn_wne_p6 &lt;int&gt;,
+## #   ugds &lt;int&gt;, costt4_a &lt;int&gt;, selective &lt;dbl&gt;,
+## #   research_u &lt;dbl&gt;
+```
+
+---
+
+# Manipulating the Data
+
+- What if we don't know precisely how Nova is spelled in these data?
+
+- `str_detect()` and `grepl()` to the rescue!
+
+
+``` r
+df %&gt;%
+  filter(grepl('Vill',instnm))
+```
+
+```
+## # A tibble: 3 × 16
+##   unitid instnm  stabbr grad_debt_mdn control region preddeg
+##    &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;          &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;  
+## 1 197142 Villa … NY             21000 Private North… Bachel…
+## 2 216597 Villan… PA             26000 Private North… Bachel…
+## 3 493707 Yeshiv… NJ                NA Private North… Associ…
+## # ℹ 9 more variables: openadmp &lt;int&gt;, adm_rate &lt;dbl&gt;,
+## #   ccbasic &lt;int&gt;, sat_avg &lt;int&gt;, md_earn_wne_p6 &lt;int&gt;,
+## #   ugds &lt;int&gt;, costt4_a &lt;int&gt;, selective &lt;dbl&gt;,
+## #   research_u &lt;dbl&gt;
+```
+
+---
+
+# Manipulating the Data
+
+- We can go deeper with this logic
+
+  - "or" denoted with `|`
+  
+  - "and" denoted with `&amp;`
+
+--
+
+
+``` r
+df %&gt;%
+  filter(str_detect(instnm,"Vill") | str_detect(instnm,"Penn"))
+```
+
+```
+## # A tibble: 25 × 16
+##    unitid instnm stabbr grad_debt_mdn control region preddeg
+##     &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;          &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;  
+##  1 154590 Willi… IA             25000 Private Plains Bachel…
+##  2 197142 Villa… NY             21000 Private North… Bachel…
+##  3 211158 Bloom… PA             26000 Public  North… Bachel…
+##  4 211361 Calif… PA             24626 Public  North… Bachel…
+##  5 211608 Cheyn… PA             25500 Public  North… Bachel…
+##  6 211644 Clari… PA             26000 Public  North… Bachel…
+##  7 212115 East … PA             23250 Public  North… Bachel…
+##  8 212160 Edinb… PA             26000 Public  North… Bachel…
+##  9 213020 India… PA             26500 Public  North… Bachel…
+## 10 213349 Kutzt… PA             26000 Public  North… Bachel…
+## # ℹ 15 more rows
+## # ℹ 9 more variables: openadmp &lt;int&gt;, adm_rate &lt;dbl&gt;,
+## #   ccbasic &lt;int&gt;, sat_avg &lt;int&gt;, md_earn_wne_p6 &lt;int&gt;,
+## #   ugds &lt;int&gt;, costt4_a &lt;int&gt;, selective &lt;dbl&gt;,
+## #   research_u &lt;dbl&gt;
+```
+
+---
+
+# Manipulating the Data
+
+- We can go deeper with this logic
+
+  - "or" denoted with `|`
+  
+  - "and" denoted with `&amp;`
+
+--
+
+
+``` r
+df %&gt;%
+  filter(str_detect(instnm,"Vill") &amp; str_detect(instnm,"Univ"))
+```
+
+```
+## # A tibble: 1 × 16
+##   unitid instnm  stabbr grad_debt_mdn control region preddeg
+##    &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;          &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;  
+## 1 216597 Villan… PA             26000 Private North… Bachel…
+## # ℹ 9 more variables: openadmp &lt;int&gt;, adm_rate &lt;dbl&gt;,
+## #   ccbasic &lt;int&gt;, sat_avg &lt;int&gt;, md_earn_wne_p6 &lt;int&gt;,
+## #   ugds &lt;int&gt;, costt4_a &lt;int&gt;, selective &lt;dbl&gt;,
+## #   research_u &lt;dbl&gt;
+```
+
+---
+
+# Manipulating the Data
+
+- Can also put `|` in a single `str_detect()`
+
+
+``` r
+df %&gt;%
+  filter(str_detect(instnm,'Vill|Penn'))
+```
+
+```
+## # A tibble: 25 × 16
+##    unitid instnm stabbr grad_debt_mdn control region preddeg
+##     &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;          &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;  
+##  1 154590 Willi… IA             25000 Private Plains Bachel…
+##  2 197142 Villa… NY             21000 Private North… Bachel…
+##  3 211158 Bloom… PA             26000 Public  North… Bachel…
+##  4 211361 Calif… PA             24626 Public  North… Bachel…
+##  5 211608 Cheyn… PA             25500 Public  North… Bachel…
+##  6 211644 Clari… PA             26000 Public  North… Bachel…
+##  7 212115 East … PA             23250 Public  North… Bachel…
+##  8 212160 Edinb… PA             26000 Public  North… Bachel…
+##  9 213020 India… PA             26500 Public  North… Bachel…
+## 10 213349 Kutzt… PA             26000 Public  North… Bachel…
+## # ℹ 15 more rows
+## # ℹ 9 more variables: openadmp &lt;int&gt;, adm_rate &lt;dbl&gt;,
+## #   ccbasic &lt;int&gt;, sat_avg &lt;int&gt;, md_earn_wne_p6 &lt;int&gt;,
+## #   ugds &lt;int&gt;, costt4_a &lt;int&gt;, selective &lt;dbl&gt;,
+## #   research_u &lt;dbl&gt;
+```
+
+---
+
+# Manipulating the Data
+
+- But **can't** do the same with `&amp;`
+
+
+``` r
+df %&gt;%
+  filter(str_detect(instnm,'Vill&amp;Univ'))
+```
+
+```
+## # A tibble: 0 × 16
+## # ℹ 16 variables: unitid &lt;int&gt;, instnm &lt;chr&gt;, stabbr &lt;chr&gt;,
+## #   grad_debt_mdn &lt;int&gt;, control &lt;chr&gt;, region &lt;chr&gt;,
+## #   preddeg &lt;chr&gt;, openadmp &lt;int&gt;, adm_rate &lt;dbl&gt;,
+## #   ccbasic &lt;int&gt;, sat_avg &lt;int&gt;, md_earn_wne_p6 &lt;int&gt;,
+## #   ugds &lt;int&gt;, costt4_a &lt;int&gt;, selective &lt;dbl&gt;,
+## #   research_u &lt;dbl&gt;
+```
+
+---
+
+# Manipulating the Data
+
+- Negations are handled with `!`
+
+--
+
+  - Literally means "not"
+  
+--
+
+- Drop rows with "of" in the school name
+
+
+``` r
+df %&gt;%
+  filter(!str_detect(instnm,"of"))
+```
+
+```
+## # A tibble: 2,025 × 16
+##    unitid instnm stabbr grad_debt_mdn control region preddeg
+##     &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;          &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;  
+##  1 100654 Alaba… AL             33375 Public  South… Bachel…
+##  2 100690 Amrid… AL             27334 Private South… Associ…
+##  3 100724 Alaba… AL             32000 Public  South… Bachel…
+##  4 100760 Centr… AL             12500 Public  South… Associ…
+##  5 100812 Athen… AL             19500 Public  South… Bachel…
+##  6 100830 Aubur… AL             24826 Public  South… Bachel…
+##  7 100858 Aubur… AL             21281 Public  South… Bachel…
+##  8 100937 Birmi… AL             25773 Private South… Bachel…
+##  9 101028 Chatt… AL             11931 Public  South… Associ…
+## 10 101161 Coast… AL             11000 Public  South… Associ…
+## # ℹ 2,015 more rows
+## # ℹ 9 more variables: openadmp &lt;int&gt;, adm_rate &lt;dbl&gt;,
+## #   ccbasic &lt;int&gt;, sat_avg &lt;int&gt;, md_earn_wne_p6 &lt;int&gt;,
+## #   ugds &lt;int&gt;, costt4_a &lt;int&gt;, selective &lt;dbl&gt;,
+## #   research_u &lt;dbl&gt;
+```
+
+---
+
+# Manipulating the Data
+
+- (same as...)
+
+
+``` r
+df %&gt;%
+  filter(!grepl("of",instnm))
+```
+
+```
+## # A tibble: 2,025 × 16
+##    unitid instnm stabbr grad_debt_mdn control region preddeg
+##     &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;          &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;  
+##  1 100654 Alaba… AL             33375 Public  South… Bachel…
+##  2 100690 Amrid… AL             27334 Private South… Associ…
+##  3 100724 Alaba… AL             32000 Public  South… Bachel…
+##  4 100760 Centr… AL             12500 Public  South… Associ…
+##  5 100812 Athen… AL             19500 Public  South… Bachel…
+##  6 100830 Aubur… AL             24826 Public  South… Bachel…
+##  7 100858 Aubur… AL             21281 Public  South… Bachel…
+##  8 100937 Birmi… AL             25773 Private South… Bachel…
+##  9 101028 Chatt… AL             11931 Public  South… Associ…
+## 10 101161 Coast… AL             11000 Public  South… Associ…
+## # ℹ 2,015 more rows
+## # ℹ 9 more variables: openadmp &lt;int&gt;, adm_rate &lt;dbl&gt;,
+## #   ccbasic &lt;int&gt;, sat_avg &lt;int&gt;, md_earn_wne_p6 &lt;int&gt;,
+## #   ugds &lt;int&gt;, costt4_a &lt;int&gt;, selective &lt;dbl&gt;,
+## #   research_u &lt;dbl&gt;
+```
+
+
+---
+
+# Manipulating: `select()`
+
+- Still TMI!
+
+--
+
+- Before, I only cared about the admissions rate (`adm_rate`), the SAT scores (`sat_avg`), and the future earnings (`md_earn_wne_p6`)
+
+--
+
+- `select` will select **columns**
+
+
+``` r
+df %&gt;%
+  filter(instnm == "Villanova University") %&gt;%
+  select(instnm,adm_rate,sat_avg,md_earn_wne_p6) # Select variables of interest
+```
+
+```
+## # A tibble: 1 × 4
+##   instnm               adm_rate sat_avg md_earn_wne_p6
+##   &lt;chr&gt;                   &lt;dbl&gt;   &lt;int&gt;          &lt;int&gt;
+## 1 Villanova University    0.282    1422          62600
+```
+
+---
+
+# Manipulating: `select()`
+
+- We can use `matches()` function with `select()` in a manner similar to `str_detect()`
+
+
+``` r
+df %&gt;%
+  select(matches("_"))
+```
+
+```
+## # A tibble: 2,546 × 6
+##    grad_debt_mdn adm_rate sat_avg md_earn_wne_p6 costt4_a
+##            &lt;int&gt;    &lt;dbl&gt;   &lt;int&gt;          &lt;int&gt;    &lt;int&gt;
+##  1         33375    0.918     939          25200    23053
+##  2         22500    0.737    1234          35100    24495
+##  3         27334   NA          NA          30700    14800
+##  4         21607    0.826    1319          36200    23917
+##  5         32000    0.969     946          22600    21866
+##  6         23250    0.827    1261          37400    29872
+##  7         12500   NA          NA          23100    10493
+##  8         19500   NA          NA          33400       NA
+##  9         24826    0.904    1082          30100    19849
+## 10         21281    0.807    1300          39500    31590
+## # ℹ 2,536 more rows
+## # ℹ 1 more variable: research_u &lt;dbl&gt;
+```
+
+---
+
+# Adding / changing variables: `mutate()`
+
+--
+
+- `mutate()` creates a new variable
+
+--
+
+
+``` r
+df %&gt;%
+  mutate(newvar = 1) %&gt;%
+  select(instnm,newvar)
+```
+
+```
+## # A tibble: 2,546 × 2
+##    instnm                              newvar
+##    &lt;chr&gt;                                &lt;dbl&gt;
+##  1 Alabama A &amp; M University                 1
+##  2 University of Alabama at Birmingham      1
+##  3 Amridge University                       1
+##  4 University of Alabama in Huntsville      1
+##  5 Alabama State University                 1
+##  6 The University of Alabama                1
+##  7 Central Alabama Community College        1
+##  8 Athens State University                  1
+##  9 Auburn University at Montgomery          1
+## 10 Auburn University                        1
+## # ℹ 2,536 more rows
+```
+
+---
+
+# Object Assignment Operator: `&lt;-`
+
+- Thus far, nothing we have done has changed `df`
+
+--
+
+- Use object assignment operator `&lt;-` to **overwrite** an existing object
+
+--
+
+
+``` r
+df &lt;- df %&gt;%
+  mutate(adm_rate_pct = adm_rate*100)
+```
+
+--
+
+- Did it work?
+
+
+``` r
+df %&gt;%
+  summarise(adm_rate_pct = mean(adm_rate_pct,na.rm=T),
+            adm_rate = mean(adm_rate,na.rm=T))
+```
+
+```
+## # A tibble: 1 × 2
+##   adm_rate_pct adm_rate
+##          &lt;dbl&gt;    &lt;dbl&gt;
+## 1         67.9    0.679
+```
+
+---
+
+# Logic: `ifelse()`
+
+- 3 inputs:
+
+  - Logical statement (labeled `test`)
+  
+  - Value if the logic is `TRUE` (labeled `yes`)
+  
+  - Value if the logic is `FALSE` (labeled `no`)
+  
+--
+
+- `ifelse([LOGIC],[VALUE IF TRUE],[VALUE IF FALSE])`
+
+---
+
+# Logic: `ifelse()`
+
+- Say it out loud: "Create a new variable called `selective` that records if the school is selective or not. If the admissions rate is less than 10% (0.1), record the school as `selective = 1`. Otherwise, record the school as `selective = 0`."
+
+
+``` r
+df %&gt;%
+  mutate(selective = ifelse(test = [LOGIC],
+                      yes = [VALUE IF TRUE],
+                      no = [VALUE IF FALSE]))
+```
+---
+
+# Logic: `ifelse()`
+
+- Say it out loud: "Create a new variable called `selective` that records if the school is selective or not. **If the admissions rate is less than 10% (0.1)**, record the school as `selective = 1`. Otherwise, record the school as `selective = 0`."
+
+
+``` r
+df %&gt;%
+  mutate(selective = ifelse(test = `adm_rate &lt; 0.1`, # This is the logic
+                      yes = [VALUE IF TRUE],
+                      no = [VALUE IF FALSE]))
+```
+
+---
+
+# Logic: `ifelse()`
+
+- Say it out loud: "Create a new variable called `selective` that records if the school is selective or not. If the admissions rate is less than 10% (0.1), **record the school as `selective = 1`**. Otherwise, record the school as `selective = 0`."
+
+
+``` r
+df %&gt;%
+  mutate(selective = ifelse(test = adm_rate &lt; 0.1, # This is the logic
+                      yes = `1`, # This is the value if TRUE
+                      no = [VALUE IF FALSE]))
+```
+---
+
+# Logic: `ifelse()`
+
+- Say it out loud: "Create a new variable called `selective` that records if the school is selective or not. If the admissions rate is less than 10% (0.1), record the school as `selective = 1`. **Otherwise, record the school as `selective = 0`**."
+
+
+``` r
+df %&gt;%
+  mutate(selective = ifelse(test = adm_rate &lt; 0.1, # This is the logic
+                      yes = 1, # This is the value if TRUE
+                      no = `0`)) # This is the value if FALSE
+```
+---
+
+# Logic: `ifelse()` + `mutate()`
+
+- Remember that if we want to keep this, we need the **assignment operator** `&lt;-`
+
+
+``` r
+df &lt;- df %&gt;%
+  mutate(selective = ifelse(test = adm_rate &lt; 0.1, # This is the logic
+                      yes = 1, # This is the value if TRUE
+                      no = 0)) # This is the value if FALSE
+```
+
+
+---
+
+# Summarizing Data: `group_by()`
+
+--
+
+- One final `tidyverse` function: `group_by()`
+
+--
+
+- Let's use the newly created `selective` variable which is either 1 or 0
+
+--
+
+
+``` r
+df %&gt;%
+  select(instnm,selective,adm_rate)
+```
+
+```
+## # A tibble: 2,546 × 3
+##    instnm                              selective adm_rate
+##    &lt;chr&gt;                                   &lt;dbl&gt;    &lt;dbl&gt;
+##  1 Alabama A &amp; M University                    0    0.918
+##  2 University of Alabama at Birmingham         0    0.737
+##  3 Amridge University                         NA   NA    
+##  4 University of Alabama in Huntsville         0    0.826
+##  5 Alabama State University                    0    0.969
+##  6 The University of Alabama                   0    0.827
+##  7 Central Alabama Community College          NA   NA    
+##  8 Athens State University                    NA   NA    
+##  9 Auburn University at Montgomery             0    0.904
+## 10 Auburn University                           0    0.807
+## # ℹ 2,536 more rows
+```
+
+---
+
+# Summarizing Data: `group_by()`
+
+- Instead of running two separate `filter()` commands, use `group_by()`
+
+--
+
+
+``` r
+df %&gt;%
+  # Group the data by selective (either 1 or 0)
+  group_by(selective) %&gt;% 
+  # Calculate average SAT for each group
+  summarise(mean_sat = mean(sat_avg,na.rm=T)) 
+```
+
+```
+## # A tibble: 3 × 2
+##   selective mean_sat
+##       &lt;dbl&gt;    &lt;dbl&gt;
+## 1         0    1135.
+## 2         1    1510.
+## 3        NA     NaN
+```
+
+
+---
+
+name: advanced
+
+# Advanced Logic: `filter()`
+
+[If no time, jump to end](#end)
+
+- `filter()` command with other logical operators
+
+--
+  - `&gt;, &lt;`: greater than, less than (`&gt;=, &lt;=`)
+  - `!`: not (i.e., `!=` means "not equal to")
+  - `&amp;`: and
+  - `|`: or
+  
+--
+
+
+``` r
+df %&gt;%
+  # Schools EXCEPT Villanova
+  filter(instnm != "Villanova University") %&gt;%
+  select(instnm,stabbr,adm_rate,sat_avg)
+```
+
+```
+## # A tibble: 2,545 × 4
+##    instnm                            stabbr adm_rate sat_avg
+##    &lt;chr&gt;                             &lt;chr&gt;     &lt;dbl&gt;   &lt;int&gt;
+##  1 Alabama A &amp; M University          AL        0.918     939
+##  2 University of Alabama at Birming… AL        0.737    1234
+##  3 Amridge University                AL       NA          NA
+##  4 University of Alabama in Huntsvi… AL        0.826    1319
+##  5 Alabama State University          AL        0.969     946
+##  6 The University of Alabama         AL        0.827    1261
+##  7 Central Alabama Community College AL       NA          NA
+##  8 Athens State University           AL       NA          NA
+##  9 Auburn University at Montgomery   AL        0.904    1082
+## 10 Auburn University                 AL        0.807    1300
+## # ℹ 2,535 more rows
+```
+
+---
+
+# Advanced Logic: `str_detect()`
+
+- `filter()` command with other functions
+
+--
+
+  - `str_detect([VAR],[PATTERN])`: detect a string
+  - `grepl([PATTERN],[VAR])`: also detects a string
+
+--
+
+
+``` r
+df %&gt;%
+  filter(str_detect(instnm,"Villanova")) %&gt;%
+  select(instnm,stabbr,adm_rate,sat_avg)
+```
+
+```
+## # A tibble: 1 × 4
+##   instnm               stabbr adm_rate sat_avg
+##   &lt;chr&gt;                &lt;chr&gt;     &lt;dbl&gt;   &lt;int&gt;
+## 1 Villanova University PA        0.282    1422
+```
+
+---
+
+# Advanced Logic: `str_detect()`
+
+- String detection is case sensitive!
+
+--
+
+
+``` r
+df %&gt;%
+  filter(str_detect(instnm,"VILL")) %&gt;%
+  select(instnm,stabbr,adm_rate,sat_avg)
+```
+
+```
+## # A tibble: 0 × 4
+## # ℹ 4 variables: instnm &lt;chr&gt;, stabbr &lt;chr&gt;,
+## #   adm_rate &lt;dbl&gt;, sat_avg &lt;int&gt;
+```
+
+--
+
+
+``` r
+df %&gt;%
+  filter(str_detect(instnm,"anova")) %&gt;%
+  select(instnm,stabbr,adm_rate,sat_avg)
+```
+
+```
+## # A tibble: 1 × 4
+##   instnm               stabbr adm_rate sat_avg
+##   &lt;chr&gt;                &lt;chr&gt;     &lt;dbl&gt;   &lt;int&gt;
+## 1 Villanova University PA        0.282    1422
+```
+
+---
+
+# Advanced Logic: `&amp;` (and), `|` (or)
+
+
+``` r
+df %&gt;%
+  filter(str_detect(instnm,"Colorado")) %&gt;%
+  select(instnm,stabbr,adm_rate,sat_avg)
+```
+
+```
+## # A tibble: 12 × 4
+##    instnm                            stabbr adm_rate sat_avg
+##    &lt;chr&gt;                             &lt;chr&gt;     &lt;dbl&gt;   &lt;int&gt;
+##  1 University of Colorado Denver/An… CO        0.673    1124
+##  2 University of Colorado Colorado … CO        0.872    1136
+##  3 University of Colorado Boulder    CO        0.784    1276
+##  4 Colorado Christian University     CO       NA          NA
+##  5 Colorado College                  CO        0.135      NA
+##  6 Colorado School of Mines          CO        0.531    1342
+##  7 Colorado State University-Fort C… CO        0.814    1204
+##  8 Colorado Mesa University          CO        0.782    1063
+##  9 University of Northern Colorado   CO        0.908    1096
+## 10 Colorado State University Pueblo  CO        0.930    1047
+## 11 Western Colorado University       CO        0.842    1114
+## 12 Colorado State University-Global… CO        0.986    1048
+```
+
+---
+
+# Advanced Logic: `&amp;` (and), `|` (or)
+
+
+``` r
+df %&gt;%
+  filter(grepl("Colorado",instnm) &amp; grepl(' of ',instnm)) %&gt;%
+  select(instnm,stabbr,adm_rate,sat_avg)
+```
+
+```
+## # A tibble: 5 × 4
+##   instnm                             stabbr adm_rate sat_avg
+##   &lt;chr&gt;                              &lt;chr&gt;     &lt;dbl&gt;   &lt;int&gt;
+## 1 University of Colorado Denver/Ans… CO        0.673    1124
+## 2 University of Colorado Colorado S… CO        0.872    1136
+## 3 University of Colorado Boulder     CO        0.784    1276
+## 4 Colorado School of Mines           CO        0.531    1342
+## 5 University of Northern Colorado    CO        0.908    1096
+```
+
+---
+
+# Advanced Logic: `&amp;` (and), `|` (or)
+
+
+``` r
+df %&gt;%
+  filter(grepl("Colorado",instnm) | grepl('Vermont',instnm)) %&gt;%
+  select(instnm,stabbr,adm_rate,sat_avg)
+```
+
+```
+## # A tibble: 16 × 4
+##    instnm                            stabbr adm_rate sat_avg
+##    &lt;chr&gt;                             &lt;chr&gt;     &lt;dbl&gt;   &lt;int&gt;
+##  1 University of Colorado Denver/An… CO        0.673    1124
+##  2 University of Colorado Colorado … CO        0.872    1136
+##  3 University of Colorado Boulder    CO        0.784    1276
+##  4 Colorado Christian University     CO       NA          NA
+##  5 Colorado College                  CO        0.135      NA
+##  6 Colorado School of Mines          CO        0.531    1342
+##  7 Colorado State University-Fort C… CO        0.814    1204
+##  8 Colorado Mesa University          CO        0.782    1063
+##  9 University of Northern Colorado   CO        0.908    1096
+## 10 Colorado State University Pueblo  CO        0.930    1047
+## 11 Western Colorado University       CO        0.842    1114
+## 12 Community College of Vermont      VT       NA          NA
+## 13 Northern Vermont University       VT        0.778      NA
+## 14 Vermont Technical College         VT        0.670      NA
+## 15 University of Vermont             VT        0.673    1287
+## 16 Colorado State University-Global… CO        0.986    1048
+```
+
+---
+
+# Advanced Logic: `&amp;` (and), `|` (or)
+
+
+``` r
+df %&gt;%
+  filter((grepl("Colorado",instnm) | grepl('Vermont',instnm)) &amp; grepl(' of ',instnm)) %&gt;%
+  select(instnm,stabbr,adm_rate,sat_avg)
+```
+
+```
+## # A tibble: 7 × 4
+##   instnm                             stabbr adm_rate sat_avg
+##   &lt;chr&gt;                              &lt;chr&gt;     &lt;dbl&gt;   &lt;int&gt;
+## 1 University of Colorado Denver/Ans… CO        0.673    1124
+## 2 University of Colorado Colorado S… CO        0.872    1136
+## 3 University of Colorado Boulder     CO        0.784    1276
+## 4 Colorado School of Mines           CO        0.531    1342
+## 5 University of Northern Colorado    CO        0.908    1096
+## 6 Community College of Vermont       VT       NA          NA
+## 7 University of Vermont              VT        0.673    1287
+```
+
+---
+
+# Advanced Logic: `&amp;` (and), `|` (or)
+
+- `&amp;` can be separated into multiple `filter()` commands
+
+
+``` r
+df %&gt;%
+  filter((grepl("Colorado",instnm) | grepl('Vermont',instnm))) %&gt;%
+  filter(grepl(' of ',instnm)) %&gt;%
+  select(instnm,stabbr,adm_rate,sat_avg)
+```
+
+```
+## # A tibble: 7 × 4
+##   instnm                             stabbr adm_rate sat_avg
+##   &lt;chr&gt;                              &lt;chr&gt;     &lt;dbl&gt;   &lt;int&gt;
+## 1 University of Colorado Denver/Ans… CO        0.673    1124
+## 2 University of Colorado Colorado S… CO        0.872    1136
+## 3 University of Colorado Boulder     CO        0.784    1276
+## 4 Colorado School of Mines           CO        0.531    1342
+## 5 University of Northern Colorado    CO        0.908    1096
+## 6 Community College of Vermont       VT       NA          NA
+## 7 University of Vermont              VT        0.673    1287
+```
+
+---
+
+# Advanced Logic: `&amp;` (and), `|` (or)
+
+- `|` can be moved into the `str_detect()` or `grepl()` commands
+
+
+``` r
+df %&gt;%
+  filter(grepl("Colorado|Vermont",instnm)) %&gt;%
+  filter(grepl(' of ',instnm)) %&gt;%
+  select(instnm,stabbr,adm_rate,sat_avg)
+```
+
+```
+## # A tibble: 7 × 4
+##   instnm                             stabbr adm_rate sat_avg
+##   &lt;chr&gt;                              &lt;chr&gt;     &lt;dbl&gt;   &lt;int&gt;
+## 1 University of Colorado Denver/Ans… CO        0.673    1124
+## 2 University of Colorado Colorado S… CO        0.872    1136
+## 3 University of Colorado Boulder     CO        0.784    1276
+## 4 Colorado School of Mines           CO        0.531    1342
+## 5 University of Northern Colorado    CO        0.908    1096
+## 6 Community College of Vermont       VT       NA          NA
+## 7 University of Vermont              VT        0.673    1287
+```
+
+---
+
+# Quick Test
+
+- Filter schools from Texas with the word "community" in their name
+
+
+``` r
+# INSERT CODE HERE
+```
+
+---
+
+# Advanced Logic: `select()`
+
+- `select` can be paired with `matches()` or `contains()` for similar flexibility (equivalent to `str_detect()` or `grepl()` for `filter()`)
+
+--
+
+
+``` r
+df %&gt;%
+  select(contains('inst'))
+```
+
+```
+## # A tibble: 2,546 × 1
+##    instnm                             
+##    &lt;chr&gt;                              
+##  1 Alabama A &amp; M University           
+##  2 University of Alabama at Birmingham
+##  3 Amridge University                 
+##  4 University of Alabama in Huntsville
+##  5 Alabama State University           
+##  6 The University of Alabama          
+##  7 Central Alabama Community College  
+##  8 Athens State University            
+##  9 Auburn University at Montgomery    
+## 10 Auburn University                  
+## # ℹ 2,536 more rows
+```
+
+---
+
+# Advanced Logic: `select()`
+
+- `matches` can work with `|`
+
+
+``` r
+df %&gt;%
+  select(!matches('_|inst'))
+```
+
+```
+## # A tibble: 2,546 × 9
+##    unitid stabbr control region    preddeg  openadmp ccbasic
+##     &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;     &lt;chr&gt;       &lt;int&gt;   &lt;int&gt;
+##  1 100654 AL     Public  Southeast Bachelo…        2      18
+##  2 100663 AL     Public  Southeast Bachelo…        2      15
+##  3 100690 AL     Private Southeast Associa…        1      20
+##  4 100706 AL     Public  Southeast Bachelo…        2      16
+##  5 100724 AL     Public  Southeast Bachelo…        2      19
+##  6 100751 AL     Public  Southeast Bachelo…        2      15
+##  7 100760 AL     Public  Southeast Associa…        1       2
+##  8 100812 AL     Public  Southeast Bachelo…       NA      22
+##  9 100830 AL     Public  Southeast Bachelo…        2      18
+## 10 100858 AL     Public  Southeast Bachelo…        2      15
+## # ℹ 2,536 more rows
+## # ℹ 2 more variables: ugds &lt;int&gt;, selective &lt;dbl&gt;
+```
+
+---
+
+# Advanced Logic: `select()`
+
+- `select` can also work with `where` to find classes
+
+
+``` r
+df %&gt;%
+  select(where(is.numeric))
+```
+
+```
+## # A tibble: 2,546 × 12
+##    unitid grad_debt_mdn openadmp adm_rate ccbasic sat_avg
+##     &lt;int&gt;         &lt;int&gt;    &lt;int&gt;    &lt;dbl&gt;   &lt;int&gt;   &lt;int&gt;
+##  1 100654         33375        2    0.918      18     939
+##  2 100663         22500        2    0.737      15    1234
+##  3 100690         27334        1   NA          20      NA
+##  4 100706         21607        2    0.826      16    1319
+##  5 100724         32000        2    0.969      19     946
+##  6 100751         23250        2    0.827      15    1261
+##  7 100760         12500        1   NA           2      NA
+##  8 100812         19500       NA   NA          22      NA
+##  9 100830         24826        2    0.904      18    1082
+## 10 100858         21281        2    0.807      15    1300
+## # ℹ 2,536 more rows
+## # ℹ 6 more variables: md_earn_wne_p6 &lt;int&gt;, ugds &lt;int&gt;,
+## #   costt4_a &lt;int&gt;, selective &lt;dbl&gt;, research_u &lt;dbl&gt;,
+## #   adm_rate_pct &lt;dbl&gt;
+```
+
+---
+
+# Quick Test
+
+- Filter to only schools in California and select only character columns
+
+
+``` r
+# INSERT CODE HERE
+```
+
+---
+
+# Plotting data
+
+--
+
+- Let's plot the data instead of writing many of these `summarise()` functions
+
+--
+
+- Visualization in `R` uses `ggplot()` function
+
+--
+
+  - Inputs: `aes(x,y,...)` (elipses `...` indicates many more inputs)
+  
+  - `x` is the x-axis (horizontal)
+  
+  - `y` is the y-axis (vertical)
+  
+
+---
+
+# `ggplot()`
+
+- Attach `ggplot()` to your data with `%&gt;%`
+
+
+``` r
+*df %&gt;%
+  ggplot()
+```
+
+&lt;img src="psc7000_lecture_1_slides_files/figure-html/unnamed-chunk-87-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# `ggplot()`
+
+- Then tell it what to put in the x-axis and y-axis
+
+--
+
+- What should go on these axes?
+
+--
+
+- .blue[Theory]: Selective schools choose higher scoring students
+
+--
+
+  - Selective schools **explain** higher scores
+  
+  - Selective schools: **independent variable** / **explanatory variable** / **predictor** / `\(X\)`
+  
+  - Higher scores: **dependent variable** / **outcome variable** / `\(Y\)`
+  
+--
+
+- Selective schools go on the x-axis, SAT scores go on the y-axis
+
+---
+
+# `ggplot()`
+
+
+``` r
+df %&gt;%
+* ggplot(aes(x = adm_rate,y = sat_avg))
+```
+
+&lt;img src="psc7000_lecture_1_slides_files/figure-html/unnamed-chunk-88-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# `ggplot()`
+
+- This gives us an empty plot
+
+--
+
+- We have the correct variables on the correct axes...
+
+--
+
+- ...but we need to choose how to display them
+
+--
+
+- There are many different `ggplot()` functions to choose from
+
+--
+
+  - `geom_point()` creates one point for each x and y coordinate
+  
+  - `geom_bar()` creates a barplot
+  
+  - `geom_histogram()` creates a histogram
+  
+  - `geom_density()` creates a density plot
+  
+  - `geom_boxplot()` creates a box-and-whisker plot
+  
+---
+
+# `ggplot()`
+
+- We **add** a second `ggplot()` function to the first with a plus sign `+`
+
+--
+
+  - **NB:** This is JUST LIKE THE PIPE OPERATOR `%&gt;%` in `tidyverse`!
+  
+--
+
+- Since `adm_rate` (the x-axis variable) and `sat_avg` (the y-axis variable) are both numeric ("continuous") measures, we will use `geom_point()`
+
+--
+
+  - We will come back to **variable types** and how to visualize them later
+  
+---
+
+# `ggplot()`
+
+
+``` r
+df %&gt;%
+  ggplot(aes(x = adm_rate,y = sat_avg)) + 
+* geom_point()
+```
+
+&lt;img src="psc7000_lecture_1_slides_files/figure-html/unnamed-chunk-89-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Plotting data
+
+--
+
+- Let's unpack this
+
+--
+
+  - `aes(x,y)` sets the basic aesthetics for the plot
+  
+--
+
+  - `geom_point()` tells `ggplot()` how to visualize those aesthetics
+  
+--
+
+  - These two parts are linked with the `+`. Similar to...?
+
+--
+
+  - ...the `%&gt;%` in `tidyverse`!
+
+---
+
+# Interpreting the plot
+
+--
+
+- We **hypothesized** that admissions and SAT scores are negatively related
+
+--
+
+  - Is this supported in the data?
+  
+--
+
+- Let's add a line of best fit with `geom_smooth()`
+
+
+``` r
+df %&gt;%
+  ggplot(aes(x = adm_rate,y = sat_avg)) + 
+  geom_point() + 
+* geom_smooth(method = 'lm',se = F)
+```
+
+---
+
+&lt;img src="psc7000_lecture_1_slides_files/figure-html/unnamed-chunk-91-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# The .blue[Research] Camp
+
+- .blue[RQ]: How might future earnings and SAT scores be **related**?
+
+--
+
+  - .blue[Theory]: SATs measure student ability.
+  
+  - .blue[Theory]: Student ability is valued by the labor market.
+  
+  - .blue[Theory]: Firms pay more for students with higher SAT scores.
+  
+--
+
+  - .blue[Hypothesis]: Earnings and SAT scores should be **positively** related
+  
+---
+
+# Plotting Quiz
+
+- Which variable goes on the x-axis?
+
+--
+
+  - **SAT scores**
+  
+--
+
+- Which variable goes on the y-axis?
+
+  - **Earnings**
+  
+--
+
+- In our theory, SAT scores **cause** earnings
+
+--
+
+- Why might this **not** be the case?
+
+--
+
+  - Spurious 1: SAT scores **and** earnings are caused by student ability
+  
+  - Spurious 2: SAT scores **and** earnings are caused by socio-economic privilege
+  
+---
+
+# Let's Plot!
+
+
+``` r
+df %&gt;%
+  ggplot(aes(x = sat_avg,y = md_earn_wne_p6)) + # Build axes
+  geom_point() +  # Add points
+  geom_smooth(method = 'lm',se = F) # Add line of best fit
+```
+
+---
+
+# Outliers
+
+- Which schools are furthest from the line?
+
+--
+
+  - These are **outliers**
+  
+--
+
+  - These schools are the **furthest** from our .blue[theory]
+
+--
+
+
+``` r
+df %&gt;%
+  mutate(out = ifelse(md_earn_wne_p6 &gt; 100000,
+                          instnm,  # Value if TRUE
+                          NA)) %&gt;% # Value if FALSE
+  drop_na(out,sat_avg) %&gt;%
+  select(instnm,md_earn_wne_p6,sat_avg)
+```
+
+```
+## # A tibble: 2 × 3
+##   instnm                              md_earn_wne_p6 sat_avg
+##   &lt;chr&gt;                                        &lt;int&gt;   &lt;int&gt;
+## 1 University of Health Sciences and …         120400    1262
+## 2 Albany College of Pharmacy and Hea…         112100    1242
+```
+
+---
+
+# Plotting data
+
+- We can add these as labels!
+
+
+``` r
+df %&gt;%
+   mutate(out = ifelse(md_earn_wne_p6 &gt; 100000,
+                          instnm,  # Value if TRUE
+                          NA)) %&gt;% # Value if FALSE
+  ggplot(aes(x = sat_avg,y = md_earn_wne_p6,
+*            label = out)) +
+  geom_point() + 
+* geom_text()
+```
+
+---
+
+# Plotting data
+
+&lt;img src="psc7000_lecture_1_slides_files/figure-html/unnamed-chunk-95-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Plotting data
+
+- Let's accentuate the outlier more with color
+
+
+``` r
+p &lt;- df %&gt;%
+   mutate(out = ifelse(md_earn_wne_p6 &gt; 100000,
+                          instnm,  # Value if TRUE
+                          NA)) %&gt;% # Value if FALSE
+  drop_na(sat_avg) %&gt;%
+  ggplot(aes(x = sat_avg,y = md_earn_wne_p6,
+*            label = out,color = out)) +
+  geom_point() + 
+* scale_color_manual(name = "Outlier",values = c('red','red','black')) +
+  geom_text(hjust = .5,vjust = 1,color = 'black',size = 3)
+```
+
+---
+
+# Plotting data
+
+&lt;img src="psc7000_lecture_1_slides_files/figure-html/unnamed-chunk-97-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+
+# Categorical Data
+
+- Thus far, plotting two continuous variables with `geom_point()`
+
+--
+
+- What if we wanted to see which state has the most selective schools?
+
+--
+
+- Use `group_by()` and `summarise()`
+  
+--
+
+
+``` r
+df %&gt;%
+  group_by(stabbr) %&gt;%
+  summarise(selective_avg = mean(adm_rate,na.rm=T))
+```
+
+```
+## # A tibble: 51 × 2
+##    stabbr selective_avg
+##    &lt;chr&gt;          &lt;dbl&gt;
+##  1 AK             0.827
+##  2 AL             0.654
+##  3 AR             0.676
+##  4 AZ             0.843
+##  5 CA             0.592
+##  6 CO             0.768
+##  7 CT             0.589
+##  8 DC             0.529
+##  9 DE             0.627
+## 10 FL             0.620
+## # ℹ 41 more rows
+```
+
+---
+
+# Categorical Data
+
+- Two variables (`stabbr` and `selective_avg`), but one of them is now a `character` type
+
+--
+
+- Can we plot this as a scatterplot?
+
+--
+
+
+``` r
+p &lt;- df %&gt;%
+  group_by(stabbr) %&gt;%
+  summarise(selective_avg = mean(adm_rate,na.rm=T)) %&gt;%
+  ggplot(aes(x = stabbr,y = selective_avg)) + 
+  geom_point()
+```
+
+---
+
+# Categorical Data
+
+- Yes...but it isn't very pretty
+
+
+``` r
+p
+```
+
+&lt;img src="psc7000_lecture_1_slides_files/figure-html/unnamed-chunk-100-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Categorical Data: `geom_bar()`
+
+- NB: `geom_bar()` will automatically count the values on the x-axis
+  
+--
+
+
+``` r
+df %&gt;%
+  ggplot(aes(x = stabbr)) + 
+  geom_bar()
+```
+
+&lt;img src="psc7000_lecture_1_slides_files/figure-html/unnamed-chunk-101-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Categorical Data: `geom_bar()`
+
+- This is fine if we just want to know which states have the most schools in our data
+
+--
+
+- But we want to put the average admissions rate on the y-axis instead
+
+--
+
+  - Need to **override** `geom_bar()` default behavior
+  
+
+``` r
+p &lt;- df %&gt;%
+  group_by(stabbr) %&gt;%
+  summarise(selective_avg = mean(adm_rate,na.rm=T)) %&gt;%
+  ggplot(aes(x = stabbr,y = selective_avg)) + 
+* geom_bar(stat = 'identity')
+```
+
+---
+
+# Categorical Data
+
+
+``` r
+p
+```
+
+&lt;img src="psc7000_lecture_1_slides_files/figure-html/unnamed-chunk-103-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Categorical Data
+
+- Getting a little better, but still ugly
+
+--
+
+- Use `reorder()` to sort the x-axis values by the y-axis
+
+
+``` r
+p &lt;- df %&gt;%
+  group_by(stabbr) %&gt;%
+  summarise(selective_avg = mean(adm_rate,na.rm=T)) %&gt;%
+* ggplot(aes(x = reorder(stabbr,selective_avg),y = selective_avg)) +
+  geom_bar(stat = 'identity')
+```
+
+---
+
+# Categorical Data
+
+- Even better!
+
+
+``` r
+p
+```
+
+&lt;img src="psc7000_lecture_1_slides_files/figure-html/unnamed-chunk-105-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Plot Tweaking
+
+- We could go even further and swap the x and y-axes (although this isn't always a good idea!)
+
+
+``` r
+p &lt;- df %&gt;%
+  group_by(stabbr) %&gt;%
+  summarise(selective_avg = mean(adm_rate,na.rm=T)) %&gt;%
+* ggplot(aes(y = reorder(stabbr,selective_avg),x = selective_avg)) +
+  geom_bar(stat = 'identity')
+```
+
+---
+
+# Plot Tweaking
+
+
+``` r
+p
+```
+
+&lt;img src="psc7000_lecture_1_slides_files/figure-html/unnamed-chunk-107-1.png" style="display: block; margin: auto;" /&gt;
+
+--
+
+- Still ugly though! We want to tweak the labels with `labs()`
+
+---
+
+# Plot Tweaking
+
+
+``` r
+p + 
+  labs(title = "Average Admissions by State",
+       x = "Admissions Rate",
+       y = "State")
+```
+
+&lt;img src="psc7000_lecture_1_slides_files/figure-html/unnamed-chunk-108-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+# Results
+
+- Do more selective schools have higher SAT scores?
+
+--
+
+  - Yes
+
+--
+
+- This .red[Result] **confirms** our .blue[Hypothesis] and **answers** our .blue[Research Question]
+
+---
+
+# Conclusion (objects, functions, code)
+
+--
+
+- What we've done today is a microcosm of data science
+
+--
+
+  1. Opened .red[data] (`readRDS`)
+  
+--
+  
+  2. Looked at .red[data] (`tidyverse` + `select()`, `filter()`, `arrange()`)
+    
+--
+
+  3. Generated .blue[hypotheses] (Admissions versus SAT scores)
+  
+--
+
+  4. .red[Tested] .blue[hypotheses] (`summarise()` + `mean()`)
+
+---
+
+# Conclusion 
+
+--
+
+- What to take away
+
+--
+
+  1. Which variables go on which axes
+  
+  2. How to put these on a `ggplot()` figure
+  
+  3. How to create a visualization of these variables
+  
+--
+
+- This wraps up the crash course in `R`
+
+--
+
+  - **REMEMBER**: This class is *inherently* challenging because of `R`
+  
+--
+
+  - The course is graded leniently to reflect the inherent difficulty of the material
+
+---
+name: end
+
+# Homework
+
+  1. Work through psc7000_hw_1.Rmd as soon as possible
+  
+  2. Complete Problem Set 1 (on GitHub) - due on Friday!
+  
+  3. If you haven't already, create a Copilot account (https://copilot.microsoft.com/)
+  
+  4. Before next class, take a look at psc7000_hw_2.Rmd
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"slideNumberFormat": "%current%",
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
