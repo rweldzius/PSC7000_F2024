@@ -13,11 +13,23 @@
     
 ## Course Description
 
-This graduate-level course delves into the foundational concepts and advanced techniques of empirical research in political science. In thefirst half of the course, students will complete an in-depth exploration of qualitative research methods in political science, with a primaryfocus on the principles outlined in the seminal text, Designing Social Inquiry by King, Keohane, and Verba. Students will engage with thetheoretical and practical aspects of qualitative research, learning to design, conduct, and analyze qualitative studies effectively.In the second half of the course, students will get an introduction to quantitative methods. The use of large, quantitative data sets isincreasingly central in social science. Whether one seeks to understand political behavior, economic outcomes, or violent conflict, theavailability of large quantities of data has changed the study of social phenomena. Our main focus will be on the computational tools of datascience. Students will leave the course with the ability to acquire, clean, analyze, visualize, and analyze various types of political data usingthe statistical programming language R, which will set them up for success in future statistical courses (as well as the post-graduation jobmarket).
+This graduate-level course delves into the foundational concepts and advanced techniques of empirical research in political science. In the
+first half of the course, students will complete an in-depth exploration of qualitative research methods in political science, with a primary
+focus on the principles outlined in the seminal text, Designing Social Inquiry by King, Keohane, and Verba. Students will engage with the
+theoretical and practical aspects of qualitative research, learning to design, conduct, and analyze qualitative studies effectively.
+In the second half of the course, students will get an introduction to quantitative methods. The use of large, quantitative data sets is
+increasingly central in social science. Whether one seeks to understand political behavior, economic outcomes, or violent conflict, the
+availability of large quantities of data has changed the study of social phenomena. Our main focus will be on the computational tools of data
+science. Students will leave the course with the ability to acquire, clean, analyze, visualize, and analyze various types of political data using
+the statistical programming language R, which will set them up for success in future statistical courses (as well as the post-graduation job
+market).
 
 Learning Outcomes: By the end of this course, students will be able to:
 
-  * Critically evaluate qualitative and quantitative research designs and methodologies.  * Conduct rigorous research projects.  * Analyze and interpret data effectively.  * Apply ethical principles in social science research.
+  * Critically evaluate qualitative and quantitative research designs and methodologies.
+  * Conduct rigorous research projects.
+  * Analyze and interpret data effectively.
+  * Apply ethical principles in social science research.
 
 The contents of this repository represent a work-in-progress and revisions and edits are likely frequent.
 
@@ -81,7 +93,11 @@ Similar to the mini-conference in Week 7, in the final two weeks of class we wil
 
 The final grade is calculated as a weighted average of these components with the following weights:
 
-  * **Weekly Memos**: 4 in total, worth 2 points each. Your presentation will be worth 2 points, for a total of 10 points.  * **Problem sets**: 6 in total, only 5 of which are worth 5 points each for a total of 25 points. This means you can miss a problem set without it hurting your final grade.  * **Midterm Project**: The project is worth 20 points (5 points for the presentation).  * **Final Project**: The project is worth 35 points (10 points for the presentation).  * **Participation**: Your participation during the first half of the course, as well as during the class presentations will be worth 10 points.
+  * **Weekly Memos**: 4 in total, worth 2 points each. Your presentation will be worth 2 points, for a total of 10 points.
+  * **Problem sets**: 6 in total, only 5 of which are worth 5 points each for a total of 25 points. This means you can miss a problem set without it hurting your final grade.
+  * **Midterm Project**: The project is worth 20 points (5 points for the presentation).
+  * **Final Project**: The project is worth 35 points (10 points for the presentation).
+  * **Participation**: Your participation during the first half of the course, as well as during the class presentations will be worth 10 points.
 
 See the table below for a breakdown of the percentages and points.
 
@@ -179,7 +195,7 @@ Villanova University makes every reasonable effort to allow members of the commu
 | 9/30/24  | Observations  | Increasing the number of observations  | KKV 6  | Memo 4  |   |
 | 10/7/24  | Mini-conference  |   |   |   |   |
 | 10/14/24  | Fall Break  |   |   |   | [PS 0](https://github.com/rweldzius/PSC7000_F2024/blob/main/Psets/psc7000_pset_0.Rmd)  |
-| 10/21/24  | Intro to R  | Objects, functions, code, visualization  |   |   |  [PS1](https://github.com/rweldzius/PSC7000_F2024/blob/main/Psets/psc7000_pset_1.Rmd)   |
+| 10/21/24  | Intro to R  | Objects, functions, code, visualization  |   |  [HW1](https://github.com/rweldzius/PSC7000_F2024/blob/main/Homeworks/psc7000_hw_1.Rmd) |  [PS1](https://github.com/rweldzius/PSC7000_F2024/blob/main/Psets/psc7000_pset_1.Rmd)   |
 | 10/28/24  | Data Wrangling & Univariate Analysis  |   |   | [HW2](https://github.com/rweldzius/PSC7000_F2024/blob/main/Homeworks/psc7000_hw_2.Rmd) | [PS2](https://github.com/rweldzius/PSC7000_F2024/blob/main/Psets/psc7000_pset_2.Rmd)   |
 | 11/4/24  | Multivariate Analysis & Uncertainty  |   |   | [HW3](https://github.com/rweldzius/PSC7000_F2024/blob/main/Homeworks/psc7000_hw_3.Rmd) | [PS3](https://github.com/rweldzius/PSC7000_F2024/blob/main/Psets/psc7000_pset_3.Rmd)  |
 | 11/11/24 |  Regression  |   |   | [HW4](https://github.com/rweldzius/PSC7000_F2024/blob/main/Homeworks/psc7000_hw_4.Rmd) | [PS4](https://github.com/rweldzius/PSC7000_F2024/blob/main/Psets/psc7000_pset_4.Rmd)   |
