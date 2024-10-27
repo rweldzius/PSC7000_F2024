@@ -11,7 +11,661 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE,error=TRUE,warning = FALSE,message = FALSE)
 ```
 
-# Part I: Univariate Data Analysis (NBA Data)
+## Part I: Data Wrangling (Michigan Exit Poll Data)
+
+![We Need a Horse, Lasso](../Lectures/figs/Wrangler.png){scale=50%}
+
+*Data Wrangling:* The process of getting the data ready for analysis, including: accessing data, reformatting in appropriate ways (format, orientation), creating variables, recoding values, and selecting variables and/or observations of interest for analysis.
+
+How you process and recode data is critical!  Principles that should guide us include:
+
+- *Replication:* Can others do what you did? Art depends on _personality_, science depends on _replication_.
+
+- *Understanding:* Can others understand what you did and why?  Can you follow what you did if you come back to the code in a year?
+
+We want to do things that are understandable and sensible.  Always imagine that you are handing the code off to someone else -- can they understand what you are doing? Can they follow what you have done to the data?  The goal in data wrangling is to provide a set of steps that will take you from the raw data to the data being analyzed in clear and understandable steps so that others can see exactly the choices that you have made (and make other choices if desired to see the robustness of your inferences).
+
+- *Robustness:* Does your code "break" easily? You cannot (easily) fix in your analysis what you screw up in your data! (Especially if you are unaware!)
+
+Data wrangling in R gives us the ability to do this because we can document and explain the exact steps we are taking to organize the data. Using code to make changes means anyone and everyone can observe what we did. 
+
+![Don't Be This Guy](../Lectures/figs/Excel.png){width=50%}
+
+In contrast, if you make changes to your data in a spreadsheet like Excel or Google Sheets or Numbers it can be impossible for someone else to figure out what you did.  What variables did you rename, what transformations did you do, how did you recode values?  
+
+People using Excel for analysis have been identified as being (partially) responsible for what is widely believed to be a [failed global economic policy](https://www.washingtonpost.com/news/wonk/wp/2013/04/16/is-the-best-evidence-for-austerity-based-on-an-excel-spreadsheet-error/).  
+
+![Source of many, many errors: World Economy](../Lectures/figs/WashPoRR.png){width=50%}
+
+And using Excel for data entry has resulted in well-documented errors in [Medical Research](https://www.nature.com/articles/d41586-021-02211-4) due to "auto-correct" changing value names.
+
+![Source of many, many errors: Medical Research](../Lectures/figs/GeneExcel.png){width=50%}
+
+In fact, Dr. Jennifer Byrne - named a top 10 person in science in 2017 because of her data sleuthing in [2017](https://www.nature.com/immersive/d41586-017-07763-y/index.html) has developed an entire program to find and correct errors produced by data entry in Excel! Link [here](https://www.eurekalert.org/news-releases/810347).
+
+![Dr. Byrne, Cancer Researcher, Data Detective](../Lectures/figs/Byrne.png){width=50%}
+
+So the goal of this topic is to give you some basic tools to be able to manipulate data and get it ready for analysis.  This includes inspecting your data and getting a sense of the type of data you have.
+
+## RECAP: Starting out
+
+When you start out (in this class) it is always a good idea to have a clean -- i.e., empty -- workspace so that your analysis is based on the code that you are doing rather than some manipulations that were done previously.  Do not be one of those students at the end of the class who has every dataset they worked with in class saved and loaded in their Environment. 
+
+If you are starting out with an empty workspace your R Studio should say the "Environment is empty" in the Environment tab. it is always a good idea to always start with an empty environment because the data manipulations we are doing will not be cumulative.  
+
+![Starting Out](../Lectures/figs/StartScreen.png){width=50%}
+
+To that end, when you quit RStudio, **DO NOT** save workspace image.  This will ensure that you are always starting with a clean and empty workspace which means that there is never a possibility of using "old" data in your analyses. If you are working on a larger project across several sessions it sometimes makes sense to save it, but for this class you should get in the practice of writing self-contained code that reads and wrangles the data you need to analyses every time rather than relying on earlier work.
+
+![DO NOT SAVE YOUR WORKSPACE WHEN YOU EXIT](../Lectures/figs/SaveEnvironment.png){width=25%}
+
+When starting out it can be easy to forget that R needs to be told where to look to find things!
+
+1. For **every** assignment/lecture create a new folder on your computer (e.g., "Topic 3").  
+2. Download the code and data into this folder. (Or move them from the Download folder to that folder).  Or create a new RMarkdown file and  _save_ the code to this folder.  
+
+3. In the Console window of RStudio figure out where R thinks it is by looking at the title bar or using `getwd` (get working directory)!
+
+```{r}
+getwd()
+```
+If this is different than where your code and data is there will be trouble!
+
+Because R is object-oriented, we can actually save this as an object and use it!
+
+```{r}
+mydir <- getwd()
+```
+
+
+4. Manually set the working directory to be the directory where your code and data is located using `setwd` (set working directory) and the location we just saved to the object `mydir`!
+
+```{r, eval=FALSE}
+setwd(mydir)
+```
+
+We can also use RStudio to accomplish the same task.
+
+1. Open your code in R-Studio.
+
+2.  ![Using the GUI to Select Directory](../Lectures/figs/Setwd.png){width=50%}
+
+3. The GUI will automatically change the directory, but you should also copy and paste the resulting code snippet in Console to your code!
+
+**Warning!**
+
+What R "sees" when working in the Console window (or using an R Script) is different from what it "sees" using RMarkdown! You can `Knit` a RMarkdown document to conduct analysis without any object ever appearing in the Global Environment.
+
+- Knitting RMarkdown (*.RMD) files does _not_ create tibbles/objects in the Global Environment!
+
+*Quick Exercise*  Clear out the Global Environment and `Knit` this document.  Confirm that the code will run and nothing will be created in the Global Environment.
+
+While this makes sense once the code/project is completed, it can make coding more difficult because we often want to be able to manipulate the code and objects while working.  To do so we are going to write and evaluate chunks one-at-a-time to ensure the objects are created in the Global Environment.
+
+So getting started we _always_ start our code by:
+
+1. Loading the `tidyverse` library and any other libraries we are going to use.
+
+```{r, message=FALSE}
+library(tidyverse)
+```
+
+2. Checking to sure that R is looking in right spot to find your data and code.  It typically makes sense to `setwd` to tell R where in your computer it should be looking for additional data (and code).
+
+```{r, eval=FALSE}
+getwd()
+setwd()
+```
+
+3. Now get that data!  One method is to use the Graphical User Interface (GUI) to select menus that will find and read in the data of interest.  If you are getting data from some other format (e.g., data saved in a basic text format (comma or tab delimted) or in another statistical package (e.g., STATA or SAS)) we want to `Import Dataset`.  
+
+![RStudio Starting Out](../Lectures/figs/GUIImport.png){width=50%}
+If you are loading in data that is already formatted in R then you go to the RStudio menu: `File > Open File...`.  (Note that this menu also has the `File > Import Dataset` option.) 
+
+Because we want to document what dataset we are using, for replicability we want to copy and paste the resulting code into our RMarkdown file so that next time we can run the code directly!
+
+A second way to access data is to use some functions directly in R.  This is what the GUI is actually doing behind the scenes.  We are going to focus on three functions in this class:
+- `load`
+- `read_rds`
+- `url`
+
+A `tidyverse` function we will sometimes use is `read_rds` (Read R Data Structure).  This will load a single object into memory.  Here we are reading in a subset of the 2020 Michigan Exit Poll and naming it the tibble `mi_ep`.  
+
+```{r}
+mi_ep <- read_rds("../data/MI2020_ExitPoll_small.rds")
+```
+
+The first part of the code is defining a new object called `mi_ep` (short for Michigan exit poll) and then assigning (`<-`) that object to be defined by the dataset being read in by the `read_rds` function. 
+
+To highlight the syntax, consider what happens when you run the following code?
+
+```{r, eval= FALSE}
+read_rds("../data/MI2020_ExitPoll_small.rds")
+```
+
+If we read in data without assigning it to an object R will simply print the results to the console window.  Nothing will be saved and we cannot use the data in future analyses!  When reading in an R data object using `read_rds` we always need to define a new object associated with that file!
+
+Before moving on, let's clean up our Environment -- always a good idea between lectures and assignments! -- using either the broom icon in the Environment GUI to delete every object or the `rm` (remove) command to remove specific objects.  Since we only have one object in our Environment so far we can use `rm` to remove it.
+
+```{r}
+rm(mi_ep)
+```
+
+A nice thing about R is that it can have multiple objects in the Global Environment at the same time. This allows you to work with multiple datasets and objects.  Instead of loading them all into memory one at a time using `read_rds`, we can also use the `load` function to load several R objects that have been saved into a single file (using the `save` function) all at once.  
+
+In the file named `MI2020_ExitPoll.Rdata` I have previously saved the entire 2020 Michigan Exit Poll (the object named `MI_final`) as well as a subset of the exit poll that focuses on variables we are going to analyze in class (named `MI_final_small`).  To give you a chance to do your own analyses, I have saved both files together so you can access either one.
+
+Note that when we are `load`ing an `.Rdata` file we **do not** need to assign it to an object because the objects are already defined within the `.Rdata` object.  You can see this when you use the `objects` function to print to the console window the objects that are loaded into memory (which will also match the Global Environment list when we run the code chunk-by-chunk):
+
+```{r}
+load(file = "../data/MI2020_ExitPoll.Rdata")
+objects()
+```
+
+Relatedly, because we are loading several objects at once the name of the file will not be the same as the name of the objects being loaded.
+
+NOTE: R will look for this file relative to where it is (as is given by `getwd`). Here I have created a `data` folder located within the current directory and telling R to look for my data in that folder!
+
+We can also read in non-R files. For example, we can read in comma-delimited files (`read.csv`), tab-delimited files (`read.delim`), Excel-created files (`read.xls`, `read.xlsx`), and files from other statistical languages (e.g., `read.dta`, `read.sav`). Reading in non-R objects/data requires reading in the data and also assigning the data to a new R object.
+
+# Trouble with tibbles?
+
+- Data objects in `tidyverse` are called `tibbles`.  Why?  As with most things, it seems Twitter is to blame...
+
+![Tibble?](../Lectures/figs/Whytibble.png){width=50%}
+
+
+- `tibbles` can be thought of as a matrix with rows and columns and we can extract the dimensions of the data using the `dim` (dimensions) command where the output is a vector of length two consisting of the number of rows -- here `r dim(MI_final_small)[1]` and then the number of columns `r dim(MI_final_small)[2]`.
+
+```{r}
+dim(MI_final_small)
+```
+
+In most of the work that we will do in DSCI 1000 rows typically refer to observations -- e.g., survey respondents -- and columns refer to characteristics of those observations (e.g., survey responses) which we call variables.
+
+We can use matrix indexing to examine/extract specific rows and columns of tibbles/dataframes.  To select the first three rows we would use:
+
+```{r}
+MI_final_small[1:3,]
+```
+To select the first three columns...
+
+```{r}
+MI_final_small[,1:3]
+```
+
+Selecting the first two rows and first four columns
+
+```{r}
+MI_final_small[1:2,1:4]
+```
+
+Selecting a collection/combination of rows and all columns we would use:
+
+```{r}
+MI_final_small[c(1:2,45,100),]
+```
+
+# Outline for the Next Few Lectures
+
+- Introduce some basic tools and techniques to answer a series of questions relevant for politics, political science, society, etc.
+
+- Think about the data we have available data and its' limitations!
+
+- Enable you to be the next political-media star.
+
+# 2020 MI Exit Poll
+
+To do our data wrangling we are going to wrangle the 2020 National Exit Poll from the National Election Pool in the state of Michigan.
+
+- We are going to use the actual data we got on Election Night!  
+
+- To answer some of the same questions we were answering.
+
+- But not much has been cleaned up since then so lots of work to do! (Ugh...)
+
+# Exit Polls in US Elections
+
+Exit polls are polls that are done on (or immediately before) elections in the United States.  They are used to help interpret the meaning of an election -- i.e., why voters voted the way they did, whether some types of voters were more likely to support one candidate over the  other, etc. -- but intelligent prognosticators do not use them to actually project who is going to win.  Put differently, they are used to help intepret an election, but they are not used to predict it (which is what voting data is used for).
+
+![Filling Out an Exit Poll](../Lectures/figs/ExitPollImage.png){width=50%}
+
+In class we are goign to focus on an Exit Poll from the National Election Pool for the state of Michigan.  Michigan is increasingly thought of as a ``swing state" that could be won by either a Democrat or a Republican in a presidential contest following is surprising support for President Trump in the 2016 presidential election.  Michigan is also a rather diverse state in terms of its population and interests and some have worked to identify groups of like-minded voters within the state.  (Note that we will also do this when we get to the "clustering" topic!)
+
+![Why Michigan?](../Lectures/figs/MISwing.png){width=50%}
+
+The Exit Poll data we will analyze is based on the following questionaire that reports the precise questions that were asked, as well as the value labels associated with each response.  So while the data that we will read in will have responses that are coded as a "1" or "3" or "4", interpreting the meaning of those values requires comparing the values to the questions below.
+
+![2020 MI Exit Poll](../Lectures/figs/EPQuex.png){width=50%}
+
+#    Lots of interesting questions!
+
+*Predictive:* Use the data to _predict_ an outcome of interest.
+
+- How many voters report voting for Biden vs. Trump?
+- What predicts who supports Trump? And Biden?
+
+*Descriptive:* Use the data to _describe_ an event.
+
+- How did the support for Trump and Biden vary by: gender? race? age? education?
+- When did they make up their minds?
+- _Why_ did voters choose to vote for Trump? Or Biden?
+- How do Trump and Biden voters vary in their opinions toward: COVID? Race relations?
+
+THINKING: Is any of it *causal*?  Can we determine what causes a voter to support a candidate from this data?
+
+Whenever we do anything using data we should first inspect our data to make sure it makes sense. The function `glimpse` gives us a quick summary by printing the first few observations of every variable to the screen.  Note that the presentation of the data is flipped (technically transposed) so that the columns are presented as rows.
+
+```{r}
+glimpse(MI_final_small)
+```
+
+This is a useful representation as we can immediately see what variables we have as well as what some of the values are.  Here, for example, we see that we have missing data -- denoted as `NA` in R - in quite a few variables.  We also see that some variables have numbers for values while others have strings of letters (e.g., `QLT20`, `preschoice`).
+
+This variation highlights the fact that there are several types of data:
+
+1. `<dbl>` Double.  "Numbers as a number." Numbers stored to a high level of scientific precision. Mathematical operations are defined. (At least in theory!) e.g., `SEX`
+
+2. `<int>` Integer.  "Numbers as a number." Mathematical operations are defined. (At least in theory!) R treats `<dbl>` and `<int>` as largely interchangeable.
+
+3. `<chr>` Character.  A variable with letter and/or number values.  Mathematical operations are _not_ defined, but other functions exist (e.g., extract the first and last characters, etc.) e.g., `preschoice`
+
+4. `<fct>` Factor.  A variable defining group membership. Mathematical operations are _not_ defined, but they can be used in special ways in R. e.g. `QLT20`.  Note how the values of a character variable like `preschoice` are in quotes while the values of a factor variable like `QLT20` are not.  Factor variable can "look" like numeric or character variables in that the values they take on may be numbers or letters (or both), but R interprets them differently than numeric and character variables and they can be used to do special things.
+
+NOTE: There are also `list` objects, but we will cover them when needed.
+
+A second way to get a sense of the data is to use the `summary` command which will report the quantiles for any integer or numeric variable, the count of every value for a factor variable, and a note if the variable is a character variable.  Unlike `glimpse` which gives you a rough approximation of how much the data may vary, `summary` quantifies the variation of each numeric variable in a bit more detail.
+
+```{r}
+summary(MI_final_small)
+```
+
+This is useful because it can reveal potential issues that we need to deal with.  If we look at the maximum value for `AGE10` for example, we can see that it has a value of `99` even though the Exit Poll questionaire indicates that the largest value should only be a `10` (for those selecting "75 and over").  This is because respondents who skipped that question were coded as having a value of 99.  We also see that in other variables (e.g., `PARTYID`) there are values of `9` even though there is no value associated with that in the questionannire.  These are again missing data!
+
+Recall that this is the actual data that was used and we we see right away that while some variables have explicit missing data (e.g., `LGBT`, `BRNAGAIN`, `RACISM20`, `QLT20`) others have missing data that is not recognized as missing by R because of how it was coded.  Moreover, the code for missing data varies between variables in this case!  A `9` indicates missing data in `PARTYID` but it means something real in `AGE10` (which uses `99` to denote missing data).
+
+There are several functions depending on the type of data.  For data that takes on discrete values -- either numeric or character -- it can be helpful to see the distribution of values that occur within a variable.  To do so we are going to get a `count` of each unique value associated with a variable in a tibble.
+
+In the code that follows we are using the `tidyverse` pipe command `%>%` which you should interpret as meaning "and then". Using piping (`%>%`), we can `count` the variable `preschoice` within the tibble `MI_final`.  This is what we will do as we are going to pipe multiple commands to accomplish our intended tasks. Note that the default reporting is to arrange the rows from lowest to smallest according to the values of the **variable being counted** (here `preschoice` which is being reported in alphabetical order).
+
+```{r}
+MI_final_small %>% 
+  count(preschoice)
+```
+
+Note that here we are printing creating a table that is printed to the console window and disappears.
+
+*Quick Exercise* Can you create a tibble containing a table of vote choice?
+
+```{r}
+# INSERT CODE HERE
+```
+
+If we try to count several variables what R will do is to present the count within each ordered value.  So the following code will first `count` each value of `preschoice` and then count how that breaks down according to the values given in the variable `SEX`.
+
+```{r}
+MI_final_small %>% 
+  count(preschoice,SEX)
+```
+
+This is an important reminder to always inspect your data and then you often, if not always, need to wrangle data before doing analysis!
+
+
+*Quick Exercise* How many Democrats and Republicans are in our sample?
+
+```{r}
+
+# INSERT CODE HERE
+
+```
+
+Note that `count` is not useful for many-valued (continuous) variables because each value is likely to occur only a small number of times.
+
+```{r}
+MI_final %>% 
+  count(WEIGHT)
+```
+
+Here the `summary` function is more useful for describing the variation in our data.  In addition to summarizing the entire dataset we can also `select` a specific variable and use `summary`.
+
+```{r}
+MI_final %>% 
+  select(WEIGHT) %>%
+  summary(WEIGHT) 
+```
+
+# Selecting Variables and Observations
+
+Once we load a dataset into active memory and take a look to get a sense of what we have we often want to be able to focus on particular variables or observations.  Not every variable or observation will be valuable for the analyses that we do and we want the ability to extract the relevant data either for future analyses (e.g., creating a new tibble with just the relevant data) or for the analysis that we want to do right now (e.g., perform a calculation using a specific variable in the tibble on a subset of the observations).  If we are interested in the how respondents who self-identify as "born again" reported voting in 2020 in Michigan, for example, we only need to analyze the presidential vote choice of born-again voters.
+
+For the data in this class, columns are variables and rows are observations. That is, each row is a unique data point and each column is a description of one feature of that data point.  When doing analysis we often want to focus on observations with particular features -- e.g., voters from a particular state in a nationwide survey.
+
+## Selecting variables (columns) using `select`
+
+To begin, let's create a new tibble called `MI_small` by extracting/selecting 4 variables from `MI_final`.  If we have a large dataset it can be useful to create a smaller dataset to save computer memory and speed processing time.  This is not a concern for any of the data we will use, but it is a useful illustration.  Beyond creating new tibbles that are a subset of existing tibbles, the other use of `select` is to extract particular variables for analysis within the tibble. 
+
+In the code that follows we are using the `tidyverse` pipe command `%>%` which you should interpret as meaning "and then".  So, in English we would read this code as: "MI_Small is defined to be MI_final and then select the variables SEX, AGE10, PRSMI20, PARTYID and then glimpse the results".
+
+```{r}
+MI_small <- MI_final_small %>%
+  select(SEX,AGE10,PRSMI20,PARTYID) %>%
+  glimpse()
+```
+
+What this code does is to create a new tibble called `MI_small` that consists of the variables `SEX`, `AGE10`, `PRSMI20`, and `PARTYID` from the `MI_final` tibble and then prints a glimpse of the new tibble to the screen so we can check to confirm that it did what we wanted it to do.  While `MI_final` had a dimension of `r dim(MI_final)`, the new tibble `MI_small` has a dimension of `r dim(MI_small)`.
+
+We can also drop variables from a tibble by negatively selecting them. To drop `AGE10` we just "subtract" the variable from the selection as follows:
+
+```{r}
+MI_small %>% 
+  select(-AGE10) %>%
+  glimpse()
+```
+
+Note that I am piping through the `glimpse` to confirm that the code is doing what I think it is doing.  A large number of coding and analysis mistakes are caused by differences in what the data scientists *thinks* the data is relative to what the data *actually* is so it is usually a good ideal to confirm that you have done what you think you have done
+
+*Quick Exercise* Create a new tibble called `MI_small_2` that contains the variables `EDUC18`, `PARTYID`, and `SEX`.
+
+```{r}
+
+# INSERT CODE HERE
+
+```
+
+We can also `select` variables based on features of the variable names.  To select all variables that start with the letter "P", for example, we would use:
+
+```{r}
+MI_small %>%
+  select(starts_with("P")) %>%
+  glimpse()
+```
+
+Why would we ever do this?  If you are working with a large number of variables it can sometimes be useful to have uniform naming conventions (e.g., have all demographic variables start with the prefix "d_" as in "d_age").
+
+We can also select variables that end with (or do not end with) a particular set of values.  The code below selects all variables that **do not** -- hence the `!` that tells R to do the opposite of the function (i.e., "does not") -- end in a `0`.
+
+```{r}
+MI_small %>% 
+  select(!ends_with("0")) %>%
+  glimpse()
+```
+
+These functions are admittedly a bit specific and we won't really use them much in class, but it is good to know the functionality exists.  Note that we are not limited to a single character, we could select variables that `starts_with("PAR")` or `ends_with("20")`.
+
+We can also select a range of variables using the sequence notation `:` (all values between) that takes all variables between the two variables-- including the two variable. For example, to select all variables between `SEX` and `PRSMI20` in the tibble we could do the following.
+
+```{r}
+MI_final_small %>% 
+  select(SEX:PRSMI20) %>%
+  glimpse()
+```
+
+Before reading the next sentence, can you think why this is **not** good coding practice?  Answer: it makes the code depend on the arrangement of the variables in your data such that a different arrangement of variables will produce differences in output.  We always want our code to be replicable and it is therefore desirable to use coding practices that are not going to be affected by reorderings that do not change the underlying data.
+
+## Reordering observations (rows) using `arrange`
+
+When working with the rows of a tibble it can sometimes be useful to rearrange their order.  The exit poll data we are working with, for example, has no natural ordering -- the order of the data is the order in which it was collected.  But we may want to rearrange the data to sort it in increasing (or decreasing) order according to selected variables.  To do so we can use the `arrange` function to sort the tibble according to the values of the specified variables.  To rearrange the `MI_small` tibble by `SEX` (from smallest value to largest value)  we would use:
+
+```{r}
+MI_final_small %>% 
+  arrange(SEX) %>%
+  glimpse()
+```
+
+Note now how all of the values for `SEX` being glimpsed consist of the value `1`.  Also note that we have **not** saved this rearrangement - we have just rearranged the tibble.  How would you save the rearrangement?  
+
+The default is to sort from smallest to largest, but to sort from largest to smallest we need to tell R to take the variable in descending (`desc`) order as follows.
+
+```{r}
+MI_small %>% 
+  arrange(desc(SEX)) %>%
+  glimpse()
+```
+
+
+
+*Quick Exercise* Sort the new tibble `MI_small_2` you created by education level and save the sorted data.
+
+```{r}
+
+# INSERT CODE HERE
+
+```
+
+We can also sort using multiple variables. If we arrange using several variables R will process them sequentially --- sort by the first variable, then sort again within each of the sorted variables according to the values of the second variable, and so on.  So if we wanted to sort by age by gender in ascending order we would use:
+
+```{r}
+MI_small %>% 
+  arrange(SEX, AGE10) %>%
+  glimpse()
+```
+
+So you can now see that the data is sorted by `AGE10` within each value of `SEX`.  There is no limit to the number of sorts we can do, or to whether we sort by ascending or descending order.
+
+As a test of what we have done so far, can you predict what the following code will produce?
+
+```{r}
+MI_small %>% 
+  select(SEX,AGE10,PARTYID) %>%
+  arrange(SEX, AGE10, desc(PARTYID)) %>%
+  glimpse()
+```
+
+To be honest, we don't really do much with `arrange` other than if we are inspecting the data visually or if we are making the output a bit more sensible.  
+Recall that the `count` function produces a tibble that is sorted according to the values of the variable being counted.  This is not always sensible as we may want to sort the tibble according to the most-frequently occuring value in the data.  If we wanted to produce a table of values sorted in descending order so that the top row was the most frequently occurring value we could `arrange` after piping thru a `count`.^[Note that in this instance we could also use `arrange(-n)` to sort in descending order.  We use `desc` because it is slightly more generic (i.e., if we tried to use `arrange(-SEX)` above it would not work).]  
+
+```{r}
+MI_final_small %>% 
+  count(preschoice) %>%
+  arrange(desc(n))
+```
+
+## Selecting observations (rows) using `filter`
+
+So far all we have done is to rearrange the observations (rows) in a tibble.  If we want to extract particular observations then we need to use the `filter` function.
+
+To select all the male respondents (i.e., `SEX` takes on the value of "1"), we could use `filter` as follows:
+
+```{r}
+MI_final_small %>%
+  filter(SEX == 2) %>%
+  glimpse()
+```
+
+When we glimpse the results we can see that every value for `SEX` is a `2` as requested.
+
+Note the syntax: we use `==` to denote "is equal to" and we use the value `2` because it is a numeric. 
+
+We can also obviously combine `filter` with `select` to extract a subset of variables and observations as follows: 
+```{r}
+MI_final_small %>%
+  select(SEX,PARTYID,preschoice) %>%
+  filter(SEX == 2) %>%
+  glimpse()
+```
+
+If we wanted to select observations for based on a character or factor variable the syntax would be somewhat different because of the difference in a numeric and character value.  To select only respondents who supported Joe Biden using the `preschoice` variable, for example, we would use quotes to denote that the value we are filtering is a character:
+
+```{r}
+MI_final_small %>%
+  filter(preschoice == "Joe Biden, the Democrat") %>%
+  glimpse()
+```
+
+# Selecting and Filtering based on conditional statements
+
+Many times we want to select observations (and/or variables) depending on whehter or not several conditions are satisfied.  To do so we use the fact that:
+
+- `&` (AND) selects if _all_ conditions are true.
+
+- `|` (OR) selects if _any_ condition is true
+
+So if we are considering condition A and condition B, filtering based on `&` will select observations for which both A and B are satisfied (i.e., the intersection) whereas `|` will select observations for which either A or B are satisfied (i.e., the union). Note that there is no limit to the number of conditions we can use and we can also combine them.
+
+- `A | B` means either condition A or B is satisfied.
+- `A & B` means that both conditions A and B are satisfied.
+- `A | B | C` means that either condition A OR condition B OR condition C are satisfied.
+- `(A & B) | C` means that either conditions A and B OR condition C is satisfied.
+- `A & (B | C)` means that condition A AND conditions B or C are satisfied.
+
+** _SELF-TEST:_ If A = self-identified Democrat, B = self-identified Republican, and C = self-identified Independent how would you interpret each of the conditions above in terms of which respondents would be filtered? 
+
+Let's see how to implement this in R. According to the values coded in the Michigan Exit Poll we see that:
+
+- `SEX`: 1 = Male, 2 = Female
+- `AGE10`: 1 = "under 24", ... , 9 = "64-75", 10 = "75+"
+
+To select the self-reported vote choices of females under the age of 24 we would want to select observations from individuals who are both female **and** under the age of 24.  To do so, we use the following (note that we are `select`ing to focus on the most relevant variables as practice -- the code also works without this step):
+
+```{r}
+MI_final_small %>%
+  select(SEX,AGE10,preschoice) %>%
+    filter(SEX == 2 & AGE10 == 1) %>%
+    glimpse()
+```
+
+OK, but it is hard to know what to take away from this. How about pulling together content from above to produce the following?
+
+```{r}
+MI_final_small %>%
+    filter(SEX == 2 & AGE10 == 1) %>%
+    count(preschoice) %>%
+    arrange(desc(n))
+```
+
+Note that here we have dropped the `select` code because the point of our code is summarize the distribution of self-reported voting behavior, not produce a new tibble for subsequent analysis.  Because we are using the `count` function applied to the variable `preschoice` the piping will automatically select the relevant variable.  
+
+Notice the difference in the nature and dimensions of the resulting tibbles from these two code snippets.  The first code snippet produced a tibble with 17 observations and 3 columns -- it is a new data set we can analyze (if we had saved it!).  But the second code snippet is a tibble that consists only of 3 observations and 2 columns because it is counting the number of times that each of the 3 unique values occur among the filtered set of respondents.
+
+*Quick Exercise* Replicate the analysis using male respondents (i.e., `SEX==1`)?  What do you observe about the number and distribution of vote choice?
+
+```{r}
+
+# INSERT CODE HERE
+```
+
+In addition to selecting cases for which both conditions are satisfied we can also select conditions for which either condition A or condition B is satisfied. If we want to focus on voters who voted for either Biden or Trump -- and ignore those who self-reported voting for some other candidate -- we can `filter` the data accordingly:
+
+```{r}
+MI_final_small %>%
+    filter(preschoice == "Joe Biden, the Democrat" | preschoice == "Donald Trump, the Republican") %>%
+    glimpse()
+```
+
+Note that this produces a new tibble that could be used for subsequent analysis containing only respondents who report voting for either Biden or Trump.  Because the number of rows decreases from `1231` in `MI_Final_small` to `1182` after the filter we have just performed, we can determine that `49` respondents reported voting for a candidate other than Biden or Trump.
+
+To reiterate how piped functions can change the meaning of a tibble, consider how the size and content of the code we just ran compares to the following:
+
+```{r}
+MI_final_small %>%
+    filter(preschoice == "Joe Biden, the Democrat" | preschoice == "Donald Trump, the Republican") %>%
+    count(preschoice) %>%
+    arrange(desc(n))
+```
+
+Again, once we pipe (`%>%`) thru the `count` function to the filtered tibble, the tibble changes from being organized by observations (1182 x 14) to being organized by the number of unique values in the variable being counted (2).  Moreover, the meaning of the columns changes from being variables associated with each observation to being the number of observations taking on each value.
+
+**Always know what your tibble looks like and what it contains!**
+
+NOTE:  We can also use conditionals when `select`ing variables.  For example:
+
+- Select variables "if and only if" multiple conditions are true:  `&` (AND)
+
+```{r}
+MI_final %>%
+  select(SEX & starts_with("P")) %>%
+  glimpse()
+```
+
+- Select variables "if and only if" any condition is true:  `|` (OR)
+
+```{r}
+MI_final %>%
+  select(SEX | starts_with("P")) %>%
+  glimpse()
+```
+
+## Combining filters and tibbles 
+
+Using piping (`%>%`), we  `count` the variable `preschoice` within the tibble `MI_final`.  This is what we will do as we are going to pipe multiple commands to accomplish our intended tasks.
+
+```{r}
+MI_final_small %>% 
+  count(preschoice)
+```
+
+Note that here we are printing creating a table that is printed to the console window and disappears.  
+
+If we wanted to save it for later we could assign this to a new object and then manipulate it.
+
+```{r}
+MI_prescount <- MI_final_small %>% 
+  count(preschoice)
+```
+
+To access this I can then manipulate it. Note that calling `MI_prescount` directly reveals that it contains two variables -- a variable of value labels with the same name as the variable that was counted (here `preschoice`) and a variable of the number of observations associated with each value (here `n`).
+
+```{r}
+MI_prescount
+```
+
+You can then access this using all of the tools we have already talked about.  For example, to get the number of Biden supporters we can select the relevant row using `filter` via
+
+```{r}
+MI_prescount %>%
+  filter(preschoice == "Joe Biden, the Democrat")
+```
+
+*Quick Exercise* Extract the number of respondents who chose either Biden or Trump.
+
+```{r}
+
+# INSERT CODE HERE
+
+```
+
+Consider what happens if we instead do:
+
+```{r}
+MI_final_small %>% 
+  select(preschoice) %>%
+  count()
+```
+What did we do ?!?! Now we have selected the variable `preschoice` and then counted up the number of observations.  Before, we were counting the variable `preschoice` which was counting each value.
+
+# Missing Data
+
+Several of our variables were only asked of half the sample (the 2020 Michigan exit poll used two different sets of questionaires to try to ask more questions) and it is important to account for that when thinking about the amount of data we have and what might be possible.
+
+For example, let's see why respondents reported voting for a candidate.
+
+```{r}
+MI_final_small %>%
+  count(Quality)
+```
+
+So here we see based on the number of `NA` that nearly half of the respondents do not have a valid reply.  We can use the `drop_na` function to remove missing data _that R recognizes_ (more on this next lecture!). Note that the responses also contain an actual value for missing data, but we will deal with that later.
+
+If we want to drop all of the missing observations in `Quality` we can use the following -- note that `drop_na` is essentially applying a filter to remove missing data.
+
+```{r}
+MI_final_small %>%
+    drop_na(Quality) %>%
+    count(Quality)
+```
+
+We can include multiple variables in this list. Note that if we do not supply a list of variables it will default to the entire data set!  Given that some questions are only asked to half of the sample, why does the following code produce a tibble with 0 rows?
+
+```{r}
+MI_final_small %>%
+    drop_na() %>%
+    count(Quality)
+```
+
+This highlights the importance of knowing what your data looks like in terms of missing data and also why it can be important to use `select` to first remove the variables of most interest.  You do not want to remove data because of missingness in variables that you do not care about!  As we will see, some functions have a built-in parameter to deal with missing data (e.g., `mean`) while others do not so always know your data!
+
+
+# Part II: Univariate Data Analysis (NBA Data)
 
 Univariate is pretty much what it sounds like: one variable. When undertaking univariate data analysis, we need first and foremost to figure what type of variable it is that we're working with. Once we do that, we can choose the appropriate use of the variable, either as an outcome or as a possible predictor.
 
@@ -383,911 +1037,3 @@ nba%>%
 ```{r}
 # INSERT CODE HERE
 ```
-
-# Part II: Agenda (Data: 2020 Michigan Exit Polls)
-
-- Conditional data: when a variable varies with respect to some other variable.
-
-- How does the value of the outcome of interest vary _depending_ on the value of another variable of interest?
-
-- Typically: outcome of interest (dependent variable), Y-axis.
-
-- Other variables possibly related to the outcome (independent variables): X-axis
-
-Our tools depend on the **type of variables** we are trying to graph.  
-
-# Returning to the "gender" gap
-Conditional variation involves examining how the values of two or more variables are related to one another.  Earlier we made these comparisons by creating different tibbles and then comparing across tibbles, but we can also make comparisons without creating multiple tibbles.
-So load in the Michigan 2020 Exit Poll Data.
-```{r message=FALSE}
-library(tidyverse)
-library(scales)
-mi_ep <- read_rds("https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/MI2020_ExitPoll_small.rds")
-MI_final_small <- mi_ep %>%
-  filter(preschoice=="Donald Trump, the Republican" | preschoice=="Joe Biden, the Democrat") %>%
-  mutate(BidenVoter=ifelse(preschoice=="Joe Biden, the Democrat",1,0),
-         TrumpVoter=ifelse(BidenVoter==1,0,1),
-         AGE10=ifelse(AGE10==99,NA,AGE10))
-```
-
-We learned that if we `count` using multiple variables that R will count within values. Can we use this to analyze how this varies by groups? Let's see!  
-
-```{r}
-MI_final_small %>%
-  filter(AGE10==1) %>%
-  count(preschoice,SEX) %>%
-  mutate(PctSupport = n/sum(n),
-         PctSupport = round(PctSupport, digits=2))
-```
-
-Here we have broken everything out by both `preschoice` and `SEX` but the `PctSupport` is not quite what we want because it is the fraction of responses (out of 1) that are in each row rather than the proportion of support for each candidate **by** sex.
-
-To correct this and to perform the functions within a value we need to use the `group_by` function.
-
-We can use the `group_by` command to organize our data a bit better.  What `group_by` does is to run all subsequent code separately according to the defined group.
-
-So instead of running a count or summarize separately for both Males and Females as we did above, we can `group_by` the variable `SEX.chr` (or `FEMALE` or `SEX` -- it makes no difference as they are all equivalent) and then preform the subsequent commands.  So here we are going to filter to select those who are 24 and below and then we are going to count the number of Biden and Trump supporters within each value of `SEX.chr`
-
-```{r}
-MI_final_small %>%
-  filter(AGE10==1) %>%
-  group_by(SEX) %>%
-  count(preschoice)
-```
-
-Note that any functions of the data are also now organized by that grouping, so if we were to manually compute the proportions using the mutation approach discussed above we would get:
-
-```{r}
-MI_final_small %>%
-  filter(AGE10==1) %>%
-  group_by(SEX) %>%
-  count(preschoice) %>%
-  mutate(PctSupport = n/sum(n),
-         PctSupport = round(PctSupport, digits=2))
-```
-
-So you can see that `PctSupport` sums to 2.0 because it sums to 1.0 within each value of the grouping variable `SEX`.
-
-If we wanted the fraction of voters who are in each unique category - so that the percentage of all the categories sum to 1.0 -- we would want to `ungroup` before doing the mutation that calculates the percentage. So here we are doing the functions after the `group_by()` separately for each value of the grouping variables (here `SEX`) and then we are going to then undo that and return to the entire dataset. 
-
-```{r}
-MI_final_small %>%
-  filter(AGE10==1) %>%
-  group_by(SEX) %>%
-  count(preschoice) %>%
-  ungroup() %>%
-  mutate(PctSupport = n/sum(n),
-         PctSupport = round(PctSupport, digits=2))
-```
-
-
-If we are just interested in the proportion and we do not care about the number of respondents in each value (although here it seems relevant!) we could also `group_by` and then `summarize` as follows:
-
-```{r}
-MI_final_small %>%
-  filter(AGE10==1) %>%
-  group_by(SEX) %>%
-  summarize(PctBiden = mean(BidenVoter),
-          PctTrump = mean(TrumpVoter)) %>%
-  mutate(PctBiden = round(PctBiden, digits =2),
-         PctTrump = round(PctTrump, digits =2))
-```
-Because we have already filtered to focus only on Biden and Trump voters, we don't actually need both since `PctBiden = 1 - PctTrump` and `PctTrump = 1 - PctBiden`.
-
-Note that we can have multiple groups.  So if we want to group by age and by sex we can do the following...
-
-```{r}
-MI_final_small %>%
-  group_by(SEX, AGE10) %>%
-  summarize(PctBiden = mean(BidenVoter)) %>%
-  mutate(PctBiden = round(PctBiden, digits =2))
-```
-
-
-We can also save it for later analysis and then filter or select the results.  For example:
-
-```{r}
-SexAge <- MI_final_small %>%
-  group_by(SEX, AGE10) %>%
-  summarize(PctBiden = mean(BidenVoter)) %>%
-  mutate(PctBiden = round(PctBiden, digits =2)) %>%
-  drop_na()
-```
-
-So if we want to look at the Biden support by age among females (i.e., `SEX==2`) we can look at:
-```{r}
-SexAge %>%
-  filter(SEX == 2)
-```
-
-And for Men...
-
-
-# Dicrete Variable By Discrete Variable (Barplot)
-
-If we are working with discrete/categorical/ordinal/data --- i.e., variables that take on a finite (and small) number of unique values then we are interested in how to compare across bar graphs.
-
-Before we used `geom_bar` to plot the number of observations associated with each value of a variable.  But we often want to know how the number of observations may vary according to a second variable.  For example, we care not only about why voters reported that they supported Biden or Trump in 2020 but we are also interested in knowing whether Biden and Trump voters were voting for similar or different reasons.  Did voters differ in terms of why they were voting for a candidate in addition to who they were voting for?  If so, this may suggest something about what each set of voters were looking for in a candidate.
-
-Let's first plot the barplot and then plot the barplot by presidential vote choice for the Michigan Exit Poll we were just analyzing. 
-
-We are interested in the distribution of responses to the variable `Quality` and we only care about voters who voted for either Biden or Trump (`preschoice`) so let's select those variables and `filter` using `preschoice` to select those respondents. We have an additional complication that the question was only asked of half of the respondents and some that were asked refused to answer.  To remove these respondents we want to `drop_na` (note that this will drop every observation with a missing value -- this is acceptable because we have used `select` to focus on the variables we are analyzing, but if we did not use `select` it would have dropped an observation with missing data in **any** variable.  We could get around this using `drop_na(Quality)` if we wanted). A final complication is that some respondents did not answer the question they were asked so we have to use `filter` to remove respondents with missing observations.  
-
-Now we include labels -- note how we are suppressing the x-label because the value labels are self-explanatory in this instance and add the `geom_bar` as before.
-
-```{r}
-mi_ep %>% 
-    select(Quality,preschoice) %>%
-    filter(preschoice == "Joe Biden, the Democrat" | preschoice == "Donald Trump, the Republican") %>%
-    drop_na() %>%
-    filter(Quality != "[DON'T READ] Don’t know/refused") %>%
-    ggplot(aes(x= Quality)) +     
-    labs(y = "Number of Voters",
-         x = "",
-         title = "Michigan 2020 Exit Poll: Reasons for voting for a candidate") +
-    geom_bar(color="black") 
-```
-
-Note that if we add `coord_flip` that we will flip the axes of the graph.  (We could also have done this by changing `aes(y= Quality)`, but then we would also have to change the associated labels.)  
-
-```{r}
-mi_ep %>% 
-    select(Quality,preschoice) %>%
-    filter(preschoice == "Joe Biden, the Democrat" | preschoice == "Donald Trump, the Republican") %>%
-    drop_na() %>%
-    filter(Quality != "[DON'T READ] Don’t know/refused") %>%
-    ggplot(aes(x= Quality)) +     
-    labs(y = "Number of Voters",
-         x = "",
-         title = "Michigan 2020 Exit Poll: Reasons for voting for a candidate") +
-    geom_bar(color="black") + 
-  coord_flip()
-```
-
-So enough review, lets add another dimension to the data.  To show how the self-reported reasons for voting for a presidential candidate varied by vote choice we are going to use the `fill` of the graph to create different color bars depending on the value of the character or factor variable that is used to `fill`.
-
-So we are going to include as a `ggplot` aesthetic a character or factor variable as a `fill` (here `fill=preschoice`) and then we are going to also include `fill` in the `labs` function to make sure that we label the meaning of the values being plotted.  The other change we have made is in `geom_bar` where we used `position=dodge` to make sure that the bars are plotted next to one-another rather than on top of one another.
-
-```{r}
-mi_ep %>% 
-    select(Quality,preschoice) %>%
-    filter(preschoice == "Joe Biden, the Democrat" | preschoice == "Donald Trump, the Republican") %>%
-    drop_na() %>%
-    filter(Quality != "[DON'T READ] Don’t know/refused") %>%
-    ggplot(aes(x= Quality, fill = preschoice)) +     
-    labs(y = "Number of Voters",
-         x = "",
-         title = "Michigan 2020 Exit Poll: Reasons for voting for a candidate",
-         fill = "Self-Reported Vote") +
-    geom_bar(color="black", position="dodge") +
-    coord_flip()
-```
-
-For fun, see what happens when you do not use `postion=dodge`.  Also see what happens if you do not flip the coordinates using `coord_flip`.  
-
-It is important to note that the `fill` variable has to be a character or a factor. If we want to graph self-reported vote by sex, for example, we need to redefine the variable for the purposes of `ggplot` as follows.  Note that because we are not mutating it and we are only defining it to be a factor within the ``ggplot` object, this redefinition will not stick.  Note also the problem caused by uninformative values in `SEX` -- can you change it.
-```{r}
-mi_ep %>% 
-    filter(preschoice == "Joe Biden, the Democrat" | preschoice == "Donald Trump, the Republican") %>%
-    ggplot(aes(x= preschoice, fill = factor(SEX))) +     
-    labs(y = "Number of Respondents",
-         x = "",
-         title = "Vote by Respondent Sex",
-         fill = "Sex") +
-    geom_bar(color="black", position="dodge") +
-    coord_flip()
-```
-
-
-*Quick Exercise* The barplot we just produced does not satisfy our principles of visualization because the fill being used is uninterpretable to those unfamiliar with the dataset.  Redo the code to use a `fill` variable that produces an informative label.  Hint: don't overthink.
-
-```{r}
-# INSERT CODE HERE
-```
-
-
-# Part III: From Gender Gap to Mode of Polling (Data: 2020 Presidential Polling)
-
-Suppose we were concerned with whether some polls might give different answers because of variation in who the poll is able to reach using that method.  People who take polls via landline phones (do you even know what that is?) might differ from those who take surveys online.  Or people contacted using randomly generated phone numbers (RDD) may differ from those contacted from a voter registration list that has had telephone numbers merged onto it.
-
-Polls were done using lots of different methods in 2020.
-
-# Loading the data
-
-```{r}
-require(tidyverse)
-Pres2020.PV <- read_rds(file="https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/Pres2020_PV.Rds")
-Pres2020.PV <- Pres2020.PV %>%
-                mutate(Trump = Trump/100,
-                      Biden = Biden/100,
-                      margin = Biden - Trump)
-```
-
-
-```{r}
-Pres2020.PV %>%
-  count(Mode)
-```
-
-
-This raises the question of -- how do we visualization variation in a variable by another variable?  More specifically, how can we visualize how the `margin` we get using one type of survey compares to the `margin` from another type of poll?  (We cannot use a scatterplot because the data is from different observations (here polls).)
-
-We could do this using earlier methods by `select`ing polls with a specific interview method ("mode") and then plotting the `margin` (or `Trump` or `Biden`), but that will produce a bunch of separate plots that may be hard to directly compare. (In addition to having more things to look at we would want to make sure that the scale of the x-axis and y-axis are similar.)
-
-We can plot another "layer" of data in ``ggplot` using the `fill` paramter.  Previously we used it to make the graphs look nice by choosing a particular color.  But if we set `fill` to be a variable in our `tibble` then `ggplot` will plot the data seperately for each unique value in the named variable.
-So if we want to plot the histogram of `margin` for two types of polls we can use the `fill` argument in `ggplot` to tell R to produce different fills depending on the value of that variable.
-```{r}
-Pres2020.PV %>% 
-  filter(Mode == "IVR/Online" | Mode == "Live phone - RDD") %>%
-    ggplot(aes(x= margin, fill = Mode)) +     
-  labs(y = "Number of Polls",
-         x = "Biden- Trump Margin",
-         title = "Biden-Trump Margin for Two Types of Polls",
-        fill = "Mode of Interview") +
-    geom_histogram(bins=10, color="black", position="dodge") + 
-    scale_x_continuous(breaks=seq(-.1,.2,by=.05),
-                     labels= scales::percent_format(accuracy = 1))
-```
-
-*Quick Exercise*  Try running the code without the `filter`.  What do you observe?  How useful is this?  Why or why not?
-
-```{r}
-# INSERT CODE
-```
-
-
-While informative, it can be hard to compare the distribution of more than two categories using such methods.  To compare the variation across more types of surveys we need to use a different visualization that summarizes the variation in the variable of interest a bit more.  One common visualization is the `boxplot` which reports the mean, 25th percentile (i.e., the value of the data if we sort the data from lowest to highest and take the value of the observation that is 25\% of the way through), the 75th percentile, the range of values, and notable outliers.
-
-Let's see what the `boxplot` of survey mode looks like after we first drop surveys that were conducted using modes that were hardly used (or missing). 
-
-```{r}
-Pres2020.PV %>% 
-  filter(Mode != "IVR" & Mode != "Online/Text" & Mode != "Phone - unknown" & Mode != "NA") %>%
-  ggplot(aes(x = Mode, y = margin)) + 
-    labs(x = "Mode of Survey Interview",
-         y = "Biden- Trump Margin",
-         title = "2020 Popular Vote Margin by Type of Poll") +
-    geom_boxplot(fill = "slateblue") +
-    scale_y_continuous(breaks=seq(-.1,.2,by=.05),
-                     labels= scales::percent_format(accuracy = 1))
-```
-
-We can also flip the graph if we think it makes more sense to display it in a different orientation using `coord_flip`.  (We could, of course, also redefine the x and y variables in the ``ggplot` object, but it is useful to have a command to do this to help you determine which orientiation is most useful).
-```{r}
-Pres2020.PV %>% 
-  filter(Mode != "IVR" & Mode != "Online/Text" & Mode != "Phone - unknown" & Mode != "NA") %>%
-  ggplot(aes(x = Mode, y = margin)) + 
-    labs(x = "Mode of Survey Interview",
-         y = "Biden- Trump Margin",
-         title = "2020 Popular Vote Margin by Type of Poll") +
-    geom_boxplot(fill = "slateblue") +
-    scale_y_continuous(breaks=seq(-.1,.2,by=.05),
-                     labels= scales::percent_format(accuracy = 1)) +
-    coord_flip()
-```
-
-A downside of the boxplot is that it can be hard to tell how the data varies within each box. Is it equally spread out?  How much data are contained in the lines (which are simply 1.5 times the height of the box)?  To get a better handle on this we can use a "violin" plot that dispenses with a standard box and instead tries to plot the distribution of data within each category.  
-
-```{r}
-Pres2020.PV %>% 
-  filter(Mode != "IVR" & Mode != "Online/Text" & Mode != "Phone - unknown" & Mode != "NA") %>%
-  ggplot(aes(x=Mode, y=margin)) + 
-    xlab("Mode") + 
-    ylab("Biden- Trump Margin") +
-    geom_violin(fill="slateblue")
-```
-
-It is also hard to know **how much** data is being plotted.  If some modes have 1000 polls and others have only 5 that seems relevant.
-
-*Quick Exercise*  We have looked at the difference in `margin`.  How about differences in the percent who report supporting `Biden` and `Trump`?  What do you observe.  Does this suggest that the different ways of contacting respondents may matter in terms of who responds?  Is there something else that may explain the differences (i.e., what are we assuming when making this comparison)?  
-
-```{r}
-# INSERT CODE HERE
-```
-
-*Quick Exercise*  Some claims have been made that polls that used multiple ways of contacting respondents were better than polls that used just one.  Can you evaluate whether there were differences in so-called "mixed-mode" surveys compared to single-mode surveys?  (This requires you to define a new variable based on `Mode` indicating whether survey is mixed-mode or not.)
-
-```{r}
-# INSERT CODE HERE
-```
-
-# Continuous Variable By Continuous Variable (Scatterplot)
-
-When we have two continuous variables we use a scatterplot to visualize the relationship.  A scatterplot is simply a graph of every point in (x,y) where x is the value associated with the x-variable and y is the value associated with the y-variable.  For example, we may want to see how support for Trump and Biden within a poll varies. So each observation is a poll of the national popular vote and we are going to plot the percentage of respondents in each poll supporting Biden against the percentage who support Trump.  
-
-To include two variables we are going to change our aesthetic to define both an x variable and a y variable -- here `aes(x = Biden, y = Trump)` and we are going to label and scale the axes appropriately.
-
-```{r}
-Pres2020.PV %>%
-  ggplot(aes(x = Biden, y = Trump)) + 
-  labs(title="Biden and Trump Support in 2020 National Popular Vote",
-       y = "Trump Support",
-       x = "Biden Support") + 
-  geom_point(color="purple") + 
-    scale_y_continuous(breaks=seq(0,1,by=.05),
-                     labels= scales::percent_format(accuracy = 1)) +
-  scale_x_continuous(breaks=seq(0,1,by=.05),
-                     labels= scales::percent_format(accuracy = 1))
-```
-
-The results are intriguing!  First the data seems like it falls along a grid.  This is because of how poll results are reported in terms of percentage points and it highlights that even continuous variables may be reported in discrete values.  This is consequential because it is hard to know how many polls are associated with each point on the graph.  How many polls are at the point (Biden 50\%, Trump 45\%)?  This matters for trying to determine what the relationship might be.  Second, it is clear that there are some questions that need to be asked -- why doesn't `Biden + Trump = 100\%`?
-
-To try to display how many observations are located at each point we have two tools at our disposal.  First, we can alter the "alpha transparency" by setting `alpha-.5` in the `geom_point` call.  By setting a low level of transparency, this means that the point will become less transparent as more points occur at the same coordinate.  Thus, a faint point indicates that only a single poll (observation) is located at a coordinate whereas a solid point indicates that there are many polls.  When we apply this to the scatterplot you can immediately see that most of the polls are located in the neighborhood of Biden 50\%, Trump 42\%.
-
-```{r}
-Pres2020.PV %>%
-  ggplot(aes(x = Biden, y = Trump)) + 
-  labs(title="Biden and Trump Support in 2020 National Popular Vote",
-       y = "Trump Support",
-       x = "Biden Support") + 
-  geom_point(color="purple",alpha = .3) + 
-    scale_y_continuous(breaks=seq(0,1,by=.05),
-                     labels= scales::percent_format(accuracy = 1)) +
-  scale_x_continuous(breaks=seq(0,1,by=.05),
-                     labels= scales::percent_format(accuracy = 1))
-```
-
-However, the grid-like nature of the plot is still somewhat hard to interpret as it can be hard to discern variations in color gradient.  Another tool is to add a tiny bit of randomness to the x and y values associated with each plot.  Instead of values being constrained to vary by a full percentage point, for example, the jitter allows it to vary by less.  To do so we replace `geom_point` with `geom_jitter`.
-
-```{r}
-Pres2020.PV %>%
-  ggplot(aes(x = Biden, y = Trump)) + 
-  labs(title="Biden and Trump Support in 2020 National Popular Vote",
-       y = "Trump Support",
-       x = "Biden Support") + 
-  geom_jitter(color="purple",alpha = .5) + 
-    scale_y_continuous(breaks=seq(0,1,by=.05),
-                     labels= scales::percent_format(accuracy = 1)) +
-  scale_x_continuous(breaks=seq(0,1,by=.05),
-                     labels= scales::percent_format(accuracy = 1)) 
-```
-
-Note how much the visualization changes.  Whereas before the eye was focused on -- and arguably distracted by -- the grid-like orientation imposed by the measurement, once we jitter the points we are immediately made aware of the relationship between the two variables.  While we are indeed slightly changing our data by adding random noise, the payoff is that the visualization arguably better highlights the nature of the relationship. Insofar the goal of visualization is communication, this trade-off seems worthwhile in this instance.  But here again is where data science is sometimes art as much as science.  The decision of which visualization to use depends on what you think most effectively communicates the nature of the relationship to the reader.
-
-We can also look at the accuracy of a poll as a function of the sample size.  This is also a relationship between two continuous variables -- hence a scatterplot!  Are polls with more respondents more accurate?  There is one poll with nearly 80,000 respondents that we will filter out to me able to show a reasonable scale.  Note that we are going to use `labels = scales::comma` when plotting the x-axis to report numbers with commas for readability.
-
-```{r}
-Pres2020.PV %>%
-  filter(SampleSize < 50000) %>%
-  mutate(TrumpError = Trump - RepCertVote/100,
-         BidenError = Biden - DemCertVote/100) %>%
-  ggplot(aes(x = SampleSize, y = TrumpError)) + 
-  labs(title="Trump Polling Error in 2020 National Popular Vote as a function of Sample Size",
-       y = "Error: Trump Poll - Trump Certified Vote",
-       x = "Sample Size in Poll") + 
-  geom_jitter(color="purple",alpha = .5) +
-  scale_y_continuous(breaks=seq(-.2,1,by=.05),
-                     labels= scales::percent_format(accuracy = 1)) +
-  scale_x_continuous(breaks=seq(0,30000,by=5000),
-                     labels= scales::comma) 
-```
-
-
-In sum, we have tested Trump's theory that the MSM was biased against him. We found that polls that underpredicted Trump **also** underpredicted Biden. This is not what we would expect if the polls favored one candidate over another.
-
-```{r}
-Pres2020.PV %>%
-  ggplot(aes(x = Biden, y = Trump)) + 
-  labs(title="Biden and Trump Support in 2020 National Popular Vote",
-       y = "Trump Support",
-       x = "Biden Support") + 
-  geom_jitter(color="purple",alpha = .5) + 
-    scale_y_continuous(breaks=seq(0,1,by=.05),
-                     labels= scales::percent_format(accuracy = 1)) +
-  scale_x_continuous(breaks=seq(0,1,by=.05),
-                     labels= scales::percent_format(accuracy = 1)) 
-```
-
-What is an alternative explanation for these patterns? Why would polls underpredict *both* Trump and Biden? 
-
-Perhaps they were fielded earlier in the year, when more people were interested in third party candidates, or hadn't made up their mind. We'll turn to testing this theory next time!
-
-# Part IV: Poll Underpredictions (Data: 2020 Presidential Polling)
-
-Recall that we have tested Trump's theory that the MSM was biased against him. We found that polls that underpredicted Trump **also** underpredicted Biden. This is not what we would expect if the polls favored one candidate over another.
-
-# Loading the data
-
-```{r}
-require(tidyverse)
-require(scales)
-Pres2020.PV <- read_rds(file="https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/Pres2020_PV.Rds")
-Pres2020.PV <- Pres2020.PV %>%
-                mutate(Trump = Trump/100,
-                      Biden = Biden/100,
-                      margin = Biden - Trump)
-```
-
-
-
-```{r}
-Pres2020.PV %>%
-  ggplot(aes(x = Biden, y = Trump)) + 
-  labs(title="Biden and Trump Support in 2020 National Popular Vote",
-       y = "Trump Support",
-       x = "Biden Support") + 
-  geom_jitter(color="purple",alpha = .5) + 
-    scale_y_continuous(breaks=seq(0,1,by=.05),
-                     labels= scales::percent_format(accuracy = 1)) +
-  scale_x_continuous(breaks=seq(0,1,by=.05),
-                     labels= scales::percent_format(accuracy = 1)) 
-```
-
-What is an alternative explanation for these patterns? Why would polls underpredict *both* Trump and Biden? 
-
-Perhaps they were fielded earlier in the year, when more people were interested in third party candidates, or hadn't made up their mind. 
-
-
-# Visualizing More Dimensions -- And Introducing Dates!
-
-How did the support for Biden and Trump vary across the course of the 2020 Election?
-
-- What should we measure?
-
-- How do we summarize, visualize, and communicate?
-
-Give you some tools to do some _amazing_ things!
-
-# Telling Time
-
-- Time is often a critical _descriptive_ variable.  (Not causal!)
-
-- Also useful for _prediction_ ?
-
-- We want to evaluate the properties of presidential polling as Election Day 2020 approached.
-
-- Necessary for prediction -- we want most recent data to account for last-minute shift.
-
-- Necessary for identifying when changes occurred (and why?)
-
-# Dates in R
-
-- Dates are a special format in R (character with quasi-numeric properties)
-
-```{r}
-election.day <- as.Date("11/3/2020", "%m/%d/%Y")   
-election.day16 <- as.Date("11/8/2016", "%m/%d/%Y")   
-```
-
-- Difference in "dates" versus difference in integers?
-
-```{r}
-election.day - election.day16
-as.numeric(election.day - election.day16)
-```
-
-#   Initial Questions
-
-- How many polls were publicly done and reported in the media about the national popular vote?
-
-- When did the polling occur?  Did most of the polls occur close to Election Day?
-
-So, for every day, how many polls were reported by the media?
-
-Note that we could also look to see if the poll results depend on how the poll is being done (i.e., the `Mode` used to contact respondents) or even depending on who funded (`Funded`) or conducted (`Conducted`) the polls.  We could also see if larger polls (i.e., polls with more respondents `SampleSize`) or polls that took longer to conduct (`DaysInField`) were more or less accurate.
-
-# Let's Wrangle...
-
-```{r}
-Pres2020.PV <- Pres2020.PV %>%
-                mutate(EndDate = as.Date(EndDate, "%m/%d/%Y"), 
-                      StartDate = as.Date(StartDate, "%m/%d/%Y"),
-                      DaysToED = as.numeric(election.day - EndDate),
-                      Trump = Trump/100,
-                      Biden = Biden/100,
-                      margin = Biden - Trump)
-```
-
-# What are we plotting?
-
-- Media Question: how does the number of polls change over time?
-
-- Data Scientist Question: What do we need to plot? `margin` or `DaysToED`?
-
-- What will each produce?
-
-- Are they _discrete/categorical_ (barplot) or _continuous_ (histogram)? 
-
-```{r}
-ggplot(data = Pres2020.PV, aes(x = DaysToED)) +
-  labs(title = "Number of 2020 National Polls Over Time",
-       x = "Number of Days until Election Day",
-       y = "Number of Polls") + 
-  geom_bar(fill="purple", color= "black") +
-  scale_x_continuous(breaks=seq(0,230,by=10)) +
-  scale_y_continuous(labels = label_number(accuracy = 1))
-```
-
-So this is a bit weird because it arranges the axis from smallest to largest even though that is in reverse chronological order.  Since November comes after January it may make sense to flip the scale so that the graph plots polls that are closer to Election Day as the reader moves along the scale to the left.
-
-```{r}
-ggplot(data = Pres2020.PV, aes(x = DaysToED)) +
-  labs(title = "Number of 2020 National Polls Over Time") + 
-  labs(x = "Number of Days until Election Day") + 
-  labs(y = "Number of Polls") + 
-  geom_bar(fill="purple", color= "black") +
-  scale_x_reverse(breaks=seq(0,230,by=10)) +
-  scale_y_continuous(labels = label_number(accuracy = 1))
-```
-
-But is the bargraph the right plot to use? Should we plot every single day given that we know some days might contain fewer polls (e.g., weekends)?  What if we to use a histogram instead to plot the number of polls that occur in a set interval of time (to be defined by the number of bins chosen)?
-
-```{r}
-ggplot(data = Pres2020.PV, aes(x = DaysToED)) +
-  labs(title = "Number of 2020 National Polls Over Time") + 
-  labs(x = "Number of Days until Election Day") + 
-  labs(y = "Number of Polls") + 
-  geom_histogram(color="PURPLE",bins = 30) +
-  scale_x_reverse()
-```
-
-Which do you prefer?  Why or why not?  Data Science is sometimes as much art as it is science - especially when it comes to data visualization!
-
-
-#   Bivariate/Multivariate relationships
-
-- Most of what we do is a relationship between (at least) 2 variables.
-
-- Here we are interested in how the margin varies as Election Day approaches: `margin` by `DaysToED`.
-
-- Want to plot X (variable that "explains") vs. Y (variable being "explained"):
-
-A very frequently used plot is the scatterplot that shows the relationship between two variables.  To do so we are going to define an aesthetic when calling `ggplot` that defines both an x-variable (here `EndDate`) and a y-variable (here `margin`).
-
-First, a brief aside, we can change the size of the figure being printed in our Rmarkdown by including some commands when defining the R chunk. Much like we could suppress messages (e.g., `message=FALSE` or tell R not to actually evaluate the chunk `eval=FALSE` or to run the code but not print the code `echo=FALSE`) we can add some arguments to this line.  For example, the code below defines the figure to be 2 inches tall, 2 inches wide and to be aligned in the center (as opposed to left-justified).  As you can see, depending on the choices you make you can destroy the readability of the graphics as `ggplot` will attempt to rescale the figure accordingly.  The dimensions are in inches and they refer to the plotting area -- an area that includes labels and margins so it is _not_ the area where the data itself appears.
-
-```{r, fig.height = 2, fig.width = 2, fig.align = "center"}
-margin_over_time_plot <- Pres2020.PV %>%
-  ggplot(aes(x = EndDate, y = margin)) + 
-  labs(title="Margin in 2020 National Popular Vote Polls Over Time",
-       y = "Margin: Biden - Trump",
-       x = "Poll Ending Date") + 
-  geom_point(color="purple")
-margin_over_time_plot
-```
-
-To ``fix" this we can call the ggplot object without defining the graphical parameters.
-```{r}
-margin_over_time_plot
-```
-
-Ok, back to fixing the graph. What do you think?
-
-1. Axes looks weird - lots of interpolation required by the consumer.
-
-2. Data looks "chunky"?  How many data points are at each point?
-
-To fix the axis scale we can use `scale_y_continuous` to chose better labels for the y-axis and we can use `scale_x_date` to determine how to plot the dates we are plotting.  Here we are going to plot at two-week intervals (`date_breaks = "2 week"`) using labels that include the month and date (`date_labels - "%b %d"`).
-
-Note here that we are going to adjust the plot by adding new features to the ggplot object `margin_over_time_plot`.  We could also have created the graph without creating the object.
-
-```{r}
-margin_over_time_plot <- margin_over_time_plot  + 
-    scale_y_continuous(breaks=seq(-.1,.2,by=.05),
-                     labels= scales::percent_format(accuracy = 1)) +
-    scale_x_date(date_breaks = "2 week", date_labels = "%b %d") 
-margin_over_time_plot
-```
-
-Now one thing that is hard to know is how many polls are at a particular point. If some points contain a single poll and others contain 1000 polls that matters a lot for how we interpret the relationship.  
-
-To help convey this information we can again use `geom_jitter` and alpha transparency instead of `geom_point`.  Here we are adding +/- .005 to the y-value to change the value of the poll, but not the date. (Note that we could also use `position=jitter` when calling `geom_point`). This adds just enough error in the x (width) and y (height) values associated with each point so as to help distinguish how many observations might share a value.  We are also going to use the alpha transparency to denote when lots of points occur on a similar (jittered) point.  Note that when doing this code we are going to redo the plot from start to finish.
-
-```{r}
-Pres2020.PV %>%
-  ggplot(aes(x = EndDate, y = margin)) + 
-  labs(title="Margin in 2020 National Popular Vote Polls Over Time",
-       y = "Margin: Biden - Trump",
-       x = "Poll Ending Date") + 
-    geom_jitter(color = "PURPLE",height=.005, alpha = .4) +
-    scale_y_continuous(breaks=seq(-.1,.2,by=.05),
-                     labels= scales::percent_format(accuracy = 1)) +
-    scale_x_date(date_breaks = "2 week", date_labels = "%b %d") 
-```
-
-In addition to plotting plotting points using `geom_point` we can also add lines to the plot using `geom_line`.  The line will connect the values in sequence so it does not always make sense to include. For example, if we add the `geom_line` to the plot it is hard to make the case that the results are meaningful.
-
-```{r}
-Pres2020.PV %>%
-  ggplot(aes(x = EndDate, y = margin)) + 
-  labs(title="Margin in 2020 National Popular Vote Polls Over Time",
-       y = "Margin: Biden - Trump",
-       x = "Poll Ending Date") + 
-    geom_jitter(color="purple", alpha = .5) + 
-    scale_y_continuous(breaks=seq(-.1,.2,by=.05),
-                     labels= scales::percent_format(accuracy = 1)) +
-    scale_x_date(date_breaks = "2 week", date_labels = "%b %d") +
-  geom_line()
-```
-
-While `geom_line` may help accentuate variation over time, it is really not designed to summarize a relationship in the data as it is simply connecting sequential points (arranged according to the x-axis). In contrast, if we were to add `geom_smooth` then the plot would add the average value of nearby points to help summarize the trend.  (Note that we have opted to include the associated uncertainty in the moving average off using the `se=T` parameter in `geom_smooth`.)  
-
-```{r message=FALSE}
-# Using message=FALSE to suppress note about geom_smooth
-Pres2020.PV %>%
-  ggplot(aes(x = EndDate, y = margin)) + 
-  labs(title="Margin in 2020 National Popular Vote Polls Over Time",
-       y = "Margin: Biden - Trump",
-       x = "Poll Ending Date") + 
-    geom_jitter(color="purple", alpha = .5) + 
-    scale_y_continuous(breaks=seq(-.1,.2,by=.05),
-                     labels= scales::percent_format(accuracy = 1)) +
-    scale_x_date(date_breaks = "2 week", date_labels = "%b %d") +
-    geom_smooth(color = "BLACK", se=T) 
-```
-
-# Plotting Multiple Variables Over Time (Time-Series)
-
-- Can we plot support for Biden and support for Trump separately over time (on the same plot)?
-
-Let's define a `ggplot` object to add to later.  Note that this code chuck will not print anything because we need to call the object to see what it produced.
-
-```{r}
-BidenTrumpplot <- Pres2020.PV %>%
-  ggplot()  +
-  geom_point(aes(x = EndDate, y = Trump), 
-             color = "red", alpha=.4)  +
-  geom_point(aes(x = EndDate, y = Biden), 
-             color = "blue", alpha=.4) +
-  labs(title="% Biden and Trump in 2020 National Popular Vote Polls Over Time",
-       y = "Pct. Support",
-       x = "Poll Ending Date") +
-  scale_x_date(date_breaks = "2 week", date_labels = "%b %d") + 
-  scale_y_continuous(breaks=seq(.3,.7,by=.05),
-                     labels= scales::percent_format(accuracy = 1)) 
-```
-
-- Note the use of `aes` in `geom_point()`!
-
-Now call the plot
-```{r}
-BidenTrumpplot
-```
-
-Now we are going to add smoothed lines to the ggplot object.  The nice thing about having saved the ggplot object above is that to add the smoothed lines we can simply add it to the existing plot.  `geom_smooth` summarizes the average using a subset of the data (the default is 75\%) by computing the average value for the closest 75\% of the data.  Put differently, after sorting the polls by their date it then summarizes the predicted value for a poll taken at that date using the closest 75\% of polls according to the date.  (It is not taking a mean of those values, but it is doing something similar.) After doing so for the first date, it then does the same for the second date, but now the "closest" data includes polls that happened both before an after.  The smoother "moves along" the x-axis and generates a predicted value for each date.  Because it is using so much of the data, the values of the line will change very slowly because the only change between two adjacent dates is by dropping and adding new information.  
-
-When calling the `geom_smooth` we used `se=T` to tell `ggplot` to produce an estimate of how much the prediction may vary.  (This is the 95\% confidence interval for the prediction being graphed.)
-
-```{r message=FALSE}
-# Using message=FALSE to suppress note about geom_smooth
-BidenTrumpplot +  
-  geom_smooth(aes(x = EndDate, y = Trump), 
-              color = "red",se=T) + 
-  geom_smooth(aes(x = EndDate, y = Biden), 
-              color = "blue",se=T)
-```
-
-If we change it to using only the closest 10\% of the data by changing `span=.1` we get a slightly different relationship.   The smoothed lines are less smooth because the impact of adding and removing points is much greater when we are using less data to compute the smoothed value -- a single observation can change the overall results much more than when we used so much more data.  In addition, the error-bars around the smoother are larger because we are using less data to calculate each point.  
-
-```{r message=FALSE}
-# Using message=FALSE to suppress note about geom_smooth
-BidenTrumpplot +  
-  geom_smooth(aes(x = EndDate, y = Trump), 
-              color = "red",se=T,span=.1) + 
-  geom_smooth(aes(x = EndDate, y = Biden), 
-              color = "blue",se=T,span=.1)
-```
-
-Try some other values to see how things change.  Note that you are not changing the data, you are only changing how you are visualizing the relationship over time by deciding how much data to use.  In part, the decision of how much data to use is a question of how much you you want to allow public opinion to vary over the course of the campaign -- how much of the variation is "real" versus how much is "noise"?
-
-*Quick Exercise*  Choose another span and see how it changes how you interpret how much variation there is in the data over time.
-
-```{r}
-# INSERT CODE
-```
-
-
-**_ADVANCED!_** We can also use `fill` to introduce another dimension into the visualization.  Consider for example, plotting support for Trump over time for mixed-mode polls versus telephone polls versus online-only polls. How would you go about doing this?  You want to be careful not to make a mess however. Just because you can doesn't mean you should!
-
-
-# State Polls and the Electoral College
-New functions and libraries:
-
-- `plotly` library
-- Working with dates
-- Simple looping
-
-First load the data of all state-level polls for the 2020 presidential election.
-
-```{r}
-Pres2020.StatePolls <- read_rds(file="https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/Pres2020_StatePolls.Rds")
-glimpse(Pres2020.StatePolls)
-```
-
-
-Variables of potential interest include:
-
-- _Biden_ : Percentage of respondents supporting Biden, the Democrat, in poll (0-100)
-- _Trump_ : Percentage of respondents supporting Trump, the Republican, in poll (0-100)
-- _BidenCertVote_ : Percentage of vote Biden, the Democrat, actually received in the election (0-100)
-- _TrumpCertVote_ : Percentage of vote Trump, the Democrat, actually received in the election (0-100)
-- _Winner_ : whether Biden won ("Dem") or Trump won ("Rep")
-- _poll.predicted_ : Indicator for whether the poll correctly predicted who won (1) or not (0)
-- _State_ & _StateName_ : the state where the poll was conducted
-- _EV_ : the number of Electoral College Votes the state is worth for the winning candidate
-
-# Overall Task:  
-
-- How do we use this data to calculate the probability that Biden will win the presidency of the United States by winning the Electoral College?
-
-### Task 1: How should we translate a poll result into a predicted probability?
-
-Suppose that I give you 10 polls from a state.  
-
-Load in the data and create the some mutations to create new variables.
-
-```{r}
-Pres2020.StatePolls <- Pres2020.StatePolls %>%
-   mutate(BidenNorm = Biden/(Biden+Trump),
-          TrumpNorm = 1-BidenNorm,
-          Biden = Biden/100,
-          Trump=Trump/100)
-```
-
-How can you use them to create a probability?  Discuss!  (I can think of 3 ways.)
-
-- Measure 1: Fraction of polls with Biden in the lead
-- Measure 2: Biden Pct = Probability Biden wins
-- Measure 3: Normalized Biden Pct = Probability Biden wins (i.e., all voters either vote for Biden or Trump). Sometimes called "two-party" vote.
-
-How does this vary across states?  The joys of `group_by()`.  Note that `group_by()` defines what happens for all subsequent code in that code chunk. So here we are going to calculate the mean separately for each state.
-
-```{r}
-stateprobs <- Pres2020.StatePolls %>%
-    group_by(StateName) %>%
-      summarize(BidenProbWin1 = mean(Biden > Trump),
-                BidenProbWin2 = mean(Biden),  
-                BidenProbWin3 = mean(BidenNorm))
-
-stateprobs
-```
-
-Clearly they differ, so let's visualize to try to understand what is going on.  Install the library `plotly`
-
-```{r}
-library(plotly)
-gg <- stateprobs %>%
-  ggplot(aes(x=BidenProbWin2, y=BidenProbWin3,text=paste(StateName))) +
-  geom_point() +
-  geom_abline(intercept=0,slope=1) +
-  labs(x= "Probability as % Support",
-       y = "Probability as Two-Party % Support",
-       title = "Comparing Probability of Winning Measures")
-
-ggplotly(gg,tooltip = "text")
-```
-
-So removing the undecided and making the probabilities for Biden and Trump sum to 100% is consequential.
-
-What about if we compare these measures to the fration of polls with a given winner?  After all, it seems implausible that the Biden would ever lose California or Trump would ever lose Tennessee.
-
-```{r}
-library(plotly)
-gg <- stateprobs %>%
-  ggplot(aes(x=BidenProbWin2, y=BidenProbWin1,text=paste(StateName))) +
-  geom_point() +
-  geom_abline(intercept=0,slope=1) +
-  labs(x= "Probability as % Support",
-       y = "Probability as % Polls Winning",
-       title = "Comparing Probability of Winning Measures")
-
-ggplotly(gg,tooltip = "text")
-```
-
-So what do you think?  Exactly the same data, but just different impications depending on how you choose to measure the probability of winning a state. Data sciene is as much about argument and reasoning as it is about coding.  How we measure a concept is often critical to the conclusions that we get.
-
-### Task 2: Start "simple" -- calculate the probability that Biden wins PA
-
-But we want to combine these probabilities with the Electoral College votes in each state.  Not every state has the same amount of Electoral College votes -- it is typically given by the number of Senators (2) plus the number of representatives (at least 1) so we need to account for this if we want to make a projection about who is going to win the Electoral College.
-
-- Create a tibble with just polls from PA.
-
-```{r}
-PA.dat <- Pres2020.StatePolls %>% 
-  filter(State == "PA")
-```
-
-- Now compute these three probabilities.  What functions do we need?
-
-```{r}
-PA.dat %>%
-      summarize(BidenProbWin1 = mean(Biden > Trump),
-                BidenProbWin2 = mean(Biden),  
-                BidenProbWin3 = mean(BidenNorm))
-```
-
-- What do you think about this?
-
-### Task 3: Given that probability, how do we change the code to compute the expected number of Electoral College Votes `EV` for Biden?
-
-- Keep the code from above and copy and paste so you can understand how each step changes what we are doing.  Note that we have the number of electoral college votes associated with each state `EV` that we want to use to compute the expected number of electoral college votes.  But recall that when we `summarize` we change the tibble to be the output of the function.  So how do we keep the number of Electoral College votes for a future mutation?
-
-```{r}
-PA.dat %>%
-      summarize(BidenProbWin1 = mean(Biden > Trump),
-                BidenProbWin2 = mean(Biden),
-                BidenProbWin3 = mean(BidenNorm),
-                EV = mean(EV)) %>%
-      mutate(BidenEV1 = BidenProbWin1*EV,
-             BidenEV2 = BidenProbWin2*EV,
-             BidenEV3 = BidenProbWin3*EV)
-
-```
-
-Note that we are calculation the Expected Value of the Electoral College votes using: _Probability that Biden wins state i_ X _Electoral College Votes in State i_.  This will allocate fractions of Electoral College votes even though the actual election is winner-take all. This is OK because the fractions reflect the probability that an alternative outcome occurs.
-
-*Quick Exercise* How can we get compute the expected number of Electoral College votes for Trump in each measure?  NOTE: There are at least 2 ways to do this because this is a 2 candidate race
-
-```{r}
-# INSERT CODE HERE
-```
-
-- `EV-BidenEV`, or compute `TrumpProbWin`
-
-### Task 4:  Now generalize to every state by applying this code to each set of state polls.
-
-- What do we need to do this calculation for every state in our tibble?
-- First, compute probability of winning a state. (How?)
-- Second, compute expected Electoral College Votes. (How?)
-
-```{r}
-Pres2020.StatePolls %>%  
-  group_by(StateName) %>%
-    summarize(BidenProbWin1 = mean(Biden > Trump),
-              BidenProbWin3 = mean(BidenNorm),
-              EV = mean(EV),
-              State = first(State)) %>%
-    mutate(State = State,
-              BidenECVPredicted1 = EV*BidenProbWin1,
-              TrumpECVPredicted1 = EV- BidenECVPredicted1,
-              BidenECVPredicted3 = EV*BidenProbWin3,
-              TrumpECVPredicted3 = EV- BidenECVPredicted3) %>%
-  summarize(BidenECVPredicted1=sum(BidenECVPredicted1),
-            BidenECVPredicted3=sum(BidenECVPredicted3),
-            TrumpECVPredicted1=sum(TrumpECVPredicted1),
-            TrumpECVPredicted3=sum(TrumpECVPredicted3),)
-```
-
-### Task 5:  Now compute total expected vote by adding to that code
-
-- NOTE: Actually 306 - 232
-- What do we need to do to the tibble we created in Task 4 to get the overall number of Electoral College Votes?
-
-```{r}
-Pres2020.StatePolls %>%  
-  group_by(StateName) %>%
-    summarize(BidenProbWin1 = mean(Biden > Trump),
-              BidenProbWin3 = mean(BidenNorm),
-              EV = mean(EV)) %>%
-    mutate(BidenECVPredicted1 = EV*BidenProbWin1,
-              TrumpECVPredicted1 = EV- BidenECVPredicted1,
-              BidenECVPredicted3 = EV*BidenProbWin3,
-              TrumpECVPredicted3 = EV- BidenECVPredicted3) %>%
-    summarize(BidenECV1 = sum(BidenECVPredicted1),
-              TrumpECV1 = sum(TrumpECVPredicted1),
-              BidenECV3 = sum(BidenECVPredicted3),
-              TrumpECV3 = sum(TrumpECVPredicted3))
-```
-
-*Quick Exercise* Could also do this for just polls conducted in the last 7 days.  How?
-
-```{r}
-# INSERT CODE HERE
-```
-
-THINKING: What about states that do not have any polls?  What should we do about them?  Is there a reason why they might not have a poll?  Is that useful information?  Questions like this become more relevant when we start to restrict the sample.
-
-Here are the number of polls done in each state in the last 3 days.  Note that when we use fewer days our measure based on the percentage of polls won may be more affected?
-
-```{r}
-Pres2020.StatePolls %>%
-  filter(DaysToED < 3) %>%
-  count(State) %>%
-  ggplot(aes(x=n)) +
-  geom_bar() + 
-  scale_x_continuous(breaks=seq(0,15,by=1)) +
-  labs(x="Number of Polls in a State",
-       y="Number of States",
-       title="Number of Polls in States \n in the Last 3 Days of 2020")
-```
-
