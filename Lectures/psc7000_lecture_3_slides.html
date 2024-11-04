@@ -1,0 +1,2619 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Multivariate Analysis</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Prof. Ryan Weldzius" />
+    <script src="libs/header-attrs-2.27/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+    <script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+    <script src="libs/plotly-binding-4.10.4/plotly.js"></script>
+    <script src="libs/typedarray-0.1/typedarray.min.js"></script>
+    <script src="libs/jquery-3.5.1/jquery.min.js"></script>
+    <link href="libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
+    <script src="libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+    <link href="libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet" />
+    <script src="libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="css/lexis.css" type="text/css" />
+    <link rel="stylesheet" href="css/lexis-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Multivariate Analysis
+]
+.subtitle[
+## Conditional Relationships &amp; Visualization
+]
+.author[
+### Prof. Ryan Weldzius
+]
+.institute[
+### Villanova University (PSC7000)
+]
+.date[
+### Slides Updated: 2024-11-04
+]
+
+---
+
+
+&lt;style type="text/css"&gt;
+.small .remark-code { /*Change made here*/
+  font-size: 85% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 50% !important;
+}
+&lt;/style&gt;
+
+
+
+# Agenda
+
+1. Mutivariate
+
+2. What is "conditional"?
+
+3. Understanding Trump support
+
+4. Why did the polls underestimate Trump support?
+
+5. Rules of visualization
+
+6. Overtime Polls + `weighted.mean()`
+
+7. Predicting winner with Electoral College Votes
+
+---
+
+# Definition
+
+--
+
+- .red[Multi] + .blue[variate]
+
+--
+
+  - .red[Many] + .blue[variables]
+  
+--
+
+  - Analysis of multiple variables
+  
+--
+
+- When we analyze **multiple** variables, we are in the world of "conditional analysis"
+
+
+---
+
+# What is .blue[conditional]?
+
+--
+
+- Put simply: "conditional" means "depending on"
+
+--
+
+  - I.e., How does a variable of interest vary *depending on* some other variable?
+  
+--
+
+  - "Variable of interest": the **outcome** (or **dependent** variable `\(Y\)`)
+  
+--
+
+  - "Some other variable": the **predictor** (or **independent** variable `\(X\)`)
+  
+--
+
+  - "Vary depending on": the **relationship**
+  
+--
+
+- Mapping concepts into .red[data] .blue[science]
+
+--
+
+  - The .blue[relationship] between the .red[outcome] and the .red[predictor]
+  
+---
+
+# What is .blue[conditional]?
+
+--
+
+- "Depending on" suggests a **causal** interpretation
+
+--
+
+  - High wages "depend on" education &amp;rarr; education **causes** high wages 
+  
+--
+
+  &lt;center&gt;&lt;img src="figs/income_unemp.png" width="90%"&gt;&lt;/center&gt;
+  
+---
+
+# What is .blue[conditional]?
+
+- "Depending on" suggests a **causal** interpretation
+
+  - High wages "depend on" education &amp;rarr; education **causes** high wages
+
+  - In .blue[theory], this is reasonable: students acquire skills in school which are valued by the labor market.
+  
+--
+
+  - But the positive correlation between education and wages might also be **"spurious"**
+  
+--
+
+  - Higher education *AND* higher wages are outcomes of some **true cause** (i.e., upbringing, SES, etc.)
+
+---
+
+# (Re-)Introducing the Data
+
+--
+
+- Using the Michigan exit poll data
+
+--
+
+- Download pre-wrangled data from [GitHub](https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/MI2020_ExitPoll_small.rds) and save to your `data` folder.
+
+--
+
+- `require(tidyverse)` and `readRDS()` the data to `mi_ep` object
+
+
+``` r
+require(tidyverse)
+
+mi_ep &lt;- read_rds('https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/MI2020_ExitPoll_small.rds')
+```
+
+---
+
+# Some Light .red[Data] .blue[Science]
+
+--
+
+- The "gender gap" in Trump support
+
+--
+
+- .blue[Theory]: Trump has expressed sexist views against women. Therefore, women should be less likely to support him.
+
+--
+
+  - **NOTE** the causal assumptions in this theory! 
+  
+--
+
+- .red[Analysis]: compare support for Trump among men and women
+
+--
+
+- But first, some quick data wrangling
+
+
+``` r
+MI_final_small &lt;- mi_ep %&gt;%
+  filter(preschoice=="Donald Trump, the Republican" | preschoice=="Joe Biden, the Democrat") %&gt;%
+  mutate(BidenVoter=ifelse(preschoice=="Joe Biden, the Democrat",1,0),
+         TrumpVoter=ifelse(BidenVoter==1,0,1),
+         AGE10=ifelse(AGE10==99,NA,AGE10))
+```
+
+---
+
+# Conditional Means
+
+
+``` r
+MI_final_small %&gt;%
+  count(preschoice,SEX) %&gt;%
+  mutate(PctSupport = n/sum(n),
+         PctSupport = round(PctSupport, digits=2))
+```
+
+```
+## # A tibble: 4 × 4
+##   preschoice                     SEX     n PctSupport
+##   &lt;chr&gt;                        &lt;dbl&gt; &lt;int&gt;      &lt;dbl&gt;
+## 1 Donald Trump, the Republican     1   247       0.21
+## 2 Donald Trump, the Republican     2   212       0.18
+## 3 Joe Biden, the Democrat          1   304       0.26
+## 4 Joe Biden, the Democrat          2   419       0.35
+```
+
+--
+
+- .red[Results] are **consistent** with the .blue[theory]
+
+--
+
+  - NB: .red[results] do not **prove** the .blue[theory]
+  
+---
+
+# Conditional Means
+
+- However, note that these proportions are out of *all* voters.
+
+--
+
+- This isn't directly addressing the .blue[theory]
+
+--
+
+  - We want to know the proportion **of women** who supported Trump
+  
+--
+
+
+``` r
+MI_final_small %&gt;%
+  count(preschoice,SEX) %&gt;%
+* group_by(SEX) %&gt;%
+  mutate(totGender = sum(n)) %&gt;%
+  mutate(pctSupport = n / totGender)
+```
+
+```
+## # A tibble: 4 × 5
+## # Groups:   SEX [2]
+##   preschoice                  SEX     n totGender pctSupport
+##   &lt;chr&gt;                     &lt;dbl&gt; &lt;int&gt;     &lt;int&gt;      &lt;dbl&gt;
+## 1 Donald Trump, the Republ…     1   247       551      0.448
+## 2 Donald Trump, the Republ…     2   212       631      0.336
+## 3 Joe Biden, the Democrat       1   304       551      0.552
+## 4 Joe Biden, the Democrat       2   419       631      0.664
+```
+  
+---
+
+# Additional .blue[Theorizing]
+
+--
+
+- The strength of the theorized relationship might vary by age
+
+--
+
+  - Younger women might be more offended by Trump's casual sexism
+  
+--
+
+  - Older women might be more inured to Trump's casual sexism
+  
+--
+
+- .blue[Theory]: the "gender gap" will be larger among younger voters
+
+--
+
+  - (But also recognize that younger Americans are generally more progressive...meaning that **both** younger men and women are more offended by Trump's casual sexism!)
+  
+---
+
+# Two-Way Conditional Means
+
+--
+
+- We could just subset with `filter()`
+
+
+``` r
+MI_final_small %&gt;%
+* filter(AGE10==1) %&gt;%
+  group_by(SEX) %&gt;%
+  count(preschoice) %&gt;%
+  mutate(PctSupport = n/sum(n),
+         PctSupport = round(PctSupport, digits=2))
+```
+
+```
+## # A tibble: 4 × 4
+## # Groups:   SEX [2]
+##     SEX preschoice                       n PctSupport
+##   &lt;dbl&gt; &lt;chr&gt;                        &lt;int&gt;      &lt;dbl&gt;
+## 1     1 Donald Trump, the Republican     7       0.44
+## 2     1 Joe Biden, the Democrat          9       0.56
+## 3     2 Donald Trump, the Republican     1       0.06
+## 4     2 Joe Biden, the Democrat         15       0.94
+```
+
+---
+
+# Two-Way Conditional Means
+
+- Or we could add `AGE10` to the `group_by`
+
+
+``` r
+MI_final_small %&gt;%
+  group_by(SEX, AGE10) %&gt;%
+  summarize(PctTrump = mean(TrumpVoter),.groups = 'drop') %&gt;%
+  mutate(PctTrump = round(PctTrump, digits =2))
+```
+
+```
+## # A tibble: 22 × 3
+##      SEX AGE10 PctTrump
+##    &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;
+##  1     1     1     0.44
+##  2     1     2     0.42
+##  3     1     3     0.42
+##  4     1     4     0.24
+##  5     1     5     0.42
+##  6     1     6     0.58
+##  7     1     7     0.54
+##  8     1     8     0.44
+##  9     1     9     0.39
+## 10     1    10     0.43
+## # ℹ 12 more rows
+```
+
+---
+
+# Two-Way Conditional Means
+
+- A little hard to make comparisons; so let's use `spread()`
+
+--
+
+
+``` r
+MI_final_small %&gt;%
+  group_by(SEX, AGE10) %&gt;%
+  summarize(PctTrump = mean(TrumpVoter),.groups = 'drop') %&gt;%
+  spread(SEX,PctTrump) %&gt;% rename(Male = `1`,Female = `2`)
+```
+
+```
+## # A tibble: 11 × 3
+##    AGE10  Male Female
+##    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+##  1     1 0.438 0.0625
+##  2     2 0.417 0.0714
+##  3     3 0.423 0.308 
+##  4     4 0.241 0.294 
+##  5     5 0.419 0.484 
+##  6     6 0.583 0.4   
+##  7     7 0.537 0.367 
+##  8     8 0.443 0.263 
+##  9     9 0.395 0.311 
+## 10    10 0.425 0.387 
+## 11    NA 0.667 0.571
+```
+
+
+---
+
+# Introducing `spread()` &amp; `gather()`
+
+- Data in `R` is either "long" or "wide"
+
+--
+
+- **Long**: One column for a categorical label and multiple rows
+  
+  - I.e., For each age group, we have one **row** for men and one **row** for women
+  
+--
+
+- **Wide**: Multiple columns for each categorical label and a single row
+
+  - I.e., For each age group, we have one **column** for men and one **column** for women
+  
+--
+
+- In `R`, we can switch between **wide** and **long** with two functions:
+
+--
+
+  1. `spread()` (or `pivot_wider()`): converts from long to wide
+  
+  2. `gather()` (or `pivot_longer()`): converts from wide to long
+  
+
+---
+
+# `spread()` and `gather()`
+
+- `spread([key],[value])`
+
+--
+
+  - `key`: variable containing categories to make into columns labels
+  
+  - `value`: variable containing values put into these new columns
+
+&lt;center&gt;&lt;img src="https://raw.githubusercontent.com/gadenbuie/tidy-animated-verbs/master/images/tidyr-spread-gather.gif" width=50%&gt;&lt;/center&gt;
+
+---
+
+# `spread()` and `gather()`
+
+- `gather([key],[value],[columns])`
+
+  - `key`: name of **new column** that contains categories
+  
+  - `value`: values you want to put into this new column
+
+&lt;center&gt;&lt;img src="https://raw.githubusercontent.com/gadenbuie/tidy-animated-verbs/master/images/tidyr-spread-gather.gif" width=50%&gt;&lt;/center&gt;
+
+---
+
+# `pivot_wider()`
+
+- `pivot_wider([names_from],[values_from])`
+
+--
+
+  - `names_from`: variable containing categories to make into column labels
+  
+  - `values_from`: variable containing values put into these new columns
+  
+--
+
+&lt;center&gt;&lt;img src="https://www.fromthebottomoftheheap.net/assets/img/posts/tidyr-longer-wider.gif" width=35%&gt;&lt;/center&gt;
+
+---
+
+# OR `pivot_longer()`
+
+- `pivot_longer([names_from],[values_from])`
+
+  - `names_from`: variable containing categories to make into column labels
+  
+  - `values_from`: variable containing values put into these new columns
+
+&lt;center&gt;&lt;img src="https://www.fromthebottomoftheheap.net/assets/img/posts/tidyr-longer-wider.gif" width=35%&gt;&lt;/center&gt;
+
+---
+
+# `spread()`
+
+
+``` r
+MI_final_small %&gt;%
+  group_by(SEX, AGE10) %&gt;%
+  summarize(PctTrump = mean(TrumpVoter),.groups = 'drop') %&gt;%
+* spread(key = SEX,value = PctTrump,fill = NA) %&gt;%
+  rename(Male = `1`,Female = `2`)
+```
+
+```
+## # A tibble: 11 × 3
+##    AGE10  Male Female
+##    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+##  1     1 0.438 0.0625
+##  2     2 0.417 0.0714
+##  3     3 0.423 0.308 
+##  4     4 0.241 0.294 
+##  5     5 0.419 0.484 
+##  6     6 0.583 0.4   
+##  7     7 0.537 0.367 
+##  8     8 0.443 0.263 
+##  9     9 0.395 0.311 
+## 10    10 0.425 0.387 
+## 11    NA 0.667 0.571
+```
+
+---
+
+# `gather()`
+
+
+``` r
+MI_final_small %&gt;%
+  group_by(SEX, AGE10) %&gt;%
+  summarize(PctTrump = mean(TrumpVoter),.groups = 'drop') %&gt;%
+  spread(key = SEX,value = PctTrump,fill = NA) %&gt;%
+  rename(Male = `1`,Female = `2`) %&gt;%
+* gather(SEX,PctTrump,-AGE10)
+```
+
+```
+## # A tibble: 22 × 3
+##    AGE10 SEX   PctTrump
+##    &lt;dbl&gt; &lt;chr&gt;    &lt;dbl&gt;
+##  1     1 Male     0.438
+##  2     2 Male     0.417
+##  3     3 Male     0.423
+##  4     4 Male     0.241
+##  5     5 Male     0.419
+##  6     6 Male     0.583
+##  7     7 Male     0.537
+##  8     8 Male     0.443
+##  9     9 Male     0.395
+## 10    10 Male     0.425
+## # ℹ 12 more rows
+```
+
+---
+
+# Save Summary for Later Use
+
+
+``` r
+SexAge &lt;- MI_final_small %&gt;%
+  group_by(SEX, AGE10) %&gt;%
+  summarize(PctTrump = mean(TrumpVoter),.groups = 'drop')
+
+SexAge %&gt;% filter(SEX == 2)
+```
+
+```
+## # A tibble: 11 × 3
+##      SEX AGE10 PctTrump
+##    &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;
+##  1     2     1   0.0625
+##  2     2     2   0.0714
+##  3     2     3   0.308 
+##  4     2     4   0.294 
+##  5     2     5   0.484 
+##  6     2     6   0.4   
+##  7     2     7   0.367 
+##  8     2     8   0.263 
+##  9     2     9   0.311 
+## 10     2    10   0.387 
+## 11     2    NA   0.571
+```
+
+
+---
+
+# Conditional Categorical Analysis
+
+--
+
+- Want to know **reason** for voting for candidate by **vote choice**
+
+--
+
+  - `Quality`: 4 category unordered
+  
+--
+
+  - `preschoice`: 2 category unordered
+  
+--
+
+- Some light data wrangling
+
+
+``` r
+toplot &lt;- mi_ep %&gt;% 
+    select(Quality,preschoice,SEX) %&gt;%
+    filter(grepl('Biden|Trump',preschoice)) %&gt;%
+    drop_na() %&gt;%
+    filter(Quality != "[DON'T READ] Don’t know/refused") 
+```
+
+---
+
+# Conditional Categorical Analysis
+
+
+``` r
+(pReasonOverall &lt;- toplot %&gt;%
+  ggplot(aes(x = Quality)) + 
+  labs(y = "Number of Voters", x = "", title = "Reasons for voting for a candidate",
+       subtitle = "Michigan 2020 Exit Poll") +
+  geom_bar(color="black",alpha = .4))
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-14-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Conditional Categorical Analysis
+
+--
+
+- Can swap axes with `coord_flip()`
+
+
+``` r
+pReasonOverall + coord_flip()
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-15-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Conditional Categorical Analysis
+
+--
+
+- `fill` and `position = "dodge"` for **conditional** analysis
+  
+
+``` r
+pReasonChoice &lt;- toplot %&gt;%
+  ggplot(aes(x = Quality,fill = preschoice)) + 
+  labs(y = "Number of Voters",x = "",
+         title = "Reasons for voting for a candidate",
+       subtitle = "Michigan 2020 Exit Poll",
+       fill = 'Self-Reported Vote') +
+    geom_bar(color="black",position = "dodge") + 
+   coord_flip()
+```
+
+---
+
+# Conditional Categorical Analysis
+
+
+``` r
+pReasonChoice
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-17-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Conditional Categorical Analysis
+
+--
+
+- What about if we do this by `SEX`?
+
+--
+
+
+``` r
+toplot %&gt;% 
+    ggplot(aes(x= preschoice, fill = SEX)) +     
+    labs(y = "Number of Respondents",x = "",
+         title = "Vote by Respondent Sex",fill = "Sex") +
+    geom_bar(position="dodge") + coord_flip()
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-18-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Be Attentive to `class()`
+
+--
+
+- How is `SEX` stored in the data?
+
+
+``` r
+class(mi_ep$SEX)
+```
+
+```
+## [1] "numeric"
+```
+
+--
+
+- Need to convert it to a `character` or `factor`
+
+
+``` r
+pVoteSex &lt;- toplot %&gt;% 
+    ggplot(aes(x= preschoice, fill = factor(SEX))) +     
+    labs(y = "Number of Respondents",x = "",
+         title = "Vote by Respondent Sex",fill = "Sex") +
+    geom_bar(position="dodge") + coord_flip()
+```
+
+---
+
+# Be Attentive to `class()`
+
+
+``` r
+pVoteSex
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-21-1.png" style="display: block; margin: auto;" /&gt;
+
+--
+
+- Why is this a bad visualization? **Poorly labeled legend!**
+
+
+---
+
+# Part II: 2020 polling
+
+--
+
+- Let's introduce a different dataset!
+
+--
+
+  - Download and open [`Pres2020_PV.Rds`](https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/Pres2020_PV.Rds)
+  - Wrangle to get the popular vote margin, expressed in decimals
+  
+--
+
+
+``` r
+require(tidyverse)
+poll &lt;- read_rds('https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/Pres2020_PV.Rds')
+
+poll &lt;- poll %&gt;%
+  mutate(Trump = Trump/100,
+         Biden = Biden/100,
+         margin = Biden - Trump)
+```
+
+---
+
+# The Research Question
+
+
+``` r
+pRQ &lt;- poll %&gt;%
+  ggplot() + 
+  geom_bar(aes(x = Biden*100),fill = 'blue',alpha = .5) + 
+  geom_bar(aes(x = Trump*100),fill = 'red',alpha = .5) + 
+  geom_vline(xintercept = 47,linetype = 'dashed',color= 'red') + 
+  geom_vline(xintercept = 51,linetype = 'dashed',color= 'blue')+ 
+  annotate(geom = 'text',x = c(47),y = Inf,angle = 90,hjust = 1,vjust = 0,label = c("Trump's Actual Support"),color = 'darkred') + 
+  annotate(geom = 'text',x = c(51),y = Inf,angle = 90,hjust = 1,vjust = 1,label = c("Biden's Actual Support"),color = 'darkblue') + 
+  labs(title = 'Poll Bias in the 2020 U.S. Presidential Election',
+       subtitle = 'Predicted vs Actual Support for Trump (red) and Biden (blue)',
+       x = 'Popular Vote Share (%)', y = 'Number of Polls') + 
+  scale_x_continuous(breaks = seq(30,60,by = 5),labels = function(x) paste0(x,'%'))
+```
+
+---
+
+# The Research Question
+
+
+``` r
+pRQ 
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-24-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# The Research Question
+
+
+``` r
+poll %&gt;% # Proportion that under-predict
+  summarise(propBidenUP = mean(Biden &lt; .51),
+            propTrumpUP = mean(Trump &lt; .47))
+```
+
+```
+## # A tibble: 1 × 2
+##   propBidenUP propTrumpUP
+##         &lt;dbl&gt;       &lt;dbl&gt;
+## 1       0.612       0.983
+```
+--
+
+
+``` r
+poll %&gt;% # Average under-prediction
+  summarise(avgBidenErr = mean(.51 - Biden),
+            avgTrumpErr = mean(.47 - Trump))
+```
+
+```
+## # A tibble: 1 × 2
+##   avgBidenErr avgTrumpErr
+##         &lt;dbl&gt;       &lt;dbl&gt;
+## 1      0.0175      0.0577
+```
+
+
+---
+
+# .blue[Theorizing]
+
+--
+
+- .blue[Research Question]: Why do polls under-predict Trump more than Biden?
+
+--
+
+  1. Unrepresentative samples (how were respondents contacted?)
+  
+  2. Small samples (how many respondents?)
+  
+  3. Shy Trump Voters / trolls (lying respondents)
+  
+  4. Timing (closer to the election &amp;rarr; less biased)
+
+---
+
+# .blue[Theorizing]
+
+- A fifth explanation?
+
+--
+
+- Anti-Trump media!
+
+&lt;center&gt;&lt;img src="https://www.open.ac.uk/blogs/religious-studies/wp-content/uploads/2017/07/trump-2.jpg"&gt;&lt;/center&gt;
+
+
+---
+
+# .blue[Theorizing]
+
+- However...
+
+&lt;center&gt;&lt;iframe width="560" height="315" src="https://www.youtube.com/embed/Cq6A9uytB7U?start=22&amp;end=31" title="Trump Admits He's Lying ALL The Time" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen&gt;&lt;/iframe&gt;&lt;/center&gt;
+
+
+
+---
+
+# .blue[Theorizing]
+
+--
+
+- Theory #1: Does the "mode" of the survey matter?
+
+--
+
+  - I.e., if you only call people on landlines, who do you reach?
+  
+--
+
+  - And how might they differ from the general population?
+  
+--
+
+- .blue[Assumption 1]: Younger people do not use landlines, meaning that surveys which rely on **r**andom **d**igit **d**ialing (RDD) will get disproportionately older respondents.
+
+--
+
+- .blue[Assumption 2]: Younger voters are more progressive, making them less likely to support Trump.
+
+--
+
+- .blue[Theory]: Surveys that use RDD will find more support for Trump than Biden.
+
+---
+
+# .red[Analyzing]
+
+--
+
+- Plot the Biden-Trump vote margin by mode type
+
+
+``` r
+poll %&gt;%
+  count(Mode)
+```
+
+```
+## # A tibble: 9 × 2
+##   Mode                 n
+##   &lt;chr&gt;            &lt;int&gt;
+## 1 IVR                  1
+## 2 IVR/Online          47
+## 3 Live phone - RBS    13
+## 4 Live phone - RDD    51
+## 5 Online             366
+## 6 Online/Text          1
+## 7 Phone - unknown      1
+## 8 Phone/Online        19
+## 9 &lt;NA&gt;                29
+```
+
+--
+
+- So many modes of interviewing people!
+
+---
+
+# (Soft) Rules of Visualization
+
+- Variable `type` informs visualization
+
+--
+
+1. Univariate
+
+  - Categorical data: `geom_bar()`
+  
+  - Continuous data: `geom_histogram()` or `geom_density()`
+  
+--
+
+2. Bivariate
+
+  - Categorical X Categorical: `geom_bar()`
+  
+  - Binary X Continuous: `geom_histogram()` or `geom_density()`
+  
+  - Categorical X Continuous: `geom_boxplot()` or `geom_violin()`
+  
+  - Continuous X Continuous: `geom_point()`
+  
+---
+
+# Beyond Bivariate
+
+2. Trivariate
+
+  - Categorical X Categorical X Continuous: `geom_tile()`
+  
+  - Continuous X Continuous X Categorical: `geom_point()` + `color`
+  
+  - Continuous X Continuous X Continuous: `geom_point()` + `color`/`size`
+  
+  - Latitude X Longitude X Categorical / Continuous: Maps!
+  
+  - Var X Var X Time: Animated!
+  
+  - (Beyond the scope of this course, but get creative!)
+
+---
+
+# .red[Analyzing]
+
+- For now, just focus on `IRV/Online` versus `Live phone - RDD`
+
+--
+
+- Since `margin` is a continuous variable, use `geom_histogram`
+
+
+``` r
+pMode &lt;- poll %&gt;% 
+  filter(Mode == "IVR/Online" | Mode == "Live phone - RDD") %&gt;%
+    ggplot(aes(x= margin, fill = Mode)) +     
+  labs(y = "Number of Polls",
+         x = "Biden- Trump Margin",
+         title = "Biden-Trump Margin for Two Types of Polls",
+        fill = "Mode of Interview") +
+*   geom_histogram(bins=10, color="black", position="dodge") +
+    scale_x_continuous(breaks=seq(-.1,.2,by=.05),
+                     labels= scales::percent_format(accuracy = 1))
+```
+
+---
+
+# Mode Matters!
+
+
+``` r
+pMode
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-29-1.png" style="display: block; margin: auto;" /&gt;
+
+--
+
+- But results are **inconsistent** with our .blue[theory]!
+
+---
+
+# Visualization
+
+--
+
+- How can we improve this? Perhaps `geom_density()` and `geom_vline()`?
+
+
+``` r
+toplot &lt;- poll %&gt;% 
+  filter(Mode == "IVR/Online" | Mode == "Live phone - RDD")
+
+pModeDens &lt;- toplot %&gt;%
+  ggplot(aes(x= margin, color = Mode)) +     
+  labs(y = "Number of Polls",
+       x = "Biden- Trump Margin",
+       title = "Biden-Trump Margin for Two Types of Polls",
+       color = "Mode of Interview") +
+* geom_density(lwd = 1.2) +
+  scale_x_continuous(breaks=seq(-.1,.2,by=.05),
+                     labels= scales::percent_format(accuracy = 1)) + 
+  geom_vline(data = toplot %&gt;%
+               group_by(Mode) %&gt;%
+               summarise(margin = mean(margin)),aes(xintercept = margin,color = Mode),linetype = 'dashed')
+```
+
+---
+
+# Visualization
+
+- How can we improve this? Perhaps `geom_density()` and `geom_vline()`?
+
+
+``` r
+pModeDens
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-31-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# More Modes
+
+--
+
+- `geom_histogram()` and `geom_density()` less useful for more comparisons
+
+--
+
+- First, let's drop modes that were hardly used
+
+
+``` r
+(toKeep &lt;- poll %&gt;%
+  count(Mode) %&gt;%
+* filter(n &gt; 5,
+         !is.na(Mode)))
+```
+
+```
+## # A tibble: 5 × 2
+##   Mode                 n
+##   &lt;chr&gt;            &lt;int&gt;
+## 1 IVR/Online          47
+## 2 Live phone - RBS    13
+## 3 Live phone - RDD    51
+## 4 Online             366
+## 5 Phone/Online        19
+```
+
+``` r
+toplot &lt;- poll %&gt;% filter(Mode %in% toKeep$Mode)
+```
+
+---
+
+# More Modes
+
+- How hard is `geom_histogram()` with more categories?
+
+
+``` r
+pModeHist &lt;- toplot %&gt;%
+  ggplot(aes(x= margin, fill = Mode)) +     
+  labs(y = "Number of Polls",
+       x = "Biden- Trump Margin",
+       title = "Biden-Trump Margin for Two Types of Polls",
+       fill = "Mode of Interview") +
+* geom_histogram(color = 'black',position = 'dodge',bins = 10) +
+  scale_x_continuous(breaks=seq(-.1,.2,by=.05),
+                     labels= scales::percent_format(accuracy = 1))
+```
+
+---
+
+# More Modes
+
+- How hard is `geom_histogram()` with more categories?
+
+
+``` r
+pModeHist
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-34-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+
+# More Modes
+
+- How hard is `geom_density()` with more categories?
+
+
+``` r
+pModeDens &lt;- toplot %&gt;%
+  ggplot(aes(x= margin, color = Mode)) +     
+  labs(y = "Number of Polls",
+       x = "Biden- Trump Margin",
+       title = "Biden-Trump Margin for Two Types of Polls",
+       color = "Mode of Interview") +
+* geom_density(lwd = 1.2) +
+  scale_x_continuous(breaks=seq(-.1,.2,by=.05),
+                     labels= scales::percent_format(accuracy = 1)) + 
+  geom_vline(data = toplot %&gt;%
+               group_by(Mode) %&gt;%
+               summarise(margin = mean(margin)),aes(xintercept = margin,color = Mode),linetype = 'dashed')
+```
+
+---
+
+# More Modes
+
+- How hard is `geom_density()` with more categories?
+
+
+``` r
+pModeDens
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-36-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# `geom_boxplot()`
+
+--
+
+- More categories requires more compact ways of visualizing distributions
+
+--
+
+
+``` r
+pModeBox &lt;- toplot %&gt;% 
+  ggplot(aes(x = Mode, y = margin)) + 
+    labs(x = "Mode of Survey Interview",
+         y = "Biden- Trump Margin",
+         title = "2020 Popular Vote Margin by Type of Poll") +
+*   geom_boxplot(fill = "slateblue") +
+    scale_y_continuous(breaks=seq(-.1,.2,by=.05),
+                     labels= scales::percent_format(accuracy = 1))
+```
+
+---
+
+# `geom_boxplot()`
+
+- More categories requires more compact ways of visualizing distributions
+
+
+``` r
+pModeBox
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-38-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Ordering Unordered Categories
+
+--
+
+- We can use `reorder()` to arrange categories by the data
+
+
+``` r
+pModeBox &lt;- toplot %&gt;% 
+* ggplot(aes(x = reorder(Mode,margin), y = margin)) +
+    labs(x = "Mode of Survey Interview",
+         y = "Biden- Trump Margin",
+         title = "2020 Popular Vote Margin by Type of Poll") +
+    geom_boxplot(fill = "slateblue") + 
+    scale_y_continuous(breaks=seq(-.1,.2,by=.05),
+                     labels= scales::percent_format(accuracy = 1))
+```
+
+---
+
+# Ordering Unordered Categories
+
+- We can use `reorder()` to arrange categories by the data
+
+
+``` r
+pModeBox + coord_flip()
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-40-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# `geom_violin()`
+
+--
+
+- Boxplots are cleaner than densities and histograms for multiple categories
+
+--
+
+- But we lose ability to see distributions within the 80% box
+
+
+``` r
+pModeViol &lt;- toplot %&gt;% 
+  ggplot(aes(x = reorder(Mode,margin), y = margin)) + 
+    labs(x = "Mode of Survey Interview",
+         y = "Biden- Trump Margin",
+         title = "2020 Popular Vote Margin by Type of Poll") +
+*   geom_violin(fill = "slateblue",alpha = .5) +
+    scale_y_continuous(breaks=seq(-.1,.2,by=.05),
+                     labels= scales::percent_format(accuracy = 1))
+```
+
+
+---
+
+# `geom_violin()`
+
+
+``` r
+pModeViol + geom_hline(yintercept = 0,linetype = 'dashed')
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-42-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Continuous by Continuous
+
+--
+
+- For .blue[conditional relationships] between two .red[continuous variables], use `geom_point()`
+
+--
+
+- .blue[Theory]: Are polls politically biased?
+
+--
+
+  - I.e., a Biden-friendly poll might **under**predict Trump support and **over**predict Biden support
+  
+--
+
+- .red[Data]: Trump support conditional on Biden support
+
+
+
+---
+
+# .red[Analysis]
+
+- Plot Trump support versus Biden support
+
+
+``` r
+pSupp &lt;- poll %&gt;%
+  ggplot(aes(x = Biden, y = Trump)) + 
+  labs(title="Biden and Trump Support in 2020 National Popular Vote",
+       y = "Trump Support",
+       x = "Biden Support") + 
+  geom_point(color="purple") + 
+    scale_y_continuous(breaks=seq(0,1,by=.05),
+                     labels= scales::percent_format(accuracy = 1)) +
+  scale_x_continuous(breaks=seq(0,1,by=.05),
+                     labels= scales::percent_format(accuracy = 1))
+```
+
+---
+
+# `geom_scatter()`
+
+
+``` r
+pSupp
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-44-1.png" style="display: block; margin: auto;" /&gt;
+
+--
+
+- How many observations are at each point?
+
+---
+
+# Tweaking `alpha`
+
+--
+
+- We can set the transparency of each point such that multiple points will show up darker
+
+--
+
+  - I.e., `alpha=.3` means that a single point will be 70% transparent, but 3 points on top of each other will be 10% transparent
+
+
+``` r
+pSupp &lt;- poll %&gt;%
+  ggplot(aes(x = Biden, y = Trump)) + 
+  labs(title="Biden and Trump Support in 2020 National Popular Vote",
+       y = "Trump Support",
+       x = "Biden Support") + 
+* geom_point(color="purple",alpha = .3,size = 3) +
+    scale_y_continuous(breaks=seq(0,1,by=.05),
+                     labels= scales::percent_format(accuracy = 1)) +
+  scale_x_continuous(breaks=seq(0,1,by=.05),
+                     labels= scales::percent_format(accuracy = 1))
+```
+
+---
+
+# Tweaking `alpha`
+
+
+``` r
+pSupp
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-46-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# `geom_jitter()`
+
+--
+
+- Instead, we could "jitter" the points
+
+--
+
+  - This adds some random noise to each point to shake them off each other
+  
+
+``` r
+pSupp &lt;- poll %&gt;%
+  ggplot(aes(x = Biden, y = Trump)) + 
+  labs(title="Biden and Trump Support in 2020 National Popular Vote",
+       y = "Trump Support",
+       x = "Biden Support") + 
+* geom_jitter(color="purple") +
+    scale_y_continuous(breaks=seq(0,1,by=.05),
+                     labels= scales::percent_format(accuracy = 1)) +
+  scale_x_continuous(breaks=seq(0,1,by=.05),
+                     labels= scales::percent_format(accuracy = 1))
+```
+
+---
+
+# `geom_jitter()`
+
+
+``` r
+pSupp
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-48-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# `size`
+
+--
+
+- Finally, we could simply count the number of polls at each x,y coordinate
+
+--
+
+  - Then size the points by the number of polls
+  
+
+``` r
+pSupp &lt;- poll %&gt;%
+  group_by(Biden,Trump) %&gt;%
+* summarise(nPolls = n()) %&gt;%
+* ggplot(aes(x = Biden, y = Trump,size = nPolls)) +
+  labs(title="Biden and Trump Support in 2020 National Popular Vote",
+       y = "Trump Support",
+       x = "Biden Support") + 
+  geom_point(color="purple",alpha = .5) +  
+    scale_y_continuous(breaks=seq(0,1,by=.05),
+                     labels= scales::percent_format(accuracy = 1)) +
+  scale_x_continuous(breaks=seq(0,1,by=.05),
+                     labels= scales::percent_format(accuracy = 1))
+```
+
+---
+
+# `size`
+
+
+``` r
+pSupp
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-50-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# .blue[Theory]
+
+--
+
+- These results indicate that polls which predict greater support for Biden **also** predict greater support for Trump
+
+--
+
+  - Is this consistent with the theory?
+  
+--
+
+  - Recall that **Biden-biased** polls should underpredict Trump support and overpredict Biden support
+  
+--
+
+  - In the .red[data], this would suggest a **negative** relationship
+  
+--
+
+  - But we find a **positive** relationship
+  
+--
+
+- **Inconsistent** with the theory, but raises another puzzle
+
+--
+
+- Why do polls that underpredict support for Biden also underpredict support for Trump?
+
+--
+
+  - .blue[Third party bias?] Polls bias against 3rd party candidates
+  
+--
+
+  - .blue[Timing of poll?] Fewer uncertain responses closer to election
+  
+---
+
+
+
+---
+
+# Part III: 2020 polling
+
+--
+
+- Back into the data!
+
+--
+
+  - Download and open [`Pres2020_PV.Rds`](https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/Pres2020_PV.Rds)
+  - Wrangle to get the popular vote margin, expressed in decimals
+  
+--
+
+
+``` r
+require(tidyverse)
+poll &lt;- read_rds('https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/Pres2020_PV.Rds')
+
+poll &lt;- poll %&gt;%
+  mutate(Trump = Trump/100,
+         Biden = Biden/100,
+         margin = Biden - Trump)
+```
+
+
+---
+
+# .blue[Theory]
+
+--
+
+- Previous results indicate that polls which predict greater support for Biden **also** predict greater support for Trump
+
+--
+
+  - Is this consistent with the theory?
+  
+--
+
+  - Recall that **Biden-biased** polls should underpredict Trump support and overpredict Biden support
+  
+--
+
+  - In the .red[data], this would suggest a **negative** relationship
+  
+--
+
+  - But we find a **positive** relationship
+  
+--
+
+- **Inconsistent** with the theory, but raises another puzzle
+
+--
+
+- Why do polls that underpredict support for Biden also underpredict support for Trump?
+
+--
+
+  - .blue[Third party bias?] Polls bias against 3rd party candidates
+  
+--
+
+  - .blue[Timing of poll?] Fewer uncertain responses closer to election
+
+
+---
+
+# Dates and More Dimensions
+
+--
+
+- To test the .blue[timing of polls theory], let's look at how predicted support varies over time
+
+--
+
+
+``` r
+poll %&gt;%
+  select(StartDate,EndDate,DaysinField)
+```
+
+```
+## # A tibble: 528 × 3
+##    StartDate  EndDate   DaysinField
+##    &lt;chr&gt;      &lt;chr&gt;           &lt;dbl&gt;
+##  1 10/31/2020 11/2/2020           3
+##  2 10/31/2020 11/2/2020           3
+##  3 10/29/2020 11/2/2020           5
+##  4 11/1/2020  11/1/2020           1
+##  5 11/1/2020  11/1/2020           1
+##  6 10/30/2020 11/1/2020           3
+##  7 10/31/2020 11/2/2020           3
+##  8 10/30/2020 11/1/2020           3
+##  9 10/29/2020 11/1/2020           4
+## 10 10/29/2020 11/1/2020           4
+## # ℹ 518 more rows
+```
+
+---
+
+# Dates
+
+--
+
+- Need to convert `StartDate` and `EndDate` into `date` class
+
+--
+
+
+``` r
+election.day &lt;- as.Date("11/3/2020", "%m/%d/%Y")  
+election.day
+```
+
+```
+## [1] "2020-11-03"
+```
+
+``` r
+election.day16 &lt;- as.Date("11/8/2016", "%m/%d/%Y")
+election.day16
+```
+
+```
+## [1] "2016-11-08"
+```
+
+``` r
+election.day - election.day16
+```
+
+```
+## Time difference of 1456 days
+```
+
+---
+
+# Wrangling
+
+
+``` r
+toplot &lt;- poll %&gt;%
+                mutate(EndDate = as.Date(EndDate, "%m/%d/%Y"), 
+                      StartDate = as.Date(StartDate, "%m/%d/%Y"),
+                      DaysToED = as.numeric(election.day - EndDate),
+                      margin = Biden - Trump)
+```
+
+--
+
+- How many polls were conducted over time?
+
+---
+
+## Polls by Date (`geom_bar`)
+
+
+``` r
+toplot %&gt;%
+  ggplot(aes(x = StartDate)) + 
+  geom_bar() + 
+  labs(title = 'Number of 2020 Polls by Date',x = 'Start Date of Poll',y = 'Number of Polls')
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-55-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Polls by Date (`geom_histogram`)
+
+
+``` r
+toplot %&gt;%
+  ggplot(aes(x = StartDate)) + 
+  geom_histogram(bins = 30,color = 'white') + 
+  labs(title = 'Number of 2020 Polls by Date',x = 'Start Date of Poll',y = 'Number of Polls')
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-56-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Polls by Time to Election
+
+
+``` r
+toplot %&gt;%
+  ggplot(aes(x = DaysToED)) + 
+  geom_histogram(bins = 30,color = 'white') + 
+  labs(title = 'Number of 2020 Polls Over Time',x = 'Days to Election',y = 'Number of Polls') + scale_x_reverse()
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-57-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Margin by Time to Election
+
+
+``` r
+toplot %&gt;%
+  ggplot(aes(x = DaysToED,y = margin)) + 
+* geom_point() +
+  labs(title = 'Biden Margin in 2020 Polls Over Time',
+       x = 'Days to Election',y = 'Margin: Biden - Trump') + 
+  scale_x_reverse() + geom_hline(yintercept = 0,linetype = 'dashed')
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-58-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Margin by Time to Election
+
+
+``` r
+toplot %&gt;%
+  ggplot(aes(x = DaysToED,y = margin)) + 
+* geom_point(alpha = .3,size = 3) +
+  labs(title = 'Biden Margin in 2020 Polls Over Time',
+       x = 'Days to Election',y = 'Margin: Biden - Trump') + 
+  scale_x_reverse() + geom_hline(yintercept = 0,linetype = 'dashed')
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-59-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Margin by Time to Election
+
+
+``` r
+toplot %&gt;%
+  ggplot(aes(x = DaysToED,y = margin)) + 
+* geom_jitter(height = .005) +
+  labs(title = 'Biden Margin in 2020 Polls Over Time',
+       x = 'Days to Election',y = 'Margin: Biden - Trump') + 
+  scale_x_reverse() + geom_hline(yintercept = 0,linetype = 'dashed')
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-60-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Highlight Trends
+
+
+``` r
+toplot %&gt;%
+  ggplot(aes(x = DaysToED,y = margin)) + 
+* geom_point(alpha = .3) + geom_line() +
+  labs(title = 'Biden Margin in 2020 Polls Over Time',
+       x = 'Days to Election',y = 'Margin: Biden - Trump') + 
+  scale_x_reverse() + geom_hline(yintercept = 0,linetype = 'dashed')
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-61-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Highlight Trends
+
+
+``` r
+toplot %&gt;%
+  ggplot(aes(x = DaysToED,y = margin)) + 
+* geom_point(alpha = .3) + geom_smooth() +
+  labs(title = 'Biden Margin in 2020 Polls Over Time',
+       x = 'Days to Election',y = 'Margin: Biden - Trump') + 
+  scale_x_reverse() + geom_hline(yintercept = 0,linetype = 'dashed')
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-62-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## Highlight Trends
+
+
+``` r
+toplot %&gt;%
+  ggplot(aes(x = DaysToED,y = margin)) + 
+* geom_point(alpha = .3) + geom_smooth(span = .1) +
+  labs(title = 'Biden Margin in 2020 Polls Over Time',
+       x = 'Days to Election',y = 'Margin: Biden - Trump') + 
+  scale_x_reverse() + geom_hline(yintercept = 0,linetype = 'dashed')
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-63-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Multiple Variables over time
+
+--
+
+- We can look at multiple continuous variables at the same time
+
+--
+
+  - Use `color` or `fill` to distinguish
+  
+
+``` r
+BidenTrumpplot &lt;- toplot %&gt;%
+  ggplot()  +
+  geom_point(aes(x = EndDate, y = Trump), 
+             color = "red", alpha=.4)  +
+  geom_point(aes(x = EndDate, y = Biden), 
+             color = "blue", alpha=.4) +
+  labs(title="% Support for Biden (blue) and Trump (red)",
+       subtitle = "2020 National Popular Vote Polls Over Time",
+       y = "Pct. Support",
+       x = "Poll Ending Date") +
+  scale_x_date(date_breaks = "2 week", date_labels = "%b %d") + 
+  scale_y_continuous(breaks=seq(.3,.7,by=.05),
+                     labels= scales::percent_format(accuracy = 1)) 
+```
+
+---
+
+# Multiple Variables over time
+
+
+``` r
+BidenTrumpplot
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-65-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Highlighting Trends
+
+
+``` r
+BidenTrumpplot +  
+  geom_smooth(aes(x = EndDate, y = Trump), 
+              color = "red",se=T) + 
+  geom_smooth(aes(x = EndDate, y = Biden), 
+              color = "blue",se=T)
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-66-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Let's go back to .blue[theory]
+
+--
+
+- Evidence of **both** Biden and Trump support increasing toward election
+
+--
+
+- Does this mean third party support waned?
+
+--
+
+- Does this mean that undecided voters made a decision?
+
+
+---
+
+# 2. Overtime Errors
+
+- Wrangling to convert character dates to `date` class
+
+--
+
+- Plotting prediction errors over time
+
+
+``` r
+toplot &lt;- poll %&gt;%
+  mutate(EndDate = as.Date(EndDate, "%m/%d/%Y"), 
+         StartDate = as.Date(StartDate, "%m/%d/%Y"),
+         DaysToED = as.numeric(as.Date('11/3/2020',format = '%m/%d/%Y') - EndDate),
+         margin = Biden - Trump,
+*        errDem = Biden - DemCertVote / 100,
+*        errRep = Trump - RepCertVote / 100)
+```
+
+---
+
+# Overtime Errors
+
+- Wrangling to convert character dates to `date` class
+
+- Plotting prediction errors over time
+
+
+``` r
+pErrOverTime_Raw &lt;- toplot  %&gt;%
+  ggplot(aes(x = StartDate)) + 
+  geom_point(aes(y = errDem),color = 'blue') + 
+  geom_point(aes(y = errRep),color = 'red') + 
+  geom_hline(yintercept = 0,linetype = 'dashed') + 
+  geom_smooth(aes(y = errDem),color = 'blue') + 
+  geom_smooth(aes(y = errRep),color = 'red') + 
+  labs(title = 'Error Over Time',subtitle = 'Raw Prediction Error',x = 'Start Date',y = 'Prediction Error') + 
+  ylim(c(-.2,.1))
+```
+
+---
+
+# Overtime Errors
+
+
+``` r
+pErrOverTime_Raw
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-69-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Poll Quality
+
+- Polls got better
+
+--
+
+  - ...but more for Biden than for Trump
+  
+--
+
+- Poll quality:
+
+--
+
+  - Sample size
+  
+  - "Margin of Error" (`MoE`)
+
+---
+
+# Weighting by Sample Size
+
+
+``` r
+pErrOverTime_SampleSize &lt;- toplot %&gt;%
+  group_by(StartDate) %&gt;%
+* summarise(errDem = weighted.mean(errDem,w = SampleSize),
+*           errRep = weighted.mean(errRep,w = SampleSize)) %&gt;%
+  ggplot(aes(x = StartDate)) + 
+  geom_point(aes(y = errDem),color = 'blue') + 
+  geom_point(aes(y = errRep),color = 'red') + 
+  geom_hline(yintercept = 0,linetype = 'dashed') + 
+  geom_smooth(aes(y = errDem),color = 'blue') + 
+  geom_smooth(aes(y = errRep),color = 'red') + 
+  labs(title = 'Error Over Time',subtitle = 'Sample-Weighted Prediction Error',x = 'Start Date',y = 'Prediction Error') + 
+  ylim(c(-.2,.1))
+```
+
+---
+
+# Weighting by Inverse of `MoE`
+
+
+``` r
+pErrOverTime_MoE &lt;- toplot %&gt;%
+  group_by(StartDate) %&gt;%
+* summarise(errDem = weighted.mean(errDem,w = 1/MoE),
+*           errRep = weighted.mean(errRep,w = 1/MoE)) %&gt;%
+  ggplot(aes(x = StartDate)) + 
+  geom_point(aes(y = errDem),color = 'blue') + 
+  geom_point(aes(y = errRep),color = 'red') + 
+  geom_hline(yintercept = 0,linetype = 'dashed') + 
+  geom_smooth(aes(y = errDem),color = 'blue') + 
+  geom_smooth(aes(y = errRep),color = 'red') + 
+  labs(title = 'Error Over Time',subtitle = 'MoE-Weighted Prediction Error',x = 'Start Date',y = 'Prediction Error') + 
+  ylim(c(-.2,.1))
+```
+
+---
+
+# Comparing
+
+
+``` r
+require(patchwork)
+pErrOverTime_Raw + pErrOverTime_SampleSize + pErrOverTime_MoE
+```
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-72-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# 3. The Electoral College
+
+--
+
+- U.S. presidents determined by the **Electoral College** (EC)
+
+--
+
+  - Each state allocated votes equal to their "congressional delegation"
+  
+--
+
+  - One vote per Senator + one vote per **M**ember **o**f **t**he **H**ouse (MotH)
+
+--
+
+  - 100 Senators + 435 MotHs + 3 votes for DC = 538 total votes
+  
+--
+
+  - To win the presidency, you need at least 270 EC votes
+  
+--
+
+- What does this mean for representation?
+
+--
+
+  - Population divided equally\* across 435 MotHs
+  
+--
+
+  - In 2020, each MotH represented 761,179 people
+
+--
+
+  - Geographic distribution of this population is **non-uniform**
+  
+---
+
+# Assigning Districts
+
+--
+
+- Every 10 years, U.S. takes a census of its population
+
+--
+
+- Based on these results, congressional districts are reapportioned
+
+--
+
+- In 2010, Florida's pop. was ~19m &amp; average pop. per MotH was ~710k
+
+--
+
+  - How many MotHs? `ceiling(19000000 / 710000)` = `27`
+  
+--
+
+  - Every state has 2 senators, so FL had 27 + 2 = 29 EC votes
+  
+--
+
+  - In 2020, FL pop. was 21m &amp;rarr; each resident had 0.00000137 of a vote
+
+--
+
+- What about Vermont?
+
+--
+
+  - 3 EC votes / 624,340 residents = 0.00000481
+  
+--
+
+- Vermonters have roughly 3.5 times the influence of Floridians!
+
+---
+
+# Data Viz Misleads!
+
+&lt;center&gt;&lt;img src="figs/map_states.PNG" width = 60%&gt;&lt;/center&gt;
+
+---
+
+# Data Viz Misleads!
+
+&lt;center&gt;&lt;img src="figs/map_counties.png" width = 70%&gt;&lt;/center&gt;
+
+
+---
+
+# Data Viz Misleads!
+
+&lt;center&gt;&lt;img src="figs/map_precints.png" width = 70%&gt;&lt;/center&gt;
+
+---
+
+# Data Viz Misleads!
+
+&lt;center&gt;&lt;img src="https://www.vividmaps.com/wp-content/uploads/2019/07/Trumpland.jpg" width = 75%&gt;&lt;/center&gt;
+
+---
+
+# Data Viz Misleads!
+
+&lt;center&gt;&lt;img src="https://www.vividmaps.com/wp-content/uploads/2019/07/Clinton.jpg" width = 75%&gt;&lt;/center&gt;
+
+---
+
+# Correcting Maps
+
+- Fundamental challenge due to distribution of population across land
+
+&lt;center&gt;&lt;img src="figs/map_ec.png" width = 55%&gt;&lt;/center&gt;
+
+---
+
+# Correcting Maps
+
+- Fundamental challenge due to distribution of population across land
+
+&lt;center&gt;&lt;img src="figs/map_pop.png" width = 55%&gt;&lt;/center&gt;
+
+
+---
+
+# Introducing Data
+
+--
+
+- We will attempt to use state polls to predict 2020 winner
+
+--
+
+- National polls are great at predicting popular vote share...
+
+--
+
+- ...but presidents aren't elected based on popular vote
+
+--
+
+- With a few exceptions, states have a "winner take all" system
+
+--
+
+  - Winner of state's popular vote gets **all** of the state's EC votes
+  
+--
+
+- Thus we need good state-level polls
+
+--
+
+- Load [`Pres2020_StatePolls.Rds`](https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/Pres2020_StatePolls.Rds) to `statePoll` object
+
+
+``` r
+require(tidyverse)
+statePoll &lt;- read_rds('https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/Pres2020_StatePolls.Rds')
+```
+
+---
+
+# Look at the data
+
+
+``` r
+glimpse(statePoll)
+```
+
+```
+## Rows: 1,545
+## Columns: 19
+## $ StartDate      &lt;date&gt; 2020-03-21, 2020-03-24, 2020-03-24…
+## $ EndDate        &lt;date&gt; 2020-03-30, 2020-04-03, 2020-03-29…
+## $ DaysinField    &lt;dbl&gt; 10, 11, 6, 2, 3, 5, 2, 2, 7, 3, 3, …
+## $ MoE            &lt;dbl&gt; 2.8, 3.0, 4.2, NA, 4.0, 1.7, 3.0, 3…
+## $ Mode           &lt;chr&gt; "Phone/Online", "Phone/Online", "Li…
+## $ SampleSize     &lt;dbl&gt; 1331, 1000, 813, 962, 602, 3244, 10…
+## $ Biden          &lt;dbl&gt; 41, 47, 48, 67, 46, 46, 46, 48, 52,…
+## $ Trump          &lt;dbl&gt; 46, 34, 45, 29, 46, 40, 48, 45, 39,…
+## $ Winner         &lt;chr&gt; "Rep", "Dem", "Dem", "Dem", "Dem", …
+## $ poll.predicted &lt;dbl&gt; 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1,…
+## $ Funded         &lt;chr&gt; "UtahPolicy.com &amp; KUTV 2News", "Sac…
+## $ Conducted      &lt;chr&gt; "Y2 Analytics", "GreatBlue Research…
+## $ margin         &lt;dbl&gt; -5, 13, 3, 38, 0, 6, -2, 3, 13, -7,…
+## $ DaysToED       &lt;drtn&gt; 218 days, 214 days, 219 days, 219 …
+## $ StateName      &lt;chr&gt; "Utah", "Connecticut", "Wisconsin",…
+## $ EV             &lt;int&gt; 6, 7, 10, 55, 16, 29, 16, 16, 12, 1…
+## $ State          &lt;chr&gt; "UT", "CT", "WI", "CA", "MI", "FL",…
+## $ BidenCertVote  &lt;dbl&gt; 38, 59, 49, 64, 51, 48, 50, 51, 58,…
+## $ TrumpCertVote  &lt;dbl&gt; 58, 39, 49, 34, 48, 51, 49, 48, 39,…
+```
+
+
+---
+
+# .blue[Scientific] Goal: Predict Winner
+
+--
+
+- Need to calculate predicted probability of Biden victory
+
+--
+
+  1. Fraction of polls with Biden in the lead
+  
+  2. Fraction of respondents supporting Biden
+  
+  3. Fraction of twoway respondents supporting Biden
+  
+--
+
+- Wrangling time!
+
+
+``` r
+statePoll &lt;- statePoll %&gt;%
+  mutate(Biden2W = Biden / (Biden+Trump),
+         Biden = Biden / 100,
+         Trump = Trump/100)
+
+stateProbs &lt;- statePoll %&gt;%
+  group_by(StateName,State) %&gt;%
+  summarise(BidenProb1 = mean(Biden &gt; Trump),
+            BidenProb2 = mean(Biden),
+            BidenProb3 = mean(Biden2W),
+            EV = mean(EV),.groups = 'drop') # This is just the value of EV
+```
+
+---
+
+# Looking at data
+
+
+``` r
+stateProbs
+```
+
+```
+## # A tibble: 50 × 6
+##    StateName   State BidenProb1 BidenProb2 BidenProb3    EV
+##    &lt;chr&gt;       &lt;chr&gt;      &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt;
+##  1 Alabama     AL         0          0.389      0.407     9
+##  2 Alaska      AK         0          0.442      0.466     3
+##  3 Arizona     AZ         0.840      0.484      0.519    11
+##  4 Arkansas    AR         0          0.381      0.395     6
+##  5 California  CA         1          0.618      0.661    55
+##  6 Colorado    CO         1          0.534      0.571     9
+##  7 Connecticut CT         1          0.584      0.631     7
+##  8 Delaware    DE         1          0.603      0.627     3
+##  9 Florida     FL         0.798      0.486      0.517    29
+## 10 Georgia     GA         0.548      0.474      0.504    16
+## # ℹ 40 more rows
+```
+
+---
+
+# Visualizing Data
+
+--
+
+- `R` has fancy packages that allow for interactive plots (`plotly`)
+
+
+``` r
+# install.packages('plotly')
+require(plotly)
+
+gg &lt;- stateProbs %&gt;%
+* ggplot(aes(x=BidenProb2, y=BidenProb3,text=paste(StateName))) +
+  geom_point() +
+  geom_abline(intercept=0,slope=1) +
+  labs(x= "Probability as % Support",
+       y = "Probability as Two-Party % Support",
+       title = "Comparing Probability of Winning Measures")
+```
+
+---
+
+# Visualizing Data
+
+
+``` r
+ggplotly(gg,tooltip = 'text')
+```
+
+<div class="plotly html-widget html-fill-item" id="htmlwidget-ed72590991657ddc7ce2" style="width:648px;height:360px;"></div>
+<script type="application/json" data-for="htmlwidget-ed72590991657ddc7ce2">{"x":{"data":[{"x":[0.38928571428571429,0.44230769230769229,0.48415094339622639,0.38125000000000003,0.61799999999999999,0.53428571428571425,0.58444444444444443,0.60285714285714287,0.48643410852713176,0.4741095890410959,0.63428571428571434,0.38166666666666665,0.56600000000000006,0.41714285714285715,0.46619047619047621,0.424375,0.39111111111111113,0.38727272727272727,0.52833333333333332,0.63636363636363635,0.6415384615384615,0.50115384615384617,0.51068181818181824,0.40090909090909088,0.44526315789473686,0.43440000000000001,0.44400000000000001,0.49136363636363639,0.52909090909090906,0.56631578947368422,0.53545454545454552,0.61846153846153851,0.47947761194029848,0.37714285714285717,0.4653846153846154,0.36599999999999999,0.58624999999999994,0.49895104895104897,0.65400000000000003,0.44038461538461537,0.41142857142857142,0.40999999999999998,0.46369230769230768,0.3992857142857143,0.64571428571428569,0.53349999999999997,0.59307692307692306,0.35375000000000001,0.50205357142857143,0.32833333333333337],"y":[0.40696497996548259,0.46581930032762203,0.51879736341892746,0.39456407198523163,0.66108016549013837,0.57064341862963197,0.63119564660287264,0.62684067129416965,0.51673639552664608,0.5041636610284177,0.66679316894324248,0.39131509040323631,0.5889432528215327,0.44201688232547159,0.49681581253334745,0.4492683633263716,0.4118412289672253,0.40822311395405431,0.56935082794352765,0.66696769693824443,0.69076942423213772,0.5391190135878895,0.54726713099242585,0.42106312139619351,0.4646467212580116,0.45911478821711954,0.45217480931766646,0.52569038542903845,0.55300232822609408,0.60811775849763272,0.550494041773396,0.65665235364136931,0.51049271444868238,0.39320149770001478,0.49596224975874315,0.38290323831575057,0.60546937226361297,0.52920845393542826,0.66051041022469592,0.46344756475908905,0.42438478099058119,0.4248292669951656,0.49324378279804576,0.43892429795241228,0.67408835954569668,0.56452601901563448,0.6254777870302517,0.36602330001815431,0.53716607212889256,0.3380024737167594],"text":["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,0,0,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(0,0,0,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[0.31205000000000005,0.67028333333333334],"y":[0.31205000000000005,0.67028333333333334],"text":"","type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(0,0,0,1)","dash":"solid"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":46.684931506849317,"r":7.3059360730593621,"b":43.105022831050235,"l":43.105022831050235},"plot_bgcolor":"rgba(235,235,235,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"title":{"text":"Comparing Probability of Winning Measures","font":{"color":"rgba(0,0,0,1)","family":"","size":17.534246575342465},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.31205000000000005,0.67028333333333334],"tickmode":"array","ticktext":["0.4","0.5","0.6"],"tickvals":[0.40000000000000002,0.5,0.60000000000000009],"categoryorder":"array","categoryarray":["0.4","0.5","0.6"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"y","title":{"text":"Probability as % Support","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.32036412619099047,0.70840777175790659],"tickmode":"array","ticktext":["0.4","0.5","0.6","0.7"],"tickvals":[0.40000000000000002,0.5,0.60000000000000009,0.70000000000000007],"categoryorder":"array","categoryarray":["0.4","0.5","0.6","0.7"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"x","title":{"text":"Probability as Two-Party % Support","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.8897637795275593,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"447b3bbe6b0":{"x":{},"y":{},"text":{},"type":"scatter"},"447b25262eba":{"intercept":{},"slope":{}}},"cur_data":"447b3bbe6b0","visdat":{"447b3bbe6b0":["function (y) ","x"],"447b25262eba":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+
+
+---
+
+# Visualizing Data
+
+--
+
+- What about the % of polls that predict a Biden victory?
+
+--
+
+  - I.e., we know Trump won't win California or Biden won't win Tennessee
+
+
+``` r
+gg &lt;- stateProbs %&gt;%
+* ggplot(aes(x=BidenProb2, y=BidenProb1,text=paste(StateName),color = BidenProb1)) +
+  geom_point() +
+  geom_abline(intercept=0,slope=1) +
+  labs(x= "Probability as % Support",
+       y = "Probability as % Polls Winning",
+       title = "Comparing Probability of Winning Measures") + 
+  scale_color_gradient2(guide = 'none',low = "darkred",mid = "white",high = "darkblue",midpoint = .5) + 
+  theme_bw()
+```
+
+---
+
+# Visualizing Data
+
+
+``` r
+ggplotly(gg,tooltip = 'text')
+```
+
+<div class="plotly html-widget html-fill-item" id="htmlwidget-488cc74ff353ca6737a9" style="width:648px;height:360px;"></div>
+<script type="application/json" data-for="htmlwidget-488cc74ff353ca6737a9">{"x":{"data":[{"x":[0.38928571428571429,0.44230769230769229,0.48415094339622639,0.38125000000000003,0.61799999999999999,0.53428571428571425,0.58444444444444443,0.60285714285714287,0.48643410852713176,0.4741095890410959,0.63428571428571434,0.38166666666666665,0.56600000000000006,0.41714285714285715,0.46619047619047621,0.424375,0.39111111111111113,0.38727272727272727,0.52833333333333332,0.63636363636363635,0.6415384615384615,0.50115384615384617,0.51068181818181824,0.40090909090909088,0.44526315789473686,0.43440000000000001,0.44400000000000001,0.49136363636363639,0.52909090909090906,0.56631578947368422,0.53545454545454552,0.61846153846153851,0.47947761194029848,0.37714285714285717,0.4653846153846154,0.36599999999999999,0.58624999999999994,0.49895104895104897,0.65400000000000003,0.44038461538461537,0.41142857142857142,0.40999999999999998,0.46369230769230768,0.3992857142857143,0.64571428571428569,0.53349999999999997,0.59307692307692306,0.35375000000000001,0.50205357142857143,0.32833333333333337],"y":[0,0,0.839622641509434,0,1,1,1,1,0.79844961240310075,0.54794520547945202,1,0,1,0,0.2857142857142857,0,0,0,1,1,1,0.91538461538461535,0.97727272727272729,0,0.052631578947368418,0,0,0.95454545454545459,1,1,1,1,0.71641791044776115,0,0.38461538461538464,0,1,0.91608391608391604,1,0,0,0,0.30769230769230771,0,1,1,1,0,0.9642857142857143,0],"text":["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":["rgba(139,0,0,1)","rgba(139,0,0,1)","rgba(112,82,177,1)","rgba(139,0,0,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(130,101,187,1)","rgba(235,229,244,1)","rgba(0,0,139,1)","rgba(139,0,0,1)","rgba(0,0,139,1)","rgba(139,0,0,1)","rgba(217,154,138,1)","rgba(139,0,0,1)","rgba(139,0,0,1)","rgba(139,0,0,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(74,46,159,1)","rgba(33,14,144,1)","rgba(139,0,0,1)","rgba(156,43,26,1)","rgba(139,0,0,1)","rgba(139,0,0,1)","rgba(51,27,150,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(165,142,206,1)","rgba(139,0,0,1)","rgba(237,200,190,1)","rgba(139,0,0,1)","rgba(0,0,139,1)","rgba(74,45,159,1)","rgba(0,0,139,1)","rgba(139,0,0,1)","rgba(139,0,0,1)","rgba(139,0,0,1)","rgba(222,164,149,1)","rgba(139,0,0,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(139,0,0,1)","rgba(44,21,148,1)","rgba(139,0,0,1)"],"opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":["rgba(139,0,0,1)","rgba(139,0,0,1)","rgba(112,82,177,1)","rgba(139,0,0,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(130,101,187,1)","rgba(235,229,244,1)","rgba(0,0,139,1)","rgba(139,0,0,1)","rgba(0,0,139,1)","rgba(139,0,0,1)","rgba(217,154,138,1)","rgba(139,0,0,1)","rgba(139,0,0,1)","rgba(139,0,0,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(74,46,159,1)","rgba(33,14,144,1)","rgba(139,0,0,1)","rgba(156,43,26,1)","rgba(139,0,0,1)","rgba(139,0,0,1)","rgba(51,27,150,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(165,142,206,1)","rgba(139,0,0,1)","rgba(237,200,190,1)","rgba(139,0,0,1)","rgba(0,0,139,1)","rgba(74,45,159,1)","rgba(0,0,139,1)","rgba(139,0,0,1)","rgba(139,0,0,1)","rgba(139,0,0,1)","rgba(222,164,149,1)","rgba(139,0,0,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(139,0,0,1)","rgba(44,21,148,1)","rgba(139,0,0,1)"]}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[0.31205000000000005,0.67028333333333334],"y":[0.31205000000000005,0.67028333333333334],"text":"","type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(0,0,0,1)","dash":"solid"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":46.684931506849317,"r":7.3059360730593621,"b":43.105022831050235,"l":48.949771689497723},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"title":{"text":"Comparing Probability of Winning Measures","font":{"color":"rgba(0,0,0,1)","family":"","size":17.534246575342465},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.31205000000000005,0.67028333333333334],"tickmode":"array","ticktext":["0.4","0.5","0.6"],"tickvals":[0.40000000000000002,0.5,0.60000000000000009],"categoryorder":"array","categoryarray":["0.4","0.5","0.6"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"y","title":{"text":"Probability as % Support","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-0.050000000000000003,1.05],"tickmode":"array","ticktext":["0.00","0.25","0.50","0.75","1.00"],"tickvals":[0,0.25,0.5,0.75,1],"categoryorder":"array","categoryarray":["0.00","0.25","0.50","0.75","1.00"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"x","title":{"text":"Probability as % Polls Winning","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":"transparent","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176002,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.8897637795275593,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498},"title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"447b21d3cd2":{"x":{},"y":{},"text":{},"colour":{},"type":"scatter"},"447b4d840013":{"intercept":{},"slope":{}}},"cur_data":"447b21d3cd2","visdat":{"447b21d3cd2":["function (y) ","x"],"447b4d840013":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+
+---
+
+# Visualizing Data
+
+--
+
+- Comparing to two-way
+
+
+``` r
+gg &lt;- stateProbs %&gt;%
+* ggplot(aes(x=BidenProb3, y=BidenProb1,text=paste(StateName),color = BidenProb1)) +
+  geom_point() +
+  labs(x= "Probability as Two-Party % Support",
+       y = "Probability as % Polls Winning",
+       title = "Comparing Probability of Winning Measures") + 
+  scale_color_gradient2(guide = 'none',low = "darkred",mid = "white",high = "darkblue",midpoint = .5) + 
+  theme_bw() + 
+  geom_hline(yintercept = .5,linetype = 'dashed',alpha = .5) + 
+  geom_vline(xintercept = .5,linetype = 'dashed',alpha = .5)
+```
+
+---
+
+# Visualizing Data
+
+
+``` r
+ggplotly(gg,tooltip = 'text')
+```
+
+<div class="plotly html-widget html-fill-item" id="htmlwidget-f9dca4397ca55c0200cc" style="width:648px;height:360px;"></div>
+<script type="application/json" data-for="htmlwidget-f9dca4397ca55c0200cc">{"x":{"data":[{"x":[0.40696497996548259,0.46581930032762203,0.51879736341892746,0.39456407198523163,0.66108016549013837,0.57064341862963197,0.63119564660287264,0.62684067129416965,0.51673639552664608,0.5041636610284177,0.66679316894324248,0.39131509040323631,0.5889432528215327,0.44201688232547159,0.49681581253334745,0.4492683633263716,0.4118412289672253,0.40822311395405431,0.56935082794352765,0.66696769693824443,0.69076942423213772,0.5391190135878895,0.54726713099242585,0.42106312139619351,0.4646467212580116,0.45911478821711954,0.45217480931766646,0.52569038542903845,0.55300232822609408,0.60811775849763272,0.550494041773396,0.65665235364136931,0.51049271444868238,0.39320149770001478,0.49596224975874315,0.38290323831575057,0.60546937226361297,0.52920845393542826,0.66051041022469592,0.46344756475908905,0.42438478099058119,0.4248292669951656,0.49324378279804576,0.43892429795241228,0.67408835954569668,0.56452601901563448,0.6254777870302517,0.36602330001815431,0.53716607212889256,0.3380024737167594],"y":[0,0,0.839622641509434,0,1,1,1,1,0.79844961240310075,0.54794520547945202,1,0,1,0,0.2857142857142857,0,0,0,1,1,1,0.91538461538461535,0.97727272727272729,0,0.052631578947368418,0,0,0.95454545454545459,1,1,1,1,0.71641791044776115,0,0.38461538461538464,0,1,0.91608391608391604,1,0,0,0,0.30769230769230771,0,1,1,1,0,0.9642857142857143,0],"text":["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":["rgba(139,0,0,1)","rgba(139,0,0,1)","rgba(112,82,177,1)","rgba(139,0,0,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(130,101,187,1)","rgba(235,229,244,1)","rgba(0,0,139,1)","rgba(139,0,0,1)","rgba(0,0,139,1)","rgba(139,0,0,1)","rgba(217,154,138,1)","rgba(139,0,0,1)","rgba(139,0,0,1)","rgba(139,0,0,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(74,46,159,1)","rgba(33,14,144,1)","rgba(139,0,0,1)","rgba(156,43,26,1)","rgba(139,0,0,1)","rgba(139,0,0,1)","rgba(51,27,150,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(165,142,206,1)","rgba(139,0,0,1)","rgba(237,200,190,1)","rgba(139,0,0,1)","rgba(0,0,139,1)","rgba(74,45,159,1)","rgba(0,0,139,1)","rgba(139,0,0,1)","rgba(139,0,0,1)","rgba(139,0,0,1)","rgba(222,164,149,1)","rgba(139,0,0,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(139,0,0,1)","rgba(44,21,148,1)","rgba(139,0,0,1)"],"opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":["rgba(139,0,0,1)","rgba(139,0,0,1)","rgba(112,82,177,1)","rgba(139,0,0,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(130,101,187,1)","rgba(235,229,244,1)","rgba(0,0,139,1)","rgba(139,0,0,1)","rgba(0,0,139,1)","rgba(139,0,0,1)","rgba(217,154,138,1)","rgba(139,0,0,1)","rgba(139,0,0,1)","rgba(139,0,0,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(74,46,159,1)","rgba(33,14,144,1)","rgba(139,0,0,1)","rgba(156,43,26,1)","rgba(139,0,0,1)","rgba(139,0,0,1)","rgba(51,27,150,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(165,142,206,1)","rgba(139,0,0,1)","rgba(237,200,190,1)","rgba(139,0,0,1)","rgba(0,0,139,1)","rgba(74,45,159,1)","rgba(0,0,139,1)","rgba(139,0,0,1)","rgba(139,0,0,1)","rgba(139,0,0,1)","rgba(222,164,149,1)","rgba(139,0,0,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(0,0,139,1)","rgba(139,0,0,1)","rgba(44,21,148,1)","rgba(139,0,0,1)"]}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[0.32036412619099047,0.70840777175790659],"y":[0.5,0.5],"text":"","type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(0,0,0,0.5)","dash":"dash"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[0.5,0.5],"y":[-0.050000000000000003,1.05],"text":"","type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(0,0,0,0.5)","dash":"dash"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":46.684931506849317,"r":7.3059360730593621,"b":43.105022831050235,"l":48.949771689497723},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"title":{"text":"Comparing Probability of Winning Measures","font":{"color":"rgba(0,0,0,1)","family":"","size":17.534246575342465},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.32036412619099047,0.70840777175790659],"tickmode":"array","ticktext":["0.4","0.5","0.6","0.7"],"tickvals":[0.40000000000000002,0.5,0.60000000000000009,0.70000000000000007],"categoryorder":"array","categoryarray":["0.4","0.5","0.6","0.7"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"y","title":{"text":"Probability as Two-Party % Support","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-0.050000000000000003,1.05],"tickmode":"array","ticktext":["0.00","0.25","0.50","0.75","1.00"],"tickvals":[0,0.25,0.5,0.75,1],"categoryorder":"array","categoryarray":["0.00","0.25","0.50","0.75","1.00"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"x","title":{"text":"Probability as % Polls Winning","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":"transparent","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176002,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.8897637795275593,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498},"title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"447b156f27b2":{"x":{},"y":{},"text":{},"colour":{},"type":"scatter"},"447b3497221c":{"yintercept":{}},"447b2e40773d":{"xintercept":{}}},"cur_data":"447b156f27b2","visdat":{"447b156f27b2":["function (y) ","x"],"447b3497221c":["function (y) ","x"],"447b2e40773d":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+
+---
+
+# Translate to EC Votes
+
+--
+
+- Start with a single state to get the idea
+
+--
+
+- **Expected Value** (EV...could also be Expected Votes): Probability * Value
+
+
+``` r
+stateProbs %&gt;%
+  filter(State == 'PA') %&gt;%
+  mutate(BEV1 = BidenProb1 * EV,
+         BEV2 = BidenProb2 * EV,
+         BEV3 = BidenProb3 * EV) %&gt;%
+  select(EV,matches('^B.*\\d'))
+```
+
+```
+## # A tibble: 1 × 7
+##      EV BidenProb1 BidenProb2 BidenProb3  BEV1  BEV2  BEV3
+##   &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1    20      0.916      0.499      0.529  18.3  9.98  10.6
+```
+
+--
+
+- Probability matters! Biden could get between 18.3 and 9.98 votes in PA!
+
+---
+
+# Translate to EC Votes
+
+- Do this for every state
+
+
+``` r
+stateProbs %&gt;%
+  mutate(BidenEV1 = BidenProb1 * EV,
+         BidenEV2 = BidenProb2 * EV,
+         BidenEV3 = BidenProb3 * EV,
+         TrumpEV1 = EV - BidenEV1,
+         TrumpEV2 = EV - BidenEV2,
+         TrumpEV3 = EV - BidenEV3) %&gt;%
+  summarise_at(vars(matches('EV\\d')),sum) # Fancy shortcut!
+```
+
+```
+## # A tibble: 1 × 6
+##   BidenEV1 BidenEV2 BidenEV3 TrumpEV1 TrumpEV2 TrumpEV3
+##      &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1     345.     272.     289.     190.     263.     246.
+```
+
+--
+
+- Overall EC votes *always* favored Biden (always above 270)
+
+--
+
+- But none of our estimates are close to the true outcome of 306 to 232
+
+---
+
+# .blue[Science] Questions
+
+--
+
+- We know that **national** polls changed closer to election
+
+--
+
+- Can we do better if we look only at **state** polls close to election day?
+
+--
+
+- .red[Data] limitations!
+
+
+``` r
+pollsPerState &lt;- statePoll %&gt;%
+  filter(DaysToED &lt;= 3) %&gt;%
+  count(State) %&gt;%
+  ggplot(aes(x = n,y = reorder(State,n))) + 
+  geom_bar(stat = 'identity',alpha = .7) + 
+  labs(title = 'Number of Polls per State',
+       subtitle = 'Last 3 Days before Election Day',
+       x = 'Number of Polls',
+       y = '')
+```
+
+---
+
+# .red[Data] Limitations
+
+&lt;img src="psc7000_lecture_3_slides_files/figure-html/unnamed-chunk-86-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# Do better with recent polls?
+
+
+``` r
+statePoll %&gt;%
+* filter(DaysToED &lt;= 3) %&gt;%
+  group_by(StateName,State) %&gt;%
+  summarise(BidenProb1 = mean(Biden &gt; Trump),
+            BidenProb2 = mean(Biden),
+            BidenProb3 = mean(Biden2W),
+            EV = mean(EV),.groups = 'drop') %&gt;%
+  mutate(BidenEV1 = BidenProb1 * EV,
+         BidenEV2 = BidenProb2 * EV,
+         BidenEV3 = BidenProb3 * EV,
+         TrumpEV1 = EV - BidenEV1,
+         TrumpEV2 = EV - BidenEV2,
+         TrumpEV3 = EV - BidenEV3) %&gt;%
+  summarise_at(vars(matches('EV\\d')),sum)
+```
+
+```
+## # A tibble: 1 × 6
+##   BidenEV1 BidenEV2 BidenEV3 TrumpEV1 TrumpEV2 TrumpEV3
+##      &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1     334.     277.     285.     201.     258.     250.
+```
+
+
+---
+
+# Conclusion
+
+--
+
+- Still not nailing the true votes!
+
+--
+
+  - Not even within the distributions of the bootstrapped estimates!
+  
+--
+
+- Why?
+
+--
+
+  1. Polls have their own uncertainty (could weight by total respondents?)
+  
+  2. Polls might not be representative of voters
+  
+  3. Polls might not be independent of each other
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
