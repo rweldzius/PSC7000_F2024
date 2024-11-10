@@ -1,0 +1,172 @@
+---
+title: "Problem Set 1 (ANSWER KEY)"
+subtitle: "Intro to `R`"
+author: "Prof. Weldzius (PSC7000)"
+institute: "Villanova University"
+date: "Due Date: 2024-10-25"
+output:
+  html_document: default
+---
+
+```{r,include=F}
+knitr::opts_chunk$set(error=TRUE)
+```
+
+
+## Getting Set Up
+
+Open `RStudio` and create a new RMarkDown file (`.Rmd`) by going to `File -> New File -> R Markdown...`.
+Accept defaults and save this file as `[LAST NAME]_ps1.Rmd` to your `code` folder.
+
+Copy and paste the contents of this `.Rmd` file into your `[LAST NAME]_ps1.Rmd` file. Then change the `author: [Your Name]` to your name.
+
+We will be using the `sc_debt.Rds` file from the course [github page](https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/sc_debt.Rds).
+
+All of the following questions should be answered in this `.Rmd` file. There are code chunks with incomplete code that need to be filled in. 
+
+This problem set is worth 5 total points. The point values for each question are indicated in brackets below. To receive full credit, you must have the correct code. In addition, some questions ask you to provide a written response in addition to the code.
+
+You are free to rely on whatever resources you need to complete this problem set, including lecture notes, lecture presentations, Google, your classmates...you name it. However, the final submission must be complete by you. There are no group assignments. To submit, compile the completed problem set and upload the PDF file to Blackboard on Friday by midnight. If you use OpenAI for help, choose to save your output as a PDF and then add this to the PDF for the problem set. Also note that I will not respond to Campuswire messages after 5PM on Friday, so don't wait until the last minute to get started!
+
+**Good luck!**
+
+
+## Question 0 [0 points]
+*Require `tidyverse` and load the `sc_debt.Rds` data by assigning it to an object named `df`.*
+```{r}
+require(tidyverse) # Load tidyverse
+df <- read_rds('https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/sc_debt.Rds') # Load the dataset directly from github
+```
+
+
+## Question 1 [0.5 points]
+*Which school has the lowest admission rate (`adm_rate`) and which state is it in (`stabbr`)?*
+```{r}
+df %>% 
+  arrange(adm_rate) %>% # Arrange by the admission rate
+  select(instnm,adm_rate,stabbr) # Select the school name, the admission rate, and the state
+```
+
+> There are two schools with the lowest admissions rate: St. Elizabeth College of
+Nursing and Yeshivat Hechal Shemuel. They are both in New York, and have an
+admissions rate of 0%. Assuming that this is an error in the data (since how can
+a school not admit any students?), the lowest non-zero admissions is for
+Hampshire College in Massachusetts.
+
+*Which are the top 10 schools by average SAT score (`sat_avg`)?*
+```{r}
+df %>%
+  arrange(desc(sat_avg)) %>% # arrange by SAT scores in descending order
+  select(instnm,sat_avg) %>% # Select the school name and SAT score
+  print(n=12) # Print the first 12 rows (hint: there is a tie)
+```
+
+> The top 10 schools by average SAT score are CIT, MIT, U Chicago, Harvey
+Mudd, Duke, Franklin Olin, WUSTL, Rice, Yale, Harvard. There is a three-way
+tie for the school with the 10th highest average SAT score: Princeton, Harvard,
+and Yale all have an average score of 1517.
+
+## Question 3 [0.5 points]
+*Create a new variable called `adm_rate_pct` which is the admissions rate multiplied by 100 to convert from a 0-to-1 decimal to a 0-to-100 percentage point.*
+
+```{r}
+df <- df %>% # Use the object assignment operator to overwrite the df object
+  mutate(adm_rate_pct = adm_rate*100) # Create the new variable adm_rate_pct
+```
+
+*Calculate the average SAT score and median earnings of recent graduates by state.*
+```{r}
+df %>%
+  group_by(stabbr) %>% # Calculate state-by-state with group_by()
+  summarise(sat_avg = mean(sat_avg,na.rm = T), # Summarise the average SAT
+            earn_avg = mean(md_earn_wne_p6,na.rm = T)) # Summarise the average earnings
+```
+
+## Question 4 [0.5 points]
+*Plot the average SAT score (x-axis) against the median earnings of recent graduates (y-axis) by school, and add the line of best fit. What relationship do you observe? Why do you think this relationship exists?*
+```{r}
+df %>%
+  ggplot(aes(x = sat_avg,y = md_earn_wne_p6)) + # Build the plot
+  geom_point() + # Add the points
+  geom_smooth(method = 'lm',se = F) # Add a line of best fit
+```
+
+> I observe a positive relationship between SAT scores and earnings. I theorize
+that this relationship reflects the fact that SAT scores capture student abilities
+that are rewarded on the labor market. However, SAT scores are also correlated
+with many other socio-economic factors which might also improve one’s
+earnings (i.e. social network) which are unrelated to student ability.
+
+## Question 5 [0.5 points]
+*Research Question: Do students who graduate from smaller schools (i.e., schools with smaller student bodies) make more money in their future careers? Before looking at the data, write out what you think the answer is, and explain why you think so.*
+
+> (Something along the lines of...) Yes students from smaller schools will make more money. This is because smaller schools tend to have smaller classes which means that professors can work with students directly, helping them learn faster and better.
+
+## Question 6 [0.5 points]
+*Based on this research question, what is the outcome / dependent / $Y$ variable and what is the explanatory / independent / $X$ variable? Create the scatterplot of the data based on this answer, along with a line of best fit. Is your answer to the research question supported?*
+```{r}
+df %>%
+  ggplot(aes(x = ugds, # Put the explanatory variable on the x-axis
+             y = md_earn_wne_p6)) +  # Put the outcome variable on the y-axis
+  geom_point() + # Create a scatterplot
+  geom_smooth(method = 'lm') + # Add line of best fit
+  labs(title = 'Relationship between School Size and Future Earnings', # give the plot meaningful labels to help the viewer understand it
+       x = 'Number of undergraduates',
+       y = 'Future earnings')
+```
+
+> The outcome variable is median future earnings (`md_earn_wne_p6`) and the explanatory variable is `ugds`. There appears to be a very small positive association between school size and future earnings, which is against my hypothesis.
+
+## Question 7 [0.5 points]
+*Does this relationship change by whether the school is a research university? Using the filter() function, create two versions of the plot, one for research universities and the other for non-research universities.*
+
+```{r}
+df %>%
+  filter(research_u == 0) %>% # Filter to non-research universities
+  ggplot(aes(x = ugds, # Put the explanatory variable on the x-axis
+             y = md_earn_wne_p6)) +  # Put the outcome variable on the y-axis
+  geom_point() + # Create a scatterplot
+  geom_smooth(method = 'lm') + # Add line of best fit
+  labs(title = 'Relationship between School Size and Future Earnings', # give the plot meaningful labels to help the viewer understand it
+       subtitle = 'Non-Research Universities', 
+       x = 'Number of undergraduates',
+       y = 'Future earnings')
+
+df %>%
+  filter(research_u == 1) %>% # Filter to research universities
+  ggplot(aes(x = ugds, # Put the explanatory variable on the x-axis
+             y = md_earn_wne_p6)) +  # Put the outcome variable on the y-axis
+  geom_point() + # Create a scatterplot
+  geom_smooth(method = 'lm') + # Add line of best fit
+  labs(title = 'Relationship between School Size and Future Earnings', # give the plot meaningful labels to help the viewer understand it
+       subtitle = 'Research Universities', 
+       x = 'Number of undergraduates',
+       y = 'Future earnings')
+```
+
+
+## Question 8 [0.5 points]
+*Instead of creating two separate plots, color the points by whether the school is a research university. To do this, you first need to modify the research_u variable to be categorical (it is currently stored as numeric). To do this, use the mutate command with `ifelse()` to create a new variable called `research_u_cat` which is either "Research" if `research_u` is equal to 1, and "Non-Research" otherwise.*
+```{r}
+df <- df %>%
+  mutate(research_u_cat = ifelse(research_u == 1, 'Research','Non-Research')) # Create a labeled version of the research_u variable
+
+df %>%
+  ggplot(aes(x = ugds, # Put the explanatory variable on the x-axis
+             y = md_earn_wne_p6, # Put the outcome variable on the y-axis
+             color = research_u_cat)) + # Color the points by the new variable you created above
+  geom_point() + # Create a scatterplot
+  geom_smooth(method = 'lm') + # Add line of best fit
+  labs(title = 'Relationship between School Size and Future Earnings', # give the plot meaningful labels to help the viewer understand it
+       x = 'Number of undergraduates',
+       color = 'School Typle',
+       y = 'Future earnings')
+```
+
+## Question 9 [1 point]
+*Write a short paragraph discussing your findings. What do you think is going on in these data?*
+
+> It seems that school size works in opposite directions between research and non-research universities. In research universities, graduates from smaller schools make more money, whereas graduates from larger non-research universities make more money. This might reflect the trade-off between learning valuable skills and social networks. At non-research universities, the value ofeducation is more about building a professional network, meaning that larger schools produce graduates with larger social networks, who go on to make more money. At research universities, the value of the degree is more about the skills themselves, meaning that smaller schools provide better teaching in a more focused way, producing graduates with better skills who go on to make more money.
+
+
+

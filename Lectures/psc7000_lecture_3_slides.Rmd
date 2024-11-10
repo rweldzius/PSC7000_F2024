@@ -523,7 +523,7 @@ pReasonChoice
 
 ```{r,fig.align='center',fig.width=9,fig.height=4.25}
 toplot %>% 
-    ggplot(aes(x= preschoice, fill = SEX)) +     
+    ggplot(aes(x= preschoice, fill = as.factor(SEX))) +     
     labs(y = "Number of Respondents",x = "",
          title = "Vote by Respondent Sex",fill = "Sex") +
     geom_bar(position="dodge") + coord_flip()

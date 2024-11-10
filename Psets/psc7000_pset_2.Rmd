@@ -20,7 +20,7 @@ Accept defaults and save this file as `[LAST NAME]_ps2.Rmd` to your `code` folde
 
 Copy and paste the contents of this `.Rmd` file into your `[LAST NAME]_ps2.Rmd` file. Then change the `author: [Your Name]` to your name.
 
-We will be using the `MI2020_ExitPoll.Rds` file from the course [github page](https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/MI2020_ExitPoll.Rds) for questions 1-4 and the `nba_players_2018.Rds` file from the course [github page](https://github.com/rweldzius/PSC4175_F2024/raw/main/Data/nba_players_2018.Rds) for questions 5-8.
+We will be using the `MI2020_ExitPoll.rds` file from the course [github page](https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/MI2020_ExitPoll.rds) for questions 1-4 and the `nba_players_2018.Rds` file from the course [github page](https://github.com/rweldzius/PSC4175_F2024/raw/main/Data/nba_players_2018.Rds) for questions 5-8.
 
 All of the following questions should be answered in this `.Rmd` file. There are code chunks with incomplete code that need to be filled in. To submit, compile (i.e., `knit`) the completed problem set and upload the PDF file to Dropbox on Friday by midnight. Instructions for how to compile the output as a PDF can be found in [Problem Set 0](https://github.com/rweldzius/PSC7000_F2024/raw/main/Psets/psc7000_pset_0.pdf). 
 
@@ -39,7 +39,7 @@ Require `tidyverse` and an additional package called `labelled` (remember to `in
 ```{r}
 require()
 require()
-MI_raw <- read_rds('') 
+MI_raw <- read_rds('https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/MI2020_ExitPoll.rds') 
 ```
 
 
