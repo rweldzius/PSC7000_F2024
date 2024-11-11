@@ -1,0 +1,278 @@
+---
+title: "Problem Set 2 (ANSWER KEY)"
+subtitle: "Data Wrangling & Univariate Analysis"
+author: "Prof. Weldzius (PSC7000)"
+institute: "Villanova University"
+date: "Due Date: 2024-11-01"
+output:
+  html_document: default
+---
+
+```{r,include=F}
+knitr::opts_chunk$set(error=TRUE)
+```
+
+
+## Getting Set Up
+
+Open `RStudio` and create a new RMarkDown file (`.Rmd`) by going to `File -> New File -> R Markdown...`.
+Accept defaults and save this file as `[LAST NAME]_ps2.Rmd` to your `code` folder.
+
+Copy and paste the contents of this `.Rmd` file into your `[LAST NAME]_ps2.Rmd` file. Then change the `author: [Your Name]` to your name.
+
+We will be using the `MI2020_ExitPoll.Rds` file from the course [github page](https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/MI2020_ExitPoll.Rds) for questions 1-4 and the `nba_players_2018.Rds` file from the course [github page](https://github.com/rweldzius/PSC4175_F2024/raw/main/Data/nba_players_2018.Rds) for questions 5-8.
+
+All of the following questions should be answered in this `.Rmd` file. There are code chunks with incomplete code that need to be filled in. To submit, compile (i.e., `knit`) the completed problem set and upload the PDF file to Dropbox on Friday by midnight. Instructions for how to compile the output as a PDF can be found in [Problem Set 0](https://github.com/rweldzius/PSC7000_F2024/raw/main/Psets/psc7000_pset_0.pdf). 
+
+This problem set is worth 5 total points. The point values for each question are indicated in brackets below. To receive full credit, you must have the correct code. In addition, some questions ask you to provide a written response in addition to the code.
+
+You will be deducted 1 point for each day late the problem set is submitted, and 1 point for failing to submit in the correct format (PDF).
+
+You are free to rely on whatever resources you need to complete this problem set, including lecture notes, lecture presentations, Google, your classmates...you name it. However, the final submission must be complete by you. There are no group assignments. To submit, compile the completed problem set and upload the PDF file to Drobox on Friday by midnight. If you use OpenAI for help, choose to save your output as a PDF and then add this to the PDF for the problem set. Also note that I will not respond to Campuswire messages after 5PM on Friday, so don't wait until the last minute to get started!
+
+**Good luck!**
+
+
+## Question 0.A
+Require `tidyverse` and an additional package called `labelled` (remember to `install.packages("labelled")` if you don't have it yet) and load the `MI2020_ExitPoll.rds` data to an object called `MI_raw`. (Tip: use the `read_rds()` function with the link to the raw data.)
+
+```{r}
+require(tidyverse)
+require(labelled)
+MI_raw <- read_rds('https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/MI2020_ExitPoll.rds')
+```
+
+
+## Question 1 [0.5 point]
+*What is the unit of analysis in this dataset? How many variables does it have? How many observations?*
+
+> The unit of analysis is a person. There are 63 variables and 1,231 observations.
+
+## Question 2 [0.5 point]
+*This has too much information that we don't care about. Create a new object called `MI_clean` that contains only the following variables:*
+
+* AGE10
+* SEX
+* PARTYID
+* EDUC18
+* PRSMI20
+* QLT20
+* LGBT
+* BRNAGAIN
+* LATINOS
+* QRACEAI
+* WEIGHT
+
+*and then list which of these variables contain missing data recorded as `NA`. How many respondents were not asked certain questions?*
+```{r}
+MI_clean <- MI_raw %>% 
+  select(AGE10,SEX,PARTYID,EDUC18,PRSMI20,QLT20,LGBT,BRNAGAIN,LATINOS,QRACEAI,WEIGHT) # Select the requested variables
+
+summary(MI_clean) # Identify which have missing data recorded as NA
+```
+
+> `QLT20`, `LGBT`, and `BRNAGAIN` have missing values stored as `NA`. 616 respondents were not asked `QLT20`, and 615 were not asked either `LGBT` or `BRNAGAIN`. 
+
+## Question 3 [0.5 point]
+*Are there* **unit non-response** *data in the `PRSMI20` variable? If so, how are they recorded? What about the `PARTYID` variable? How many people refused to answer both of these questions?*
+
+```{r}
+MI_clean %>%
+  count(PRSMI20)
+
+MI_clean %>%
+  count(PARTYID)
+
+MI_clean %>%
+  count(PRSMI20,PARTYID) %>%
+  filter(PRSMI20 == 8 & PARTYID == 9)
+```
+
+> The unit non-response data in the `PRSMI20` variable is recorded with the number `8`. Missing data in the `PARTYID` variable is recorded with the number `9`. Only two people refused to give answers to both questions.
+
+
+## Question 4 [0.5 points]
+*Let's create a new variable called `preschoice` that converts `PRSMI20` to a character. To do this, install the `labelled` package if you haven't already, then use the `to_character()` function from the `labelled` package. Now `count()` the number of respondents who reported voting for each candidate. How many respondents voted for candidate Trump in 2020? How many respondents refused to tell us who they voted for?*
+```{r}
+require(labelled)
+MI_clean <- MI_clean %>%
+  mutate(preschoice = to_character(PRSMI20))
+
+MI_clean %>%
+  count(preschoice)
+```
+
+> 459 respondents voted for candidate Trump in 2020. 14 people refused to give an answer. 
+
+
+## Question 5 [0.5 point]
+What proportion of women supported Trump?
+
+```{r}
+# Women Trump supporters
+MI_clean %>%
+  drop_na(preschoice) %>%
+  filter(SEX == 2) %>%
+  count(preschoice) %>%
+  mutate(share = n / sum(n))
+
+# Alternative approach
+MI_clean %>%
+  drop_na(SEX,preschoice) %>%
+  mutate(trumpSupp = grepl('Trump',preschoice)) %>%
+  group_by(SEX) %>%
+  summarise(share = mean(trumpSupp))
+```
+
+> 32.5% of women supported Trump. 
+
+
+## Extra Credit 1 [0.5 point]
+*Among women, which age group sees the highest support for Trump? To answer, you will need to calculate the proportion of women who supported Trump by age-group to determine which age-group had the highest Trump support among women. You will need to clean the AGE10 variable before completing this problem, just like we did with the PRSMI20 variable. Call the new variable "Age". HINT: to make your life easier (and not write a 10-level nested ifelse() function), try asking ChatGPT for help with this prompt: "I have a labelled variable in R that I want to convert to text. How can I do this?"*
+
+```{r}
+MI_clean %>%
+  count(AGE10)
+
+require(labelled)
+MI_clean <- MI_clean %>%
+  mutate(Age = as.character(to_factor(AGE10)))
+
+MI_clean %>%
+  count(AGE10,Age)
+
+MI_clean %>%
+  count(Age,SEX,preschoice) %>%
+  group_by(Age,SEX) %>%
+  mutate(proportion = prop.table(n)) %>%
+  filter(SEX == 2,
+         grepl('Trump',preschoice)) %>%
+  arrange(desc(proportion))
+
+head(MI_clean)
+
+```
+
+> Among women, the age group with the greatest support for Trump is between 40 and 44 years old, followed by 45 and 49 year olds. We also see that women who refused to give their age actually had the highest support for Trump (57%). 
+
+## Question 0.B
+*Require `tidyverse` and an additional package called `haven` (remember to `install.packages("haven")` if you don't have it yet; once you've installed it, remember to either delete the command or comment it out with #), and then load the [`nba_players_2018.Rds`](https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/nba_players_2018.Rds?raw=true') data to an object called `nba`.*
+
+```{r}
+require(tidyverse)
+require(haven)
+nba <- read_rds('https://github.com/rweldzius/PSC4175_F2024/raw/main/Data/nba_players_2018.Rds?raw=true')
+```
+
+
+## Question 6 [0.5 point]
+*Plot the distribution of field goals attempted by all NBA players in the 2018-2019 season. Explain why you chose the visualization that you did. Then add a vertical line indicating the mean and median number of points in the data. Color the median line blue and the mean line red. Why is the median lower than the mean?*
+```{r}
+nba %>%
+  summarise(mean_fga = mean(fga,na.rm = T))
+nba %>%
+  ggplot(aes(x = fga)) + # Put the fga variable on the x-axis of a ggplot.
+   geom_histogram() + # Choose the appropriate geom function to visualize.
+  labs(title = 'Field Goals Attempted by Player',
+       subtitle = '2018-2019 NBA Season',
+       x = 'Field Goals Attempted',
+       y = 'Number of Players') + # Add labels
+      geom_vline(xintercept = c(median(nba$fga)), color = 'blue') + # Median vertical line (blue)
+      geom_vline(xintercept = c(mean(nba$fga)), color = 'red') # Mean vertical line (red)
+```
+
+> I chose to use a geom_histogram because fga is a continuous variable. The mean is larger than the median because the data is right-skewed, reflecting the fact that there are a few players who attempt many field goals, and many players who do not.
+
+## Question 7 [0.5 point]
+*Now examine the `country` variable. Visualize this variable using the appropriate `geom_...`, and justify your reason for choosing it. Tweak the plot to put the country labels on the y-axis, ordered by frequency. Which country are most NBA players from? What is weird about your answer, and what might explain it? *
+
+```{r}
+nba %>%
+  count(country) %>% # count the number of players by country
+  ggplot(aes(y = country, x=n)) + # place the country on the y-axis, reordered by the number of players. Put the number of players on the x-axis
+  geom_bar(stat = 'identity') + # Choose the best geom
+  labs(title = 'NBA Players by Country of Origin',
+       subtitle = '2018-2019 NBA Season',
+       x = 'Number of Players',
+       y = 'Country of Origin') # Add labels
+
+nba %>%
+  count(country) %>% # count the number of players by country
+  ggplot(aes(y = reorder(country,n), x=n)) + # place the country on the y-axis, reordered by the number of players. Put the number of players on the x-axis
+  geom_bar(stat = 'identity') + # Choose the best geom
+  labs(title = 'NBA Players by Country of Origin',
+       subtitle = '2018-2019 NBA Season',
+       x = 'Number of Players',
+       y = 'Country of Origin') # Add labels
+```
+
+> The majority of NBA players are from `NA`, which is likely just the United States. I chose the geom_bar() visualization since the country variable is categorical.
+
+## Question 8 [0.5 point]
+*Let's pretend we are consulting for an NBA organization. The owner and GM tell us they are interested in the relationship between the player's age (`agePlayer`) and the amount of points they score (`pts`). Please answer the following research question and provide a theory supporting your answer: "Do older NBA players score more points than younger players?"*
+
+> Open to interpretation. Must include an answer and a theoretical explanation for the answer.
+
+## Question 9 [0.5 point]
+*Based on your answer above, what is the outcome / dependent / $Y$ variable and what is the explanatory / independent / $X$ variable? Why?*
+
+> The outcome variable is points scored and the explanatory variable is the player's age.
+
+*Create a univariate visualization of both the $X$ and $Y$ variables. Choose the best `geom_...()` based on the variable type, and make sure to label your plots!*
+
+```{r}
+# X variable
+nba %>%
+  ggplot(aes(x = agePlayer)) + # Put the X variable on the x-axis
+  geom_bar() +  # Choose the best geom given the variable type (make sure to look at it if you aren't sure)
+  labs(title = 'Age of NBA Players',
+       subtitle = '2018-2019 NBA Season',
+       x = 'Player Age (years)',
+       y = 'Number of Players')     # Add labels
+
+# Y variable
+nba %>%
+  ggplot(aes(x = pts)) + # Put the Y variable on the x-axis
+  geom_histogram() +  # Choose the best geom given the variable type (make sure to look at it if you aren't sure)
+  labs(title = 'Total Points Scored by NBA Player',
+       subtitle = '2018-2019 NBA Season',
+       x = 'Points Scored',
+       y = 'Number of Players')     # Add labels
+```
+
+## Question 10 [0.5 point]
+*Now analyze the data by creating a multivariate visualization that shows the relationship between age and points. Add a STRAIGHT line of best fit with `geom_smooth()`.*
+
+```{r}
+nba %>%
+  ggplot(aes(x = agePlayer, y = pts)) + # Put the X variable on the x-axis, and the Y variable on the y-axis
+  geom_point() +  # Choose the best geom given both variable types
+  geom_smooth(method = 'lm') + # Add a STRAIGHT line of best fit
+  labs(title = 'Relationship between Player Age and Points Scored',
+       subtitle = '2018-2019 NBA Season',
+       x = 'Player Age',
+       y = 'Points Scored')     # Add labels
+```
+
+*Based on your analysis, does the data support or reject your hypothesis from Question 3?*
+
+> Will vary by student.
+
+## Extra Credit 2 [0.5 point]
+*Let's look for evidence of a "curvelinear" relationship between player age and points scored. To do so, first calculate the average points scored by age. Then plot this relationship using a multivariate visualization. Add a line of best fit with `geom_smooth()` but DON'T use `method = "lm"`. What do you conclude? Why?*
+
+```{r}
+nba %>%
+  group_by(agePlayer) %>%
+  summarise(pts = mean(pts,na.rm = T)) %>%
+  ggplot(aes(x = agePlayer, y = pts)) + # Put the X variable on the x-axis, and the Y variable on the y-axis
+  geom_point() +  # Choose the best geom given both variable types
+  geom_smooth() + # Add a STRAIGHT line of best fit
+  labs(title = 'Relationship between Player Age and Average Points Scored',
+       subtitle = '2018-2019 NBA Season',
+       x = 'Player Age',
+       y = 'Average Points Scored')     # Add labels
+```
+
+> The data exactly supports my hypothesis. The youngest and oldest players score the fewest points, while players in their late 20s through early 30s score the most points.
+
