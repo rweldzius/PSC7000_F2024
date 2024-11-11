@@ -90,11 +90,11 @@ nba%>%select(idConference)%>%
   glimpse()
 ```
 
-It looks like conference is structured as numeric, but a "1" or a "2". Because it's best to have binary variables structured as "has the characteristic" or "doesn't have the characteristic" we're going to create a variable for western conference that's set  to 1 if the player was playing in the western conference and 0 if the player was not (this is the same as playing in the eastern conference).
+It looks like conference is structured as numeric, but a "1" or a "2". Because it's best to have binary variables structured as "has the characteristic" or "doesn't have the characteristic" we're going to create a variable for western conference that's set  to 2 if the player was playing in the western conference and 1 if the player was not (this is the same as playing in the eastern conference).
 
 ```{r}
 nba<-nba%>%
-  mutate(conference=ifelse(idConference==1,'West','East'))
+  mutate(conference=ifelse(idConference==2,'West','East'))
 ```
 
 Now that we've wrangled, let's compare personal fouls among players in the east versus west conferences
