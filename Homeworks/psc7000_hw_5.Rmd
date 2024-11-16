@@ -19,7 +19,7 @@ As an example, consider the following plot of weekly spending on entertainment (
 
 ![](../Lectures/figs/condmean.png)
 
-If we're asked to summarize the relationship between wages and spending, we could use conditional means. That's what the blue line above does: for each of the four quartiles of hourly wages, it provides the average spending on entertainment. We could expand this logic and include both more levels of hourly wages and other variables with which to calculate the mean-- for example, hourly wages and level of education. The problem is that this approach gives us lots of numbers back.
+If we're asked to summarize the relationship between wages and spending, we could use conditional means. That's what the blue line above does: for each of the four quartiles of hourly wages, it provides the average spending on entertainment. We could exxpand this logic and include both more levels of hourly wages and other variables with which to calculate the mean-- for example, hourly wages and level of education. The problem is that this approach gives us lots of numbers back.
 
 The graphic below fits a line (in red) to the data:
 
@@ -455,12 +455,12 @@ The second thing to do is to visualize the errors as a scatter plot, where the e
 
 ```{r}
 p <- mvEval1 %>%
-  ggplot(aes(x = log_budget,y = errors,text = title)) + 
+  ggplot(aes(x = log_budget,y = errors)) + 
   geom_point() + 
   geom_smooth() + 
   geom_hline(yintercept = 0,linetype = 'dashed')
 
-ggplotly(p)
+p
 ```
 
 As we can see, our model does poorly, as indicated by the curved `geom_smooth()` line. Substantively, this means that we are dramatically **underestimating** lower budget movies and, to a lesser extend, **underestimating** big budget movies. In both cases, our errors are positive. 
