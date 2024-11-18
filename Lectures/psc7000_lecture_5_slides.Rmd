@@ -45,21 +45,28 @@ knitr::knit_hooks$set(chunk = function(x, options) {
 
 # Agenda
 
-1. Modeling Conditional Variation
+**First half of class:**
 
-2. Adding Regression to the **Process**
+  1. Modeling Conditional Variation
 
-3. Introducing the Data
+  2. Adding Regression to the **Process**
 
-4. Demonstrating Regressions
+  3. Introducing the Data
 
-5. Skew, logs, and coefficients
+  4. Demonstrating Regressions
+  
+--
 
-6. Evaluating a regression: Univariate and multivariate visualization of errors
+**Second half of class:**
 
-7. Root Mean Squared Error (RMSE)
+  5. Skew, logs, and coefficients
+ 
+  6. Evaluating a regression: Univariate and multivariate visualization of errors
 
-8. Cross Validation
+  7. Root Mean Squared Error (RMSE)
+
+  8. Cross Validation
+
 
 ---
 
@@ -619,7 +626,7 @@ glimpse(debt)
   
   4. **Regression** (today)
   
-  5. Evaluation of **errors** (next lecture)
+  5. Evaluation of **errors** 
 
 ---
 
@@ -1498,9 +1505,7 @@ mv_analysis %>%
 
 --
 
-  - Could add additional predictors $X_2$, $X_3$, etc.
-  
-  - Next lecture!
+  - Could add additional predictors $X_2$, $X_3$, etc. (we'll see this in a few slides)
 
 ---
 
@@ -1893,9 +1898,12 @@ inds <- sample(1:nrow(mv_analysis),
                replace = F)
 ```
 
-
 ---
-# Conclusion: Area 51 vs. EEAAO
 
-<center><img src="figs/Area51.jpg" width = "50%"></center>
-<center><img src="figs/eeaao.jpg" width = "50%"></center>
+# Next time:
+
+1. Multivariate regression
+
+2. Regression with categorical variables
+
+3. Logit regression (binary outcome variable)
