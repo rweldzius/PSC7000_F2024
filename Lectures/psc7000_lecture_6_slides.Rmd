@@ -1,0 +1,1483 @@
+---
+title: "Multivariate Regression & Logistic Regression"
+subtitle: "(Last Lecture!)"
+author: "Prof. Weldzius"
+institute: "Villanova University"
+date: "Slides Updated: `r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    # self_contained: true
+    chakra: libs/remark-latest.min.js
+    lib_dir: libs
+    css:
+      - default
+      - css/lexis.css
+      - css/lexis-fonts.css
+    #seal: false
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      slideNumberFormat: "%current%/%total%"
+      ratio: "16:9"
+
+---
+
+```{css,echo = F}
+.small .remark-code { /*Change made here*/
+  font-size: 85% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 50% !important;
+}
+```
+
+```{r,include=F}
+set.seed(123)
+options(width=60)
+knitr::opts_chunk$set(fig.align='center',fig.width=9,fig.height=5,message=F,warning=F)
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\n \\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
+```
+
+# Part I: Linear Regression 
+
+## Agenda
+
+1. Recap of Movie Analysis
+
+2. Multiple Regression
+
+3. Categorical Predictors
+
+---
+
+# Recap of Movie Analysis
+
+```{r,message=F,warning=F}
+require(tidyverse)
+
+mv <- read_rds('https://github.com/rweldzius/PSC4175_F2024/raw/main/Data/mv.Rds')
+```
+
+--
+
+- .blue[Theory]: the more a movie costs, the more it should make
+
+--
+
+  - If not, Hollywood would go out of business!
+  
+--
+
+- $X$: budget
+
+- $Y$: gross
+
+---
+# Area 51 vs. EEAAO
+
+<center><img src="figs/Area51.jpg" width = "50%"></center>
+<center><img src="figs/eeaao.jpg" width = "50%"></center>
+---
+
+# Step 1: Look
+
+```{r}
+summary(mv %>% select(gross,budget))
+```
+
+---
+
+# Step 1: Look
+
+```{r}
+mv %>%
+  mutate(missing = ifelse(is.na(gross) | is.na(budget),1,0)) %>%
+  group_by(year) %>%
+  summarise(propMissing = mean(missing)) %>%
+  ggplot(aes(x = year,y = propMissing)) + geom_line() #<<
+```
+
+
+---
+
+# Some quick wrangling
+
+```{r}
+mv <- mv %>%
+  drop_na(gross,budget)
+
+mv %>%
+  select(gross,budget) %>%
+  glimpse()
+```
+
+---
+
+# Step 2: Univariate Viz
+
+```{r}
+mv %>%
+  select(title,gross,budget) %>%
+  gather(metric,value,-title) %>%
+  ggplot(aes(x = value,color = metric)) + 
+  geom_density()
+```
+
+---
+
+# More Wrangling?
+
+--
+
+- Univariate visualization higlights significant **skew** in both measures
+
+  - Most movies don't cost a lot and don't make a lot
+
+  - But there are a few blockbusters that pull the density way out
+
+- Let's **wrangle** two new variables that take the log of these skewed measures
+
+  - Logging transforms skewed measures to more "normal" measures
+
+```{r}
+mv <- mv %>%
+  mutate(gross_log = log(gross),
+         budget_log = log(budget))
+```
+
+---
+
+# Step 2: Univariate Viz
+
+```{r}
+mv %>%
+  select(title,gross_log,budget_log) %>%
+  gather(metric,value,-title) %>%
+  ggplot(aes(x = value,color = metric)) + 
+  geom_density()
+```
+
+---
+
+# Step 3: Multivariate Viz
+
+```{r}
+pClean <- mv %>%
+  ggplot(aes(x = budget,y = gross)) + 
+  geom_point() + 
+  scale_x_log10(labels = scales::dollar) + 
+  scale_y_log10(labels = scales::dollar) + 
+  labs(title = "Movie Costs and Returns",
+       x = "Costs (logged budget)",
+       y = "Returns (logged gross)")
+```
+
+---
+
+# Step 3: Multivariate Viz
+
+```{r}
+pClean + geom_smooth(method = 'lm')
+```
+
+---
+
+# Step 4: Regression!
+
+```{r}
+m <- lm(gross_log ~ budget_log,data = mv)
+summary(m)
+```
+
+
+---
+
+# Step 5.1: Univariate Viz of Errors
+
+- Errors $\varepsilon = Y - \hat{Y}$
+
+  - In `R`, can also get them via `resid()` function
+
+```{r}
+mv <- mv %>%
+  mutate(errors_manual = gross_log - predict(m),
+         errors_resid = resid(m))
+
+```
+
+---
+
+# Step 5.1: Univariate Viz of Errors
+
+```{r,message=F}
+mv %>%
+  ggplot(aes(x = errors_resid)) + 
+  geom_histogram()
+```
+
+---
+
+# Step 5.2: Multivariate Viz of Errors
+
+```{r,message=F}
+mv %>%
+  ggplot(aes(x = budget_log,y = errors_resid)) + 
+  geom_point() + 
+  geom_smooth()
+```
+
+---
+
+# Step 5.3: Cross Validated RMSE
+
+```{r}
+set.seed(123)
+rmseBudget <- NULL
+for(i in 1:100) {
+  inds <- sample(1:nrow(mv),size = round(nrow(mv)/2),replace = F)
+  
+  train <- mv %>% slice(inds)
+  test <- mv %>% slice(-inds)
+  
+  mTrain <- lm(gross_log ~ budget_log,train)
+  
+  test$preds <- predict(mTrain,newdata = test)
+  
+  rmse <- sqrt(mean((test$gross_log - test$preds)^2,na.rm=T))
+  rmseBudget <- c(rmseBudget,rmse)
+}
+
+mean(rmseBudget)
+```
+
+---
+
+
+# Thinking like a .blue[scientist]
+
+--
+
+- Our previous model predicted `gross` as a function of `budget`
+
+--
+
+- .blue[Theoretically], is this sensible?
+
+--
+    
+  1. Bigger budgets &rarr; famous actors &rarr; mass appeal &rarr; more tickets
+  
+--
+
+  2. Bigger budgets &rarr; advertising money &rarr; mass appeal &rarr; more tickets
+  
+--
+
+- But what if the movie is just...not good?
+
+
+---
+
+# Alternative .blue[Theory]
+
+--
+
+- Good movies make more money
+
+--
+
+  - .blue[Theory]: good movies &rarr; recommendations &rarr; more tickets
+  
+--
+
+- Predict gross with .red[IMDB rating] (`score`)
+
+```{r}
+pIMDB <- mv %>%
+  ggplot(aes(x = score,y = gross)) + 
+  geom_point() + 
+  labs(title = "Movie gross as a function of public perception",
+       x = "IMDB score",
+       y = "Gross (logged)") + 
+  scale_y_log10(label = scales::dollar) + 
+  geom_smooth(method = 'lm',se = F)
+```
+
+---
+
+# Alternative .red[Model]
+
+```{r,message = F}
+pIMDB
+```
+
+---
+
+# Evaluating the Model
+
+- Let's go straight to RMSE
+
+  - We can have `R` calculate errors for us with `residuals()` command
+
+```{r}
+m2 <- lm(gross_log ~ score,mv)
+error <- residuals(m2)
+(rmseScore <- sqrt(mean(error^2)))
+```
+
+- Even worse!
+
+---
+
+# Multivariate Regression
+
+--
+
+- Recall that we can **model** our outcome with multiple **predictors**
+
+$$Y = \alpha + \beta_1 X_1 + \beta_2 X_2 + \dots + \varepsilon$$
+
+--
+
+- How much better can we predict `gross` with **BOTH** `budget` and `score`?
+
+```{r}
+m3 <- lm(gross_log ~ budget_log + score,mv)
+error <- residuals(m3)
+(rmseBudgScore <- sqrt(mean(error^2)))
+```
+
+---
+
+# Comparing Models
+
+--
+
+- Which model best predicts movie revenues?
+
+```{r}
+p <- data.frame(budget = mean(rmseBudget),
+           IMDB = rmseScore,
+           combined = rmseBudgScore) %>%
+  gather(model,rmse) %>%
+  ggplot(aes(x = reorder(model,rmse),y = rmse)) + 
+  geom_bar(stat = 'identity') + 
+  labs(title = "Best Regression Model",
+       subtitle = "Predicting a movie's revenue",
+       y = "RMSE (lower is better)",
+       x = "Model") + 
+  coord_flip()
+```
+
+---
+
+# Comparing Models
+
+- Which model best predicts movie revenues?
+
+```{r}
+p
+```
+
+
+---
+
+# Why RMSE?
+
+--
+
+- Want to understand how good / bad our model is
+
+--
+
+- Can use it to compare models
+
+--
+
+- Do we improve our model with `score`?
+
+---
+
+# Why RMSE?
+
+```{r}
+set.seed(123)
+bsRes <- NULL
+for(i in 1:100) {
+  inds <- sample(1:nrow(mv),size = round(nrow(mv)/2),replace = F)
+  train <- mv %>% slice(inds)
+  test <- mv %>% slice(-inds)
+  
+  mB <- lm(gross_log ~ budget_log,train)
+  mS <- lm(gross_log ~ score,train)
+  mC <- lm(gross_log ~ budget_log + score,train)
+  
+  bsRes <- test %>%
+    mutate(pB = predict(mB,newdata = test),
+           pS = predict(mS,newdata = test),
+           pC = predict(mC,newdata = test)) %>%
+    summarise(Budget = sqrt(mean((gross_log - pB)^2,na.rm=T)),
+              Score = sqrt(mean((gross_log - pS)^2,na.rm=T)),
+              Combined = sqrt(mean((gross_log - pC)^2,na.rm=T))) %>%
+    bind_rows(bsRes)
+}
+```
+
+---
+
+# Quick Aside: alternative `code`
+
+- `sample_n()` and `anti_join()`
+
+```{r}
+set.seed(123)
+bsRes <- NULL
+for(i in 1:100) {
+  train <- mv %>%
+    sample_n(size = round(nrow(.)*.8),replace = F)
+  test <- mv %>%
+    anti_join(train) #<<
+
+  mB <- lm(gross_log ~ budget_log,train)
+  mS <- lm(gross_log ~ score,train)
+  mC <- lm(gross_log ~ budget_log + score,train)
+  
+  bsRes <- test %>%
+    mutate(pB = predict(mB,newdata = test),
+           pS = predict(mS,newdata = test),
+           pC = predict(mC,newdata = test)) %>%
+    summarise(Budget = sqrt(mean((gross_log - pB)^2,na.rm=T)),
+              Score = sqrt(mean((gross_log - pS)^2,na.rm=T)),
+              Combined = sqrt(mean((gross_log - pC)^2,na.rm=T))) %>%
+    bind_rows(bsRes) 
+}
+```
+
+---
+
+# Why RMSE?
+
+```{r}
+bsRes %>%
+  summarise_all(mean,na.rm=T)
+```
+
+---
+
+# Visualizing
+
+```{r}
+bsRes %>%
+  gather(model,rmse) %>%
+  ggplot(aes(x = rmse,y = reorder(model,rmse))) + 
+  geom_violin()
+```
+
+
+---
+
+# Categorical Data
+
+--
+
+- Thus far, only using continuous variables
+
+--
+
+- But we can do regression with categorical data too!
+
+--
+
+- The Bechdel Test: 3 questions of a movie
+
+--
+
+  1. Does it have two women in it?
+  2. Who talk to each other?
+  3. About something other than a man?
+  
+```{r}
+mv %>%
+  count(bechdel_score)
+```
+
+---
+
+# Research Question
+
+--
+
+- .blue[Do movies that pass the Bechdel Test make more money?]
+
+--
+
+  - .blue[Theory:] Women are ~50% of the population. Movies that pass the test are more appealing to women.
+  
+--
+
+  - .blue[Hypothesis:] Movies that pass the test make more money.
+  
+--
+
+- .red[Wrangling:] Let's turn the `bechdel_score` variable into a binary
+
+```{r}
+mv <- mv %>%
+  mutate(bechdel_bin = ifelse(bechdel_score == 3,1,0)) %>%
+  mutate(bechdel_factor=recode_factor(bechdel_bin,
+                                      `1`="Pass",
+                                      `0`="Fail",
+                                      ))
+```
+
+---
+
+# Regression
+
+--
+
+- We can add the binary factor to our regression
+
+```{r}
+summary(lm(gross_log ~ bechdel_factor,mv))
+```
+
+---
+
+# Regression
+
+- Coefficient is positive
+
+--
+
+- What is the interpretation?
+
+--
+
+  - Movies that fail make more money...
+  
+--
+
+  - ...than what?
+  
+--
+
+  - Movies that pass the Bechdel Test
+  
+--
+
+- Categorical variables are **always interpreted in relation to the hold-out category**!
+
+---
+
+# Regression
+
+- Movies that fail the test make more money!?
+
+--
+
+- **REMEMBER**: Correlation $\neq$ causation
+
+--
+
+  - What might explain this pattern?
+  
+--
+
+  - Budgets in a sexist Hollywood!
+  
+--
+
+  - Movies that fail the test get larger budgets
+  
+--
+
+  - Budgets are positively associated with gross
+  
+--
+
+- So we want to "control" for budget by adding it to our regression
+
+```{r}
+mBechCtrl <- lm(gross_log ~ budget_log + bechdel_factor,mv)
+```
+
+---
+
+# Regression
+
+```{r}
+summary(mBechCtrl)
+```
+
+---
+
+# Regression
+
+- Our hypothesis is supported!
+
+--
+
+- What about non-binary categorical variables?
+
+```{r}
+mv %>%
+  count(rating)
+```
+
+---
+
+# Categorical
+
+- Let's first remove rarely-occurring ratings
+
+```{r}
+mvAnalysis <- mv %>%
+  filter(!rating %in% c('Approved','TV-14','TV-MA','TV-PG','X'))
+```
+
+---
+
+# Categorical
+
+```{r}
+summary(lm(gross_log ~ rating,mvAnalysis))
+```
+
+---
+
+# Categorical
+
+- Everything makes less money than the hold-out category!
+
+--
+
+  - "G"-rated movies are powered by children
+  
+--
+
+- What if we wanted to compare to a different reference category?
+
+```{r}
+mvAnalysis <- mvAnalysis %>%
+  mutate(rating = factor(rating,
+                         levels = c('R','PG-13','PG','G','Not Rated')))
+
+mRating2 <- lm(gross_log ~ rating,mvAnalysis)
+```
+
+---
+
+# Categorical
+
+```{r}
+summary(mRating2)
+```
+
+---
+
+# Cross Validation
+
+- This is why `sample_n()` is useful
+
+```{r,warning = F}
+set.seed(123)
+rmseRes_rating <- NULL
+for(i in 1:100) {
+  train <- mvAnalysis %>%
+    group_by(rating) %>%
+    sample_n(size = round(n()*.8),replace = F)
+  test <- mvAnalysis %>% anti_join(train)
+  
+  m <- lm(gross_log ~ rating,train)
+  rmseRes_rating <- test %>%
+    mutate(preds = predict(m,newdata = test)) %>%
+    summarise(rmse = sqrt(mean((gross_log - preds)^2,na.rm=T))) %>%
+    bind_rows(rmseRes_rating)
+}
+rmseRes_rating %>% summarise(rmse = mean(rmse)) #<<
+```
+
+---
+
+# Break Time! 
+
+<center><img src="figs/break3.jpg" height=440px width=640px></center>
+
+
+---
+
+# Part II: Logistic Regression 
+
+## Agenda
+
+1. Classification
+
+2. Fortnite gaming (i.e., Prof's desperate attempt to be relevant)
+
+```{r,message=F,warning=F}
+require(tidyverse)
+fn <- read_rds('https://github.com/rweldzius/PSC4175_F2024/raw/main/Data/fn_cleaned_final.rds')
+```
+
+
+---
+
+# Definitions
+
+- *Classification:* predicting the **class** of given data points via **predictive modeling**
+
+--
+
+  - *Class*: AKA targets, labels, or **categories**
+  
+--
+
+  - *Predictive Modeling*: Approximate mapping function $f: X \rightarrow Y$
+  
+--
+
+  - $X$: predictor variables
+  
+  - $Y$: outcome variable
+  
+  - $f$: ??
+  
+---
+
+# Mapping Functions
+
+- We have already used mapping functions!
+
+--
+
+- Linear Regression
+
+--
+
+  - $f$: $Y = \alpha + \beta X + \varepsilon$
+  
+--
+
+- Underlying idea: $X$ contain information about $Y$
+
+---
+
+# It is in the $Y$
+
+- If $Y$ is continuous, we use OLS (ordinary least squares) regression
+
+--
+
+- If $Y$ is **binary**, we use "logistic" regression (AKA "logit")
+
+--
+
+  - As always, this is a **deep** area of study for those interested
+  
+--
+
+- Today, using OLS for binary $Y$
+
+--
+
+  - Next few classes: replacing OLS regression with logit
+  
+
+---
+
+# Fortnite
+
+<center><img src="https://cdn2.unrealengine.com/blade-2560x1440-2560x1440-d4e556fb8166.jpg" width="80%"></center>
+
+---
+
+# Fortnite
+
+- Goal is to win (i.e., be the last player alive)
+
+- Professional e-sports teams want to maximize this probability
+
+- .blue[Research Question]: How can we increase the number of victories?
+
+--
+
+- **NB**: we are moving out of the **.blue[Research]** camp now, and into the **.red[Prediction]** world
+
+--
+
+  - We don't care so much about *why* a relationship exists, we just want to get accurate predictions
+
+--
+
+  - Theory can still help us, but want to start with the data to get our thinking started
+
+---
+
+# The Data
+
+```{r, message=FALSE}
+glimpse(fn)
+```
+
+---
+
+# The Data
+
+- Start with the basics:
+
+--
+
+  1. What is the unit of analysis?
+  
+  2. Which variables are we interested in?
+
+
+---
+
+# Prediction
+
+$$Y = \alpha + \beta_1 X_1 + \beta_2 X_2 + \dots + \varepsilon$$
+
+--
+
+- $Y$: victory (`won`)
+
+--
+
+- $X$: ??
+
+--
+
+  - In prediction, we don't care about **theory** or **research questions**
+
+  - Just want to maximize **accuracy**...which $X$'s are the "best"?
+  
+  - But theory can still help us make sensible choices about which $X$'s to use
+  
+--
+
+- Look at univariate & conditional relationships
+
+---
+
+# The Data
+
+- Outcome $Y$: `won`
+
+```{r,message=F,warning=F}
+require(scales)
+fn %>%
+  summarise(`Win %` = percent(mean(won)))
+```
+
+--
+
+- Multivariate analysis?
+
+---
+
+# Which $X$?
+
+```{r}
+fn %>%
+  group_by(mental_state) %>%
+  summarise(pr_win = mean(won))
+```
+
+---
+
+# Which $X$?
+
+```{r}
+fn %>%
+  group_by(gameIdSession) %>%
+  summarise(pr_win = mean(won))
+```
+
+---
+
+# Which $X$?
+
+```{r}
+fn %>%
+  group_by(gameIdSession) %>%
+  summarise(pr_win = mean(won)) %>%
+  ggplot(aes(x = gameIdSession,y = pr_win)) + 
+  geom_point()
+```
+
+---
+
+# Which $X$?
+
+```{r}
+fn %>%
+  ggplot(aes(x = hits,y = won)) + 
+  geom_point()
+```
+
+---
+
+# Which $X$?
+
+```{r}
+fn %>%
+  ggplot(aes(x = hits,y = won)) + 
+  geom_jitter()
+```
+
+---
+
+# Heatmaps
+
+- Look at 3-dimensions of data
+
+--
+
+  - Done this before by tweaking `fill`, `color`, or `size`
+  
+--
+
+- `geom_tile()`: create a heatmap
+
+```{r}
+p <- fn %>%
+  mutate(accuracy_decile = ntile(hits,n=10)) %>% # Bin hits by decile (10%)
+  group_by(accuracy_decile,mental_state) %>% # Calculate average winning by mental state and accuracy
+  summarise(pr_win = mean(won),
+            .groups = 'drop') %>%
+  ggplot(aes(x = factor(mental_state),
+             y = factor(accuracy_decile), # Both x and y-axes are factors
+             fill = pr_win)) + # Fill by third dimension
+  geom_tile() + # Creates rectangles
+  scale_fill_gradient(limits = c(0,1)) # Set fill color (can do much more here)
+```
+
+---
+
+# Heatmaps
+
+```{r}
+p
+```
+
+---
+
+# Simplest Predictions
+
+- Remember: regression is just fancier conditional means
+
+```{r}
+fn <- fn %>%
+  mutate(hits_decile = ntile(hits,n=10)) %>% # Bin hits by decile (10%)
+  group_by(hits_decile,mental_state) %>% # Calculate average winning by mental state and accuracy
+  mutate(prob_win = mean(won)) %>% # use mutate() instead of summarise() to avoid collapsing the data
+  mutate(pred_win = ifelse(prob_win > .5,1,0)) %>% # If the probability is greater than 50-50, predict a win
+  ungroup()
+```
+
+---
+
+# Simplest Predictions
+
+- Conditional means
+
+```{r}
+fn %>%
+  group_by(won,pred_win) %>%
+  summarise(nGames=n(),.groups = 'drop')
+```
+
+--
+
+- How good is this? Think about the underlying goal...we want a model that accurately predicts whether a game is won or not
+
+- The `won` column is the **truth**...it tells us whether the game was won or not
+
+- The `pred_win` column is our **prediction**
+
+---
+
+# Accuracy
+
+- What is "accuracy"?
+
+--
+
+  - Proportion "correct" predictions
+  
+--
+
+- For a binary outcome, "accuracy" has two dimensions
+
+--
+
+  - Proportion of correct `1`s: **Sensitivity**
+  
+  - Proportion of correct `0`s: **Specificity**
+  
+---
+
+# Accuracy
+
+```{r}
+(sumTab <- fn %>%
+  group_by(won) %>%
+  mutate(total_games = n()) %>%
+  group_by(won,pred_win,total_games) %>%
+  summarise(nGames=n(),.groups = 'drop') %>%
+  mutate(prop = nGames / total_games))
+```
+
+--
+
+- Overall accuracy: (`r (sumTab %>% filter(won == 0 & pred_win == 0) %>% pull(nGames))`+`r (sumTab %>% filter(won == 1 & pred_win == 1) %>% pull(nGames))`) / (`r (sumTab %>% filter(won == 0 & pred_win == 0) %>% pull(total_games))`+`r (sumTab %>% filter(won == 1 & pred_win == 1) %>% pull(total_games))`) = `r percent(((sumTab %>% filter(won == 0 & pred_win == 0) %>% pull(nGames)) + (sumTab %>% filter(won == 1 & pred_win == 1) %>% pull(nGames))) / ((sumTab %>% filter(won == 0 & pred_win == 0) %>% pull(total_games)) + (sumTab %>% filter(won == 1 & pred_win == 1) %>% pull(total_games))))`
+
+- But we are doing **great** at predicting losses (`r percent(sumTab %>% filter(won == 0 & pred_win == 0) %>% pull(prop))`)...
+
+- ...and **terribly** at predicting wins (`r percent(sumTab %>% filter(won == 1 & pred_win == 1) %>% pull(prop))`)
+
+---
+
+# Regression
+
+```{r,message = F}
+fn %>%
+  ggplot(aes(x = damage_to_players,y = won)) + 
+  geom_point() + 
+  geom_smooth(method = 'lm')
+```
+
+---
+
+# Regression
+
+- Binary outcome variable!
+
+--
+
+  - A linear regression is not the best solution
+  
+--
+
+  - Predictions can exceed support of $Y$
+
+--
+
+- But it can still work! **linear probability model**
+
+```{r}
+mLM <- lm(won ~ hits + accuracy + mental_state,fn)
+```
+
+---
+
+# Linear Regression
+
+```{r}
+require(broom) # broom package makes it easy to read regression output
+tidy(mLM) %>% # This would be the same as summary(mLM)
+  mutate_at(vars(-term),function(x) round(x,5))
+```
+
+
+---
+
+# Evaluating Predictions
+
+```{r}
+mLM <- lm(won ~ hits + accuracy + mental_state + damage_taken + head_shots + gameIdSession,fn)
+fn %>%
+  mutate(preds = predict(mLM)) %>%
+  mutate(predBinary = ifelse(preds > .5,1,0)) %>%
+  select(won,predBinary,preds)
+```
+
+---
+
+# Evaluating Predictions
+
+
+```{r}
+(sumTab <- fn %>%
+  mutate(pred_win = ifelse(predict(mLM) > .5,1,0)) %>%
+  group_by(won) %>%
+  mutate(total_games = n()) %>%
+  group_by(won,pred_win,total_games) %>%
+  summarise(nGames=n(),.groups = 'drop') %>%
+  mutate(prop = percent(nGames / total_games)) %>%
+  ungroup() %>%
+  mutate(accuracy = percent(sum((won == pred_win)*nGames) / sum(nGames))))
+```
+
+---
+
+# Evaluating Predictions
+
+- Overall accuracy is just the number of correct predictions (either `0` or `1`) out of all possible
+
+--
+
+  - Is `r sumTab$accuracy[1]` good?
+
+--
+
+  - What would the dumbest guess be? Never win! `r percent(1-mean(fn$won))`
+
+--
+
+- Might also want to care about just `1`s
+
+--
+
+  - **Sensitivity**: Predicted wins / actual wins = `r sumTab %>% filter(won == 1 & pred_win == 1) %>% pull(prop)`
+  
+--
+
+- Also might care about just `0`s
+
+--
+
+  - **Specificity**: Predicted losses / actual losses = `r sumTab %>% filter(won == 0 & pred_win == 0) %>% pull(prop)`
+  
+---
+
+# Thresholds
+
+- Shifting the threshold for `0` or `1` prediction can matter
+
+--
+
+```{r}
+fn %>%
+  mutate(pred_win = ifelse(predict(mLM) > .4,1,0)) %>%
+  group_by(won) %>%
+  mutate(total_games = n()) %>%
+  group_by(won,pred_win,total_games) %>%
+  summarise(nGames=n(),.groups = 'drop') %>%
+  mutate(prop = percent(nGames / total_games)) %>%
+  ungroup() %>%
+  mutate(accuracy = percent(sum((won == pred_win)*nGames) / sum(nGames)))
+```
+
+---
+
+# Thresholds
+
+- Shifting the threshold for `0` or `1` prediction can matter
+
+```{r}
+fn %>%
+  mutate(pred_win = ifelse(predict(mLM) > .7,1,0)) %>%
+  group_by(won) %>%
+  mutate(total_games = n()) %>%
+  group_by(won,pred_win,total_games) %>%
+  summarise(nGames=n(),.groups = 'drop') %>%
+  mutate(prop = percent(nGames / total_games)) %>%
+  ungroup() %>%
+  mutate(accuracy = percent(sum((won == pred_win)*nGames) / sum(nGames)))
+```
+
+- Restricting to above 70% means we don't think anyone wins!
+
+---
+
+# Thresholds
+
+- We could keep trying different values until we hit on one that maximizes our accuracy
+
+--
+
+- But this is inefficient! Let's loop it instead!
+
+--
+
+
+```{r}
+toplot <- NULL
+for(thresh in seq(0,1,by = .025)) {
+  toplot <- fn %>%
+  mutate(pred_win = ifelse(predict(mLM) > thresh,1,0)) %>%
+  group_by(won) %>%
+  mutate(total_games = n()) %>%
+  group_by(won,pred_win,total_games) %>%
+  summarise(nGames=n(),.groups = 'drop') %>%
+  mutate(prop = nGames / total_games) %>%
+  ungroup() %>%
+  mutate(accuracy = sum((won == pred_win)*nGames) / sum(nGames)) %>%
+  mutate(threshold = thresh) %>%
+    bind_rows(toplot)
+}
+```
+
+---
+
+# Thresholds
+
+- We might only care about accuracy by itself (although this is a bit naive)
+
+.small[
+```{r}
+toplot %>%
+  select(accuracy,threshold) %>%
+  distinct() %>%
+  ggplot(aes(x = threshold,y = accuracy)) + 
+  geom_line()
+```
+]
+
+---
+
+# Thresholds
+
+.small[
+```{r}
+toplot %>%
+  mutate(metric = ifelse(won == 1 & pred_win == 1,'Sensitivity',
+                         ifelse(won == 0 & pred_win == 0,'Specificity',NA))) %>%
+  drop_na(metric) %>%
+  ggplot(aes(x = threshold,y = prop,color = metric)) + 
+  geom_line()
+```
+]
+
+
+---
+
+# ROC Curve
+
+- Receiver-Operator Characteristic (ROC) Curve
+
+--
+
+- Commonly used to evaluate classification methods
+
+--
+
+  - X-axis: 1-specificity
+
+  - Y-axis: sensitivity
+
+--
+
+```{r}
+p <- toplot %>%
+  mutate(metric = ifelse(won == 1 & pred_win == 1,'Sensitivity',
+                         ifelse(won == 0 & pred_win == 0,'Specificity',NA))) %>%
+  drop_na(metric) %>%
+  select(prop,metric,threshold) %>%
+  spread(metric,prop) %>%
+  arrange(desc(Specificity),Sensitivity) %>%
+  ggplot(aes(x = 1-Specificity,y = Sensitivity)) + 
+  geom_line() + 
+  xlim(c(0,1)) + ylim(c(0,1)) + 
+  geom_abline(slope = 1,intercept = 0,linetype = 'dotted') + 
+  ggridges::theme_ridges()
+```
+
+---
+
+# ROC Curve
+
+```{r}
+p
+```
+
+--
+
+- Better models have high levels of sensitivity **and** specificity at every threshold
+
+---
+
+# AUC Measure
+
+- Area Under the Curve (AUC)
+
+--
+
+  - A single number summarizing classification performance
+  
+--
+
+```{r,message=F}
+require(tidymodels)
+roc_auc(data = fn %>%
+  mutate(pred_win = predict(mLM),
+         truth = factor(won,levels = c('1','0'))) %>%
+  select(truth,pred_win),truth,pred_win)
+```
+
+---
+
+# AUC
+
+- What is a "good" AUC?
+
+--
+
+  - We know it is bounded between 0 (i.e., it predicts everything **perfectly wrong**) and 1 (i.e., it predicts everything **perfectly correct**)
+  
+  - But typically we don't see AUC values less than 0.5 (why is this?)
+  
+--
+
+- AUC can be interpreted like numeric grades at Villanova (and for this class)
+
+  - 0.95+ is amazing
+  
+  - 0.9 - 0.95 is very good
+  
+  - 0.8-range is B-tier
+  
+  - 0.7-range is C-tier
+  
+  - 0.6-range is really bad
+  
+  - AUC values less than 0.6 are failing
+
+---
+
+# Party time!
+
+- Adding more variables / trying different combinations
+
+--
+
+- **Workflow**
+
+--
+
+  1. Train models
+  
+  2. Predict models
+  
+  3. Evaluate models
+  
+---
+
+# Train models
+
+```{r}
+m1 <- lm(won ~ hits,fn)
+m2 <- lm(won ~ hits + head_shots,fn)
+m3 <- lm(won ~ hits + accuracy + head_shots,fn)
+m4 <- lm(won ~ hits + accuracy + head_shots + mental_state,fn)
+m5 <- lm(won ~ hits + accuracy + head_shots + mental_state + distance_traveled,fn)
+m6 <- lm(won ~ hits + accuracy + mental_state + head_shots + distance_traveled + gameIdSession,fn)
+```
+
+---
+
+# Predict models
+
+```{r}
+toEval <- fn %>%
+  mutate(m1Preds = predict(m1),
+         m2Preds = predict(m2),
+         m3Preds = predict(m3),
+         m4Preds = predict(m4),
+         m5Preds = predict(m5),
+         m6Preds = predict(m6),
+         truth = factor(won,levels = c('1','0')))
+```
+
+---
+
+# Evaluate models
+
+```{r}
+rocRes <- NULL
+for(model in 1:6) {
+  rocRes <- roc_auc(toEval,truth,paste0('m',model,'Preds')) %>%
+    mutate(model = paste0('Model ',model)) %>%
+    bind_rows(rocRes)
+}
+```
+
+---
+
+# Evaluate models
+
+```{r}
+rocRes %>%
+  ggplot(aes(x = .estimate,y = reorder(model,.estimate))) + 
+  geom_bar(stat = 'identity') + 
+  ggridges::theme_ridges() + labs(x = 'AUC',y = 'Regression Model')
+```
+
+---
+
+# OVERFITTING
+
+- Cross validation to the rescue!
+
+.tiny[
+```{r}
+set.seed(123)
+cvRes <- NULL
+for(i in 1:100) {
+  # Cross validation prep
+  inds <- sample(1:nrow(fn),size = round(nrow(fn)*.8),replace = F)
+  train <- fn %>% slice(inds)
+  test <- fn %>% slice(-inds)
+
+  # Training models
+  m1 <- lm(won ~ hits,train)
+  m2 <- lm(won ~ hits + head_shots,train)
+  m3 <- lm(won ~ hits + accuracy + head_shots,train)
+  m4 <- lm(won ~ hits + accuracy + head_shots + mental_state,train)
+  m5 <- lm(won ~ hits + accuracy + head_shots + mental_state + distance_traveled,train)
+  m6 <- lm(won ~ hits + accuracy + mental_state + head_shots + distance_traveled + gameIdSession,train)
+
+  # Predicting models
+  toEval <- test %>%
+    mutate(m1Preds = predict(m1,newdata = test),
+           m2Preds = predict(m2,newdata = test),
+           m3Preds = predict(m3,newdata = test),
+           m4Preds = predict(m4,newdata = test),
+           m5Preds = predict(m5,newdata = test),
+           m6Preds = predict(m6,newdata = test),
+           truth = factor(won,levels = c('1','0')))
+
+  # Evaluating models
+  rocResBS <- NULL
+  for(model in 1:6) {
+    rocResBS <- roc_auc(toEval,truth,paste0('m',model,'Preds')) %>%
+      mutate(model = as.character(get(paste0('m',model))$call$formula)[3]) %>%
+      bind_rows(rocResBS)
+  }
+  cvRes <- rocResBS %>%
+    mutate(bsInd = i) %>%
+    bind_rows(cvRes)
+}
+```
+]
+---
+
+# Cross Validation AUC
+
+```{r}
+cvRes %>%
+  ggplot(aes(x = .estimate,y = factor(reorder(model,.estimate)))) + 
+  geom_boxplot() + labs(x = 'Distribution of AUC',y = 'Specification')
+```
+
+---
+
+# Conclusion
+
+- Classification is just a type of prediction
+
+--
+
+  - We used linear regression
+  
+--
+
+  - But there are **much** fancier algorithms out there
