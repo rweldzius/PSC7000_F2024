@@ -1,0 +1,1614 @@
+---
+title: "Clustering"
+subtitle: "Homework 17"
+author: "Prof. Weldzius"
+institute: "Villanova University"
+date: "Due Date: 2024-11-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,error=TRUE,warning = FALSE,message = FALSE)
+```
+
+# Clustering: Part I
+
+The last few times we have been talking about using a regression to characterize a relationship between variables. As we saw, by making a few assumptions, we can use either linear or logistic regression to summarize not only how variables are related to one another, but also how to use that relationship to predict out-of-sample (or future) observations.
+  
+We are now going to introduce a different algorithm - the `kmeans` algorithm.  This specific algorithm is part of a larger class of algorithms/models that have been designed to identify relationships within the data.  This is sometimes called "clustering" or "segmentation".  The goal is to figure out clusters/segments of data that are "similar" based on observable features.
+
+The goal is to therefore try to figure out an underlying structure in our data.  That is, we want to use the data to learn about which observations are more or less similar. Because I do not know what the true relationship is, what we are doing is sometimes called "Unsupervised" learning.  In contrast, "supervised" learning is when we are actively bringing information in and "supervising" the characterization being done.  We will see an example of this in a few lectures, but for now we are going to start with an unsupervised approach.
+
+Efforts to characterize the relationship within data to determine which observations cluster together (or are segmented) is often an important first step for determining the empirical regularity of interest.
+
+This is what dating sites (e.g., e-harmony) do when they try to figure out which individuals are more or less similar.  This is what Facebook and Tik-Tok does when it tries to determine what to show you in your feed.  This is what Netflix does when recommending your next series to watch. Personality tests and profiles are another example of this.  These tools are also used in marketing to identify likely consumers and by political campaigns to figure out which voters should be targeted and perhaps even how.  What they actually do is obviously more complicated, but the basic idea is very, very similar to what we are going to learn today.
+
+#   Measurement is Sometimes Discovery
+
+One thing that will become quickly apparent is that how we measure something can have profound implications on what it means - especially if we have no theory to guide us in the organization/analysis of data.  Sometimes data exploration = measurement = discovery. 
+
+It is also important to note that nothing we are doing is causal -- the algorithm is silent as to why the relationships exist.  It is equally important to note that the analysis is descriptive, not predictive.  This is a critical point with profound implications -- if you identify segments in your data and they take proactive steps using that information, the steps you take may affect how future data is clustered.  
+
+- Clustering algorithm: discover groups of observations ``similar" to each other.
+- Unsupervised learning vs. Supervised learning.
+- Descriptive and exploratory data analysis.
+
+The algorithm we are going to use is one of the earliest implementations of clustering and it is very simple in what it does.  There are many more complicated procedures and models, but for the purposes of illustrating the general idea (and also the generic limitations of this kind of "unsupervised learning") it is easiest to start with what is perhaps one of the simplest clustering methods.
+
+The procedure used by the k-means clustering algorithm consists of several steps"
+
+1. The data scientist chooses the number of clusters/segments they wish to identify in the data of interest.  The number of clusters is given by `K` -- hence the name `kmeans`.
+2. The computer randomly chooses initial centroids of `K` clusters in the multidimensional space (where the number of dimensions is the number of variables).
+3. Given the choice of `K` centroids, the computer assigns each observation to the cluster whose centroid is the closest (in terms of Euclidian distance).  
+4. Given that assignment, the computer computes a new centroid for each cluster using the within-cluster mean of the corresponding variable.
+5. Repeat Steps 3 and 4 until the cluster assignments no longer change.
+
+So, if there are two variables, say $X$ and $Y$ and we are fitting 2 centroids, the computer will begin by randomly choosing a "centroid" for each cluster -- which is simply a point in $(x,y)$.  Say $(x_1,y_1)$ for cluster 1 and $(x_2,y_2)$ for cluster 2.  Then given this choice, the computer figures out which centroid is "closest" to each data point.  So for data point $i$ that is located at $(x_i,y_i$) the computer computes the distance from each.
+
+Given this, the Euclidean distance to cluster 1 is simply:
+$$ (x_1 -x_i)^2 + (y_1 - y_i)^2 $$
+And the Euclidean distance to cluster 2:
+$$ (x_2 -x_i)^2 + (y_2 - y_i)^2 $$
+(Note that if we have more variables we just include them in a similar fashion.) Having calculcated the distance to each of the $K$ centroids -- here 2 -- we now assign each datapoint to either cluster "1" or "2" depending on which is smaller.  After doing this for every data point, we then calculate a new centroid by taking the average of all of the points in each cluster in each variable.  So if there are $n_1$ observations allocated to cluster 1 and $n_2$ observations allocated to cluster 2 we would compute the new centroids using:
+
+$$x_1 = \sum_i^{n_1} \frac{x_i}{n_1}$$
+$$y_1 = \sum_i^{n_1} \frac{y_i}{n_1}$$
+$$x_2 = \sum_i^{n_2} \frac{x_i}{n_2}$$
+$$y_2 = \sum_i^{n_2} \frac{y_i}{n_2}$$
+
+Now, using these new values for $(x_1,y_1)$ for the centroid of cluster 1 and $(x_2,y_2)$ for the centroid of cluster 2 we reclassify all the observations to allocate each observation to the cluster with the closest centroid.  We then recalculate the centroid for each cluster after this reallocation and then we iterate over these two steps until no data points change their cluster assignment.
+
+Given this, how sensitive is this to the scale of the variables?  What does that imply?
+
+# Applications to Elections and Election Night
+
+Predicting elections requires using votes that are counted to make predictions for "similar counties." There are lots of ways to determine similarity based on past voting behavior (and demographics).
+
+Entire books have been written that try to determine how many "Americas" there are.  For example...
+
+![](../Lectures/figs/PatchworkNation.jpg){width=30%}
+
+And many "quizzes" are produced to determine what type of voter you are (more on this later!).  For example: 
+[quiz from the NY Times](https://www.nytimes.com/interactive/2021/09/08/opinion/republicans-democrats-parties.html).
+
+These are all products that are based on various types of clustering analyses that try to detect pattern in data.
+
+So let's start simple and think about the task of predicting what is going to happen in a state on Election Night.  To do so we want to segment the state into different politically relevant regions so that we can track how well candidates are doing.  Or, if you are working for a candidate, which counties should be targeted in get-out-the-vote efforts.
+
+We are going to be working with two datasets.  A dataset of votes cast in Florida counties in the 2016 election (`FloridaCountyData.Rds`) and also a dataset of the percentage of votes cast for Democratic and Republican presidential candidates in counties (or towns) for the 2004, 2008, 2012, 2016, and 2020 elections (`CountyVote2004_2020.Rds`).
+
+To begin, let's start with Florida in 2016.
+
+```{r, message=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(plotly)
+
+dat <- read_rds(file="https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/FloridaCountyData.Rds")
+glimpse(dat)
+```
+
+The first task that we face as data scientists is to determine which variables are relevant for clustering.  Put differently, which variables define the groups we are trying to find.  `kmeans` is a very simple algorithm and it assumes that every included variable is equally important for the clustering that is recovered.  As a result, if you include only garbage/irrelevant data the relationships you find will also be garbage.  The alogorithm is unsupervised in that it has no idea which variables are more or less valuable to what you are trying to find.  It is simply trying to find how the data clusters together given the data you have given it!  It cannot evaluate the quality of the data you provide.
+
+As a result, when doing `kmeans` we often start with simple visualization around data that we think is likely to be of interest. To make it interactive we can again use `plotly` package and include some `text` information in the `ggplot` `aes`thetic. We will also clean up the labels and override the default of scientific notation.  We will also change the name of the legend to make it descriptive and interpretable.
+
+```{r }
+gg<- dat %>%
+    ggplot(aes(x = Trump, y = Clinton, color = geo_strata,
+               text=paste(county_name))) +
+  geom_point(alpha = 0.3) +
+  scale_x_continuous(labels=comma) +
+  scale_y_continuous(labels=comma) +
+  labs(x="Number of Trump Votes",
+       y="Number of Clinton Votes",
+       title="Florida County Votes in 2016",
+       color = "Region")
+  
+ggplotly(gg,tooltip = "text")
+```
+
+So this suggests that counties with more Clinton votes tend to covary with counties with more Trump voters.  Obviously. So we have discovered that there are more votes for both candidates in larger counties.  So if we were to cluster based on this we would essentially find groups based on population size.  Not useful.
+
+So maybe we should look at the percentage of votes rather than the number of votes.  Let's see. Again let's improve the labels and axes and make it interactive using `plotly` to show how the code differs from the default syntax above.
+
+```{r}
+gg <- dat %>% 
+  ggplot(aes(PctTrump, PctClinton, color = geo_strata,
+               text=paste(county_name))) +
+  geom_point(alpha = 0.3) +
+  scale_y_continuous(limits = c(0,1),labels = scales::percent_format(accuracy = 1)) + 
+  scale_x_continuous(limits = c(0,1),labels = scales::percent_format(accuracy = 1)) + 
+  labs(x="Pct of Trump Votes",
+       y="Pct of Clinton Votes",
+       title="Florida County Vote Share in 2016",
+       color = "Region")
+
+ggplotly(gg,tooltip = "text")
+```
+
+So now we see that places with a higher percentage of support for Clinton have a lower support for Trump.  That seems useful if we are interested in characterizing the political context of a county.
+
+But those are highly correlated?  Do we need both percentage that support Clinton and also the percentage that support Trump?  It seems like that is the same information being "double-counted."  What if we include something like the number of eligible voters?
+
+```{r}
+gg <- dat %>% 
+  ggplot(aes(PctTrump, eligible_voters, color = geo_strata,
+               text=paste(county_name))) +
+  geom_point(alpha = 0.3) +
+  scale_y_continuous(label=comma, breaks=seq(0,2000000,by=125000)) + 
+  scale_x_continuous(limits = c(0,1),labels = scales::percent_format(accuracy = 1)) + 
+  labs(x="Pct of Trump Votes",
+       y="Number of Eligible Voters",
+       main="Florida County Election Results in 2016",
+       color = "Region")
+
+ggplotly(gg,tooltip = "text")
+```
+
+Now things get trickier.  Do we want to segment based on the number of eligible voters?  Or is it more useful to focus on support for Clinton and Trump?  This decision is hugely consequential for the groups `kmeans` will recover.  This again highlights the role of the data scientist -- _you_ need to make a decision and justify it because the decision will be consequential!
+
+To start let's characterize counties by support for Clinton and Trump.
+
+```{r}
+rawvote <- dat %>%
+  select(c(PctTrump,PctClinton)) %>%
+  drop_na()
+```
+
+Now we run by providing the data frame of all numeric data and the number of clusters -- here `centers` that we want the algorithm to find for us.
+
+```{r}
+fl.cluster1 <- kmeans(rawvote, centers=2)
+```
+
+Now call the object to see what we have just created and all of the objects that we can now work with.
+
+```{r}
+fl.cluster1
+```
+
+Alternatively, we can also call the `tidy` function to produce a tibble of the overall fit:
+
+```{r}
+clusters <- tidy(fl.cluster1)
+clusters
+```
+
+In this object you can see the mean value for each variable in each cluster -- i.e., the centroid -- as well as the number of observations (here counties) belonging to each cluster, and also the within sum of squares for each cluster.  Recall that the centroid for each cluster is simply the average value of the variable for all counties that are assigned to that cluster.  (This is the same as the $x_1$, $y_1$, $x_2$, and $y_2$ defined above.)
+
+The values associated with `withinss` are the within sum of squares for all observations in a cluster.  This is the sum of the squared distances between each data point in the cluster and the centorid of that cluster.  So if $T_i$ denotes the value of `PctTrump` for county $i$ and $C_i$ denotes the value of `PctClinton` for county $i$ the within sum of squares for the $n_1$ counties that belong to cluster $1$ is given by:
+
+$$\sum_i^{n_1} (\bar{T}_1 - T_i)^2 + (\bar{C}_1 - C_i)^2$$
+
+if we use $\bar{T}_1$ to denote the mean of support for Trump in the $n_1$ counties allocated to cluster 1 and $\bar{C}_1$ to denote the mean support for Clinton in those $n_1$ counties. We will return to this later. 
+
+One important thing to note is that `kmeans` starts the algorithm by randomly choosing a centroid for each cluster and then iterating until no classifications change cluster.  As a result, the clusters we identify can depend on the initial choices and there is nothing to ensure that this results in an "optimal" in a global sense.  The classification is conditional on the initial start and the optimization is "local" and relative to that initial choice. So make sure you always set a seed!
+
+*SELF_TEST* Do a new clustering with 4 centroids called `florida.me` and look at the contests of each cluster using tidy:
+
+```{r}
+florida.me <- kmeans(rawvote, centers=4)
+tidy(florida.me)
+```
+
+Because `kmeans` is choosing random start values to start the classification the start values will matter, especially when you are fitting a lot of clusters to a high dimensional dataset (i.e., lots of variables).  Even when you are fitting a model with few clusters and few variables the start values may impact the clustering that is found.
+
+To illustrate this lets analyze the same data using the same number of clusters using a different seed value.  
+
+```{r}
+set.seed(13469) # set new seed value
+fl.cluster2 <- kmeans(rawvote,centers=2) # new clustering
+```
+
+Now lets compare how the clusters found in `fl.cluster1` compare to the clusters found in the new clustering (`fl.cluster2`) using the`table` function.
+
+```{r}
+table(fl.cluster1$cluster,fl.cluster2$cluster) # compare clusters
+```
+
+So we can see the classification is exactly flipped.  The observations are still largely clustered into the same clustering, but the labels of those clusters is changed.  Even though the same information is recovered in both clusterings, the labels of the clusters has changed.  This point is essential for replication!
+
+Typically the information we are most interested in is how the observations are clustered -- i.e., the labels contained in the `cluster` variable. So how do we get this information back to our original tibble?  Thankfully there is a function for that. The `augment` function will add the `cluster` variable from the kmeans clustering onto a tibble containing the data used in the clustering.
+
+```{r}
+dat.cluster <- augment(fl.cluster1,dat)
+```
+
+With this new augmented tibble -- `dat.cluster` -- we can now visualize how well the recovered clusters correspond with the underlying data.  While this can be more challenging when we are working with high-dimensional data (i.e.., lots of variables) in this case we can visualize the relationship because we have used only two variables in the clustering to characterize the political leanings of counties in Florida.
+
+If I want to plot the points using the cluster label, I can use the `geom_text` code to include the `label` passed to the `ggplot` `aes`thetic.
+
+```{r}
+dat.cluster %>%
+  ggplot(aes(x = PctTrump, y = PctClinton, label = .cluster)) +
+  geom_text() + 
+  scale_y_continuous(limits = c(0,1),labels = scales::percent_format(accuracy = 1)) + 
+  scale_x_continuous(limits = c(0,1),labels = scales::percent_format(accuracy = 1)) + 
+  labs(title = "Florida Counties: 2016",
+       x = "% Trump in 2016",
+       y = "% Clinton in 2016")
+```
+
+But maybe that is too messy.  The overlapping numbers is a bit distracting. 
+
+So let's switch to colored points and add in the location of the centroids. This is useful for reminding us of what `kmeans` is actually doing.  Let us pull this information from the `clusters` object we created using the `tidy()` function applied to our `kmeans` object.  Recall that the location of the centroid is just the average of every variable being analyzed.  NOTE: what happens if we replace `color` with `fill`?
+
+```{r}
+gg <- ggplot() +
+  geom_point(data=dat.cluster, aes(x = PctTrump, y = PctClinton, color = .cluster,
+                                   text=paste(county_name))) + 
+  geom_point(data=clusters, aes(x = PctTrump, y = PctClinton), size = 10, shape = "+") + 
+  labs(color = "Cluster",
+    title = "Florida Counties: 2016",
+       x = "% Trump in 2016",
+       y = "% Clinton in 2016") +
+  scale_y_continuous(limits = c(0,1),labels = scales::percent_format(accuracy = 1)) + 
+  scale_x_continuous(limits = c(0,1),labels = scales::percent_format(accuracy = 1)) 
+
+ggplotly(gg,tooltip = "text")
+```
+
+
+Recall that there is no global minimization being done in this algorithm -- all we are doing is starting with a randomly chosen centroid and then doing a (local) minimization given those start values.  As a result, you can get different classifications with different start values. Here is a simple example that again shows the sensitivity to start values. 
+
+```{r}
+set.seed(42)
+fl.cluster1 <- kmeans(rawvote,centers=2)
+
+set.seed(13469)
+fl.cluster2 <- kmeans(rawvote,centers=2)
+
+table(fl.cluster1$cluster,fl.cluster2$cluster)
+```
+
+But we can use `nstart` to try multiple initial configurations and use the one that produces the best total within sum of squares given the number of centers being chosen.  Given that we are only classifying based on two variables let's try 25 different start values.
+
+```{r}
+set.seed(42)
+fl.cluster1 <- kmeans(rawvote,centers=2,nstart=25)
+
+set.seed(13469)
+fl.cluster2 <- kmeans(rawvote,centers=2,nstart=25)
+
+table(fl.cluster1$cluster,fl.cluster2$cluster)
+```
+
+So now you can see that using multiple start values eliminates the classification differences based on the initial start value!  Now the clusters have the same counties in each -- although with different names.  What `nstart` is doing is having the algorithm try a bunch of different start values and then choose the centroid that has the lowest within sum of squares as the starting value. So while this is not doing a search over every possible start value, it chooses the "best" start value among the set of values it generates.
+
+Now think about doing a `kmeans` for three clusters.  Based on the figure we just created, where do you think the three clusters will be located.
+
+_**SELF TEST**_ Now implement this! What do you observe? Were you correct?
+
+```{r}
+# INSERT CODE HERE
+```
+
+# The variables you use matter!
+
+So what if we did cluster based on the number of votes cast?  How would that affect the conclusions we get?  Instead of clustering based on `PctTrump` and `PctClinton` do the clustering using `Trump` and `Clinton`.  Can you predict what will happen before you do it?
+
+```{r}
+rawvote <- dat %>%
+  select(c(Trump,Clinton)) %>%
+  drop_na()
+
+fl.cluster1.count <- kmeans(rawvote, centers=2)
+
+dat.cluster2 <- augment(fl.cluster1.count,dat)
+clusters <- tidy(fl.cluster1.count)
+
+clusters
+```
+
+Now graph the new clusters, labeling the county names.
+
+```{r, message=FALSE}
+gg <- ggplot() +
+  geom_point(data=dat.cluster2, aes(x = Trump, y = Clinton, color = .cluster,
+                                   text=paste(county_name))) + 
+  geom_point(data=clusters, aes(x = Trump, y= Clinton), size = 10, shape = "+") + 
+  labs(color = "Cluster",
+       title = "Florida Counties",
+       x = "Votes for Trump",
+       y = "Votes for Clinton") +
+  scale_y_continuous(label=comma) + 
+  scale_x_continuous(label=comma) 
+
+ggplotly(gg,tooltip = "text")
+```
+
+
+And finally, how do the clusters compare to one another?  If you do a table of the clusters against one another what do you observe?
+
+```{r}
+table(ByPct = fl.cluster1$cluster,
+      ByVote= fl.cluster1.count$cluster)
+```
+
+The scale matters.  What if we do a clustering using `eligible voters`, `PctTrump` and `PctClinton`.  What do you observe for a clustering of these variables using `k=2` clusters?
+
+```{r}
+rawvote3 <- dat %>%
+  select(c(eligible_voters,PctClinton,PctTrump))
+
+cluster.mix <- kmeans(rawvote3,centers=2,nstart=25)
+tidy(cluster.mix)
+```
+
+
+Now rescale the data being fit using the `scale` function to normalize the data to have mean 0 and variance 1.  (Note that `scale` just normalizes a data.frame object.) Why is this important given the alogorithm being used?  Now cluster the rescaled data.  How do the resulting clusters compare to the unrescaled clusters and also our original scaling based on the percentages -- `fl.cluster1`? 
+
+```{r}
+rawvote3.scale <- scale(rawvote3)
+summary(rawvote3.scale)
+
+cluster.mix2 <- kmeans(rawvote3.scale,centers=2,nstart=25)
+tidy(cluster.mix2)
+```
+
+How to compare? Start with the normalized vs. unnormalized clustering (i.e., same variables but different scale).
+```{r}
+table(Normalized = cluster.mix2$cluster, 
+      Unnormalized = cluster.mix$cluster)
+```
+
+Now compare to the original clustering we did using vote share (i.e., different variables and different scale).
+
+```{r}
+table(Normalized = cluster.mix2$cluster, 
+      ByPct = fl.cluster1$cluster)
+```
+
+This means...
+
+# More Data! More Clusters?
+
+Perhaps we need more data. Lets get all of the county (or town) level data from 2004 up through 2020.  Let's focus on Florida again.
+
+```{r}
+dat.all <- read_rds(file="https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/CountyVote2004_2020.Rds")
+
+dat.fl <- dat.all %>%
+  filter(state=="FL")
+```
+
+For now, let us work with `pct_rep_2016` and `pct_rep_2020` -- but try replicating the results using a different choice to see what happens. Note that `kmeans` takes a data frame with all numeric columns so let's start by creating a new tibble with just numeric data and no missingness.  
+
+```{r}
+rawvote <- dat.fl %>%
+  select(c(pct_rep_2004,pct_rep_2008,pct_rep_2012,pct_rep_2016,pct_rep_2020)) %>%
+  drop_na()
+```
+
+Again we can start by visualizing the relationship.  Since we can only think in 2 dimensions, let's look at some.
+
+```{r}
+rawvote %>%
+  ggplot(aes(x=pct_rep_2016, y=pct_rep_2020)) +
+  geom_point() +
+  labs(x="% Trump 2016", 
+       y = "% Trump 2020", 
+       title = "Trump Support in Florida Counties: 2016 & 2020") +
+  geom_abline(intercept=0,slope=1) +
+  scale_x_continuous(limits = c(0,1),labels = scales::percent_format(accuracy = 1)) + 
+  scale_y_continuous(limits = c(0,1),labels = scales::percent_format(accuracy = 1)) 
+```
+
+What if we compare Republican vote share in 2004 and 2020.  What does that show?
+
+```{r}
+rawvote %>%
+  ggplot(aes(x=pct_rep_2004, y=pct_rep_2020)) +
+  geom_point() +
+  labs(x="% Republican 2004", 
+       y = "% Republican 2020", 
+       title = "Republican Support in Florida Counties: 2004 & 2020") +
+  geom_abline(intercept=0,slope=1) +
+  scale_x_continuous(limits = c(0,1),labels = scales::percent_format(accuracy = 1)) + 
+  scale_y_continuous(limits = c(0,1),labels = scales::percent_format(accuracy = 1)) 
+```
+
+# How many clusters?
+
+So a critical question is always -- how many clusters should I use?  An issue with answering this question is that there really isn't a statistical theory to guide this determination.  More clusters will always "explain" more variation, and if we choose the number of clusters equal to the number of data points we will perfectly "fit/explain" the data. But it will be a trivial explanation and not give us any real information. Recall that one of the goals is to use the clustering to reduce the dimensionality of the data in a way that recovers a "meaningful" representation of the underlying data. 
+
+So let us explore how the clustering changes for different numbers of centers.  What we are going to do is to create a tibble called `kcluster.fl` that is going contain the results of a `kmeans` clustering for 10 different choices of `K` that varies from 1 to 10.
+
+```{r}
+kcluster.fl <- 
+  tibble(K = 1:10) %>%   # define a sequence that we will use to denote k
+  mutate(   # now we are going to create new variables in this tibble
+    kcluster = map(K, ~kmeans(rawvote, .x, nstart = 25)),   # run a kmeans clustering using k
+    tidysummary = map(kcluster, tidy), # run the tidy() function on the kcluster object
+    augmented = map(kcluster, augment, rawvote), # save the cluster to the data
+  )
+```
+
+The above code uses the `map` function which is how we can apply a function across an index.  So in line 419 we are going to take `map` to apply the sequence of `K` values we defined running from 1 to 10 the `kmeans()` algorithm applied to the `rawvotes` tibble.  The `.x` in the line reveals where we are going to substitute the value being mapped.  So the object `kcluster` is going to be a list of 10 elements -- each list element being a `kmeans` object associated with the choice of `K` centers.
+
+We then map the `tidy` function to the list of `kcluster` we just created -- creating a list called `tidysummary` where each element is the summary associated with the kth clustering. We next create a tibble that augments the original data being clustered -- `rawvotes` with the cluster label associated with the kth clustering.  (But remember that the meaning of those labels is not fixed!)
+
+So let's give in to see what we have just done.  If we take a look at the first row of `kcluster.fl` we can see that it consists of a vector of the sequence of k's we defined, and then the three list objects we created -- `kcluster`, `tidysummary`, and `augmented`.
+
+```{r}
+kcluster.fl[1,]
+```
+But to work with these objects we need to extract these lists.  Lists are a pain in R -- especially when you are starting out -- so do not think too hard about the following. What we are going to essentially do is to extract each of the list objects in `kcluster.fl` to a separate tibble. 
+
+```{r}
+clusters <- kcluster.fl %>%
+  unnest(cols=c(tidysummary))
+
+clusters
+```
+
+So clusters is a tibble that consists of the centroids associated with each of the centroids in each of the `K` clusterings we did.
+
+We can also extract the clusters associated with each of the observations by doing a similar operation on the `augmented` list we created.
+
+```{r}
+points <- kcluster.fl %>%
+  unnest(cols=c(augmented))
+
+points
+```
+
+So now we can plot the results.  To do so we are going to produce multiple plots by "facet-wrapping" using values `K`.
+
+```{r}
+p1 <- 
+  ggplot(points, aes(x = pct_rep_2004, y = pct_rep_2020)) +
+  geom_point(aes(color = .cluster), alpha = 0.8) + 
+  labs(x = "% Republican Vote 2004",
+       y = "% Republican Vote 2020",
+       color = "Cluster",
+       title = "Clusters for Various Choices of K") + 
+  facet_wrap(~ K) + 
+  scale_x_continuous(limits = c(.25,1),labels = scales::percent_format(accuracy = 1)) + 
+  scale_y_continuous(limits = c(.25,1),labels = scales::percent_format(accuracy = 1)) 
+
+p1
+```
+
+Now let's add in the centroids!
+
+```{r}
+p1 + geom_point(data = clusters, size = 4, shape = "+")
+```
+
+How does Total Within Sum of squares change as clusters increase?  Recall that the within sum of squares for each cluster is simply how far each data point in a cluster is from the centroid according to squared Euclidean distance.  Thus, if $T$ denotes `PctTrump` and $C$ denotes `PctClinton` the within sum of squares for cluster $k$ using the $n$ counties that are allocated in cluster $k$ is given by:
+
+$$WSS_k=\sum_i^n (\bar{T}_k - T_i)^2 + (\bar{C}_k - C_i)^2$$
+
+Given this, the total within sum of squares is simply the sum of the within sum of squares across the k clusters.  In other words, if we fit $K$ clusters, the total within sum of squares is:
+
+$$ TSS = \sum_k^K WSS_k$$
+
+Note that the total sum of squares will usually decrease as the number of clusters increase, Why?  Because more clusters means more centroids which will mean smaller squared distances.  If, for example, we fit a model with as many centroids as there are observations -- i.e., $K==N$ -- then the within sum of squares for every observation would be $0$ and the total sum of squares would also be $0$!  Note that the total sum of squares will not always decrease depending on number of clusters because of the dependence on start values. Especially when analyzing many variables, the results become more sensitive it is to start values! 
+
+Too see what we have created, let us take a look within the tibble `kcluster.fl` and extract the second list item -- which is the set of tibbles summarizing the overall fit.
+
+```{r}
+fits <- kcluster.fl[[2]]
+```
+
+To extract the total within sum-of-squares from this we can write a loop to extract the information.  Note that we are using `[[]]` to select an element from a list.  Then we can plot the relationship.  For simplicity I have used the standard plot command in base R rather than 
+
+
+```{r}
+tot.withinss <- NULL
+
+for(i in 1:10){
+  tot.withinss[i] <- fits[[i]]$tot.withinss
+}
+
+fit <- bind_cols(k = seq(1,10), tot.withinss = tot.withinss)
+
+ggplot(fit, aes(x=k,y=tot.withinss)) + 
+  geom_line() +
+  scale_x_continuous(breaks=seq(1,10)) + 
+  labs(x="Number of Clusters", y ="Total Within Sum of Squares")
+```
+
+# Identifying the meaning of clusters
+
+OK, so how do we interpret what this means?  Or label the clusters sensibly?  This again requires the data scientist to examine and mutate the data. 
+
+```{r}
+set.seed(13469)
+fl.cluster <- kmeans(rawvote, centers=5, nstart = 25)
+dat.cluster <- augment(fl.cluster,dat.fl)
+```
+
+```{r}
+tidy(fl.cluster) %>%
+  arrange(-pct_rep_2020)
+```
+
+Now change the order of the factor so that it is ordered from most Trump supporting to most Clinton Supporting. To do so we need to use the `factor` function to re-define the order of the levels.
+
+```{r}
+dat.cluster <- dat.cluster %>%
+  mutate(cluster = factor(.cluster, 
+                          levels=c(3,5,2,4,1)))
+```
+
+Now let's check that we did this correctly.  Let's see if the clusters are arranged by average Trump support.
+
+```{r}
+dat.cluster %>%
+  group_by(cluster) %>%
+  summarize(PctTrump = mean(pct_rep_2020))
+```
+
+Yes, but the labels are weird and unintuitive.  Let's fix this by using the `factor` function to change the `labels` associated with each factor value.
+
+```{r}
+dat.cluster <- dat.cluster %>%
+  mutate(cluster = factor(cluster, 
+                          labels=c("Very Strong Rep","Strong Rep","Rep","Toss Up","Strong Dem")))
+```
+
+Now confirm that we did not screw that up.  
+
+```{r}
+dat.cluster %>%
+  group_by(cluster) %>%
+  summarize(PctTrump = mean(pct_rep_2020))
+```
+
+This seems good to go.
+
+```{r}
+fl.centers <- as.data.frame(fl.cluster$centers)
+
+gg <- ggplot() +
+  geom_point(data=dat.cluster, aes(x = pct_rep_2020, y = pct_rep_2004, color = cluster,
+                                   text=paste(county.name)), alpha = 0.8) + 
+  geom_point(data=fl.centers, aes(x = pct_rep_2020, y = pct_rep_2004), size = 6, shape = "+") + 
+  labs(color = "Cluster",
+       title = "Florida Counties",
+       x = "Percentage Vote for Trump",
+       y = "Percentage Vote for Clinton") +
+  scale_y_continuous(limits = c(0,1),labels = scales::percent_format(accuracy = 1)) + 
+  scale_x_continuous(limits = c(0,1),labels = scales::percent_format(accuracy = 1)) 
+
+ggplotly(gg,tooltip = "text")
+```
+
+So how well does our classification compare to the one that was used by the networks on Election Night?
+
+```{r}
+table(dat.cluster$cluster,dat.cluster$party.strata)
+```
+
+Interesting....
+
+It is often also useful to summarize the distribution of key variables by the clusters we have found to try to interpret their meaning. Here we can use a boxplot to describe how the county clusters vary in terms of the average support for President Trump.
+
+```{r}
+dat.cluster %>%
+  ggplot(aes(x=cluster, y=pct_rep_2020)) +
+  geom_boxplot() + 
+  labs(x="Cluster",
+       y="Pct Trump",
+       title="Support for Trump Across Counties in FL")
+```
+
+We could also merge in county-level demographic data (using Census `fips_code`) and see how things change if we cluster counties based on their demographic features.  But the important thing to remember is that because this is an unsupervised method there is no way to determine if the clustering is what you want it to be. Also recall that the scale matters. The computer will always find the number of clusters you ask for, but whether those clusters mean anything is up to you, the data analyst to determine.  This is where critical thinking is essential -- what variables are appropriate to include?  And how do you interpret the meaning of the clusters given the distribution of data within those clusters?
+
+# Even More Data! Even More Clusters?
+
+What if we looked at all counties? Note we are going to drop some states that do not record vote by counties (e.g., Maine) as well as others for which we are lacking data for some years (e.g., Alaska).  Let's create a tibble containing just the data called `rawdata` and drop all missing data.
+
+Do we need to standardize?  Why or why not?
+
+```{r}
+rawvote <- dat.all %>%
+  select(c(pct_rep_2004,pct_rep_2008,pct_rep_2012,pct_rep_2016,pct_rep_2020)) %>%
+  drop_na()
+```
+
+What if we compare Republican vote share in 2004 and 2020.  What does that show?  Let's plot and see.
+
+```{r}
+rawvote %>%
+  ggplot(aes(x=pct_rep_2004, y=pct_rep_2020)) +
+  geom_point() +
+  labs(x="% Republican 2004", 
+       y = "% Republican 2020", 
+       title = "Republican Support in Counties: 2004 & 2020") +
+  geom_abline(intercept=0,slope=1) +
+  scale_x_continuous(limits = c(0,1),labels = scales::percent_format(accuracy = 1)) + 
+  scale_y_continuous(limits = c(0,1),labels = scales::percent_format(accuracy = 1)) 
+```
+
+We begin by setting a seed to ensure replicability and then we fit `K` different clusters -- one for each choice of `K`.
+
+```{r}
+set.seed(42)
+kcluster.us <- 
+  tibble(K = 1:10) %>%   # define a sequence that we will use to denote k
+  mutate(   # now we are going to create new variables in this tibble
+    kcluster = map(K, ~kmeans(rawvote, .x, iter.max = 100)),   # run a kmeans clustering using k
+    tidysummary = map(kcluster, tidy), # run the tidy() function on the kcluster object
+    augmented = map(kcluster, augment, rawvote) # save the cluster to the data
+  )
+```
+
+To plot this we want to extract the data points from `kcluster.us` using the `unnest` function to the tibble `points.us` and we want to extract the centroids of the clusters from the tidysummary for each cluster into the new tibble `clusters.us` by `unnest`ing the summaries of each fit.
+
+```{r}
+points.us <- kcluster.us %>%
+  unnest(cols=c(augmented))
+
+clusters.us <- kcluster.us %>%
+  unnest(cols=c(tidysummary))
+```
+
+Now we can use these two new tibbles to plot.
+
+```{r}
+points.us %>%
+  ggplot(aes(x = pct_rep_2004, y = pct_rep_2020)) +
+  geom_point(aes(color = .cluster), alpha = 0.8) + 
+  labs(x = "% Republican Vote 2004",
+       y = "% Republican Vote 2020",
+       color = "Cluster",
+       title = "Clusters for Various Choices of K") + 
+  facet_wrap(~ K) + 
+  scale_x_continuous(limits = c(.25,1),labels = scales::percent_format(accuracy = 1)) + 
+  scale_y_continuous(limits = c(.25,1),labels = scales::percent_format(accuracy = 1)) + 
+  geom_point(data = clusters.us, size = 4, shape = "+") 
+```
+
+So how many clusters?  Here we can see what the total within sum of squares is for each set of clusters that we find for the various choices of k.  To determine how many, we want to choose a value of k such that there is very little change from adding additional clusters.  Note that more clusters will always do better, so the issue is to find out the point at which the improvement seems small.  This is a judgment call.
+
+So let's extract the fits from the `kcluster.us` list and then loop over the `k` different fits to extract the total within sum of squares (`tot.withinss`) and then create a new tibble `fit` that contains the vector of cluster sizes and vector of total within sum of squares that we used the loop to extract (i.e., `tot.withinss`).
+
+```{r}
+fits <- kcluster.us[[2]]
+tot.withinss <- NULL
+
+for(i in 1:10){
+  tot.withinss[i] <- fits[[i]]$tot.withinss
+}
+
+fit <- bind_cols(k = seq(1,10), tot.withinss = tot.withinss)
+```
+
+Now plot to see where the line "bends".
+
+```{r}
+fit %>%
+  ggplot(aes(x=k,y=tot.withinss)) + 
+  geom_line() +
+  scale_x_continuous(breaks=seq(1,10)) + 
+  labs(x="Number of Clusters", 
+       y ="Total Within Sum of Squares",
+       title = "Fit by Number of Clusters")
+```
+
+So it seems like there are 4 or maybe 5 clusters that seem relevant?
+
+# Clustering: Part II 
+
+## Tweets, Texts, and Topics, oh my!
+
+Lots of press attention (and academic/commercial research) to social media communication.  Trying to characterize (in the hopes of predicting) behavior and "sentiment."  Many are trying to do this at scale -- analyzing the behavior of large numbers of individual users -- including using clustering methods to uncover different "types" of users that can be used to understand and predict human opinion and behavior across a wide range of activities and concepts.
+
+Perhaps no individual has been more scrutinized than former President Trump -- who was arguably defined by his use of twitter as a medium of communication, agenda-setting, and mobilization.  Multiple news stories and academic papers have focused on the corpus of Trump Tweets.
+
+For example, the NY Times did an expose [here](https://www.nytimes.com/interactive/2019/11/02/us/politics/trump-twitter-presidency.html) whereby they had reporters read every single tweet and classify it. (See the methodology [here](https://www.nytimes.com/2019/11/02/insider/trump-twitter-data.html).  Remarkably, this was work that was done by hand.  Hopefully by the end of class you can see how you could do something similar using R!  More similar to what we are going to do is the work by [fivethirtyeight](https://fivethirtyeight.com/features/the-worlds-favorite-donald-trump-tweets/).
+
+We used to be able to read in Trump data via the Twitter API, but since that has been deactivated we are going to use data that was collected and posted [here](https://www.kaggle.com/austinreese/trump-tweets).     
+
+Note that you could also look at news coverage using data that people have collected on the scrolling chryons at the bottom of the screen [here](https://archive.org/details/third-eye).
+
+As an example of a recent publication in _Nature: Humanities and Social Sciences Communications_ using sentiment analysis see: [Sentiments and emotions evoked by news headlines of coronavirus disease (COVID-19) outbreak](https://www.nature.com/articles/s41599-020-0523-3).  
+
+
+Let's load the packages we are going to use into memory.  You may need to install some of these.
+
+```{r, warning= FALSE, message=FALSE}
+library(readr)
+library(tidyverse)
+library(lubridate)
+library(scales)
+```
+
+Just to give you a sense of the preprocessing, here I read in a csv file and did some manipulations
+
+```{r,eval=F}
+trumptweets <- read_csv("https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/trump_tweets.csv")
+#View(trumptweets)
+glimpse(trumptweets)
+tweets <- trumptweets %>%
+  select(id, text, date, retweets, favorites) %>%
+  mutate(date = with_tz(date, "EST"),
+         Tweeting.hour = format(date, format = "%H"),
+         Tweeting.date = format(date, format = "%Y-%m-%d"),
+         Tweeting.date = as.Date(Tweeting.date),
+         Tweeting.year = as.factor(format(date, format = "%Y")))
+```
+
+First thing we always do is to see what we have so we know what we are working with and what we have to do to answer the questions we want to answer. Then we select the variables we want and practice creating some time objects for future use.  (We are using the `lubridate` package for the date manipulations.)  Note that `date` had the time of the tweet in UTC so we used the `with_tz` function from `lubridate` package to change the time zone to Eastern Standard Time (as that is where Washington, DC, Bedminster, NJ, and Mar Lago, FL are located) -- note that dates are also changed if the timezone change crosses days (a benefit of saving the object as a date object!).
+
+
+Because our data is larger than usual, we want to keep an eye on how much is loaded into memory.  Since we no longer need `trumptweets` let us remove it via `rm()`.
+
+```{r,eval=F}
+rm(trumptweets)
+```
+
+
+Let's focus on asking the question of how Trump's Twitter behavior changed over time.  This is a broad question, so let's break it up into a few specific questions to tackle using the tools we have talked about thus far to help demonstrate that based on the concepts and code we have talked about in class you are able to do quite a bit.
+
+1. How did the frequency of Trump's tweets change over time -- and, in particular, once he was elected President.
+2. When did Trump tweet?  Was "Executive Time" a change to his behavior or did he always have a self-defined "Executive Time"?
+3. Which of his tweets were most impactful?  (Measures via Rewtweets and Favorites).
+
+All of this can be done at the level of the tweet using tools we have previously used and discussed in class -- i.e., no text analysis required.  So we will start there.  Sometimes simple analyses will get you what you need and complexity for the sake of complexity is not a virtue.
+
+After using the data -- and conditional means -- to answer these descriptive questions we can then pivot to analyze what was being tweeted about using several tools that will get into the analysis of the content of the text being tweeted.
+
+4. What were the topics that Trump was tweeting about before and after becoming president? (`kmeans`)
+5. What were the dominant "sentiments" being expressed by Trump and how did that change after becoming president. (Sentiment Analysis)
+
+Note that we are going to compare pre-post presidency but you have the tools, and also the code based on what we do today, to do much finer-grained analyses.  You can compare how the behavior changes each year.  Or each month?  Or in response to his impeachments.  Or how his activity in the 2016 campaign compares to his activity in his 2020 campaign.  Or dive into the 2016 campaign and see how he acted and reacted during his rise to the Republican nomination.  There are many, many fascinating (and largely unanswered) questions that you should be empowered to be able to do based on what we cover!  We will dive deeper a few times, but largely to illustrate the amazing stuff that you can do.
+
+So let's get to it!
+
+```{r}
+tweets <- read_rds(file="https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/Trumptweets.Rds")
+```
+
+So let's start by describing our data graphically.  How frequently was President Trump tweeting throughout the time series we possess?
+
+```{r}
+tweets %>% 
+  group_by(Tweeting.date) %>%
+  count() %>%
+  ggplot() +
+  geom_point(aes(x=Tweeting.date,y=n),alpha=.4) +
+  labs(x="Date",y="Number of Tweets",title="Tweeting by Trump")
+```
+
+Here each point is the number of tweets in a day.  Some days there was clearly a lot of activity.  Moreover we can see that Trump was more active before becoming President and his frequency of tweeing increased over his presidency.
+
+We can also consider how did the number of retweets, on average, change across days on which a tweet occurred?  (Here we are using the `scales` library to set the `scale_y_continuous` to label numbers with commas (`label=comma`).)
+
+```{r}
+tweets %>% 
+  group_by(Tweeting.date) %>%
+  summarize(AvgRetweet = mean(retweets)) %>%
+  ggplot() +
+  geom_point(aes(x=Tweeting.date,y=AvgRetweet),alpha=.4) +
+  labs(x="Date",y="Average Retweets",title="Tweeting by Trump") +
+  scale_y_continuous(label=comma)
+```
+
+Clearly there is a lot of variation here. Which tweets were re-tweeted the most?  
+
+```{r}
+tweets %>% 
+  select(content,retweets) %>%
+  top_n(retweets,n=10) %>%
+  arrange(-retweets)
+```
+
+Now can you do the same to identify the tweets that were selected as a favorite?  How does this list compare to the tweets that were most likely to be retweeted?  Can you write this code?
+
+```{r}
+# INSERT CODE HERE
+```
+
+In general, how should we measure influence/impact?  Favorites or retweets?  Does the choice matter?  Let's look at the relationship to see how consequential the determination is.
+
+```{r}
+tweets %>% 
+  ggplot(aes(x=retweets, y=favorites)) + 
+  geom_point() + 
+  scale_x_continuous(label=comma) + 
+  scale_y_continuous(label=comma) +
+  labs(x= "Number of Retweets", y = "Number of Times Favorited",title="Trump Tweets: Relationship between Retweets and Favorites")
+```
+
+In general they seem pretty related, but there are a handful of tweets that are retweeted far more than they are favorited. (On your own, can you figure out which ones these are?)
+
+We can also use `plotly` to create an HTML object with each point denoting how many retweets each tweet receieved and the date of the tweet. We can use this to label the tweets to get a better sense of what tweets were most re-tweeted?  (This will be a very large plot given the number of tweets and the length of the content being pasted into the object!  To keep things manageable let's focus on the top 75th-percentile of tweets.)
+
+```{r message=FALSE}
+library(plotly)
+gg <- tweets %>%
+  filter(retweets > quantile(retweets,.75)) %>% 
+  ggplot(aes(x=Tweeting.date,y=retweets,text=paste(content))) +
+  geom_point(alpha=.4) +
+  labs(x="Date",y="Retweets",title="Tweeting by Trump") +
+  scale_y_continuous(label=comma)
+ggplotly(gg,tooltip = "text")
+```
+
+On your own, can you do the same for the most favorited tweets?
+
+```{r}
+# INSERT CODE HERE
+```
+
+In addition to looking at the change over time we can also look at the hour at which Trump was tweeting using the `hour` variable we created.  To start let's do the total number of tweets at each hour across the entire corpus.
+
+```{r}
+tweets %>% 
+  group_by(Tweeting.hour) %>%
+  count() %>%
+  ggplot() +
+  geom_point(aes(x=as.numeric(Tweeting.hour),y=n),alpha=.4) +
+  labs(x="Hour",y="Number of Tweets",title="Tweeting by Trump: Hour of Day (EST)") +
+  scale_x_continuous(n.breaks = 13, limits = c(0,23))
+```
+
+Did Trump's use to twitter change after he was elected President?  Certainly we would think that the content might change -- as well as how likely it was to be favorited and retweeted -- but how about the frequency and timing of the tweets?   
+
+Let's create an indicator variable `PostPresident` using the `date` variable to define whether the date is before (`FALSE`) or after (`TRUE`)  his election as president (we could also use the inauguration date, but some claimed that his behavior would change once he was officially projected.)
+
+```{r}
+tweets %>% 
+  mutate(PostPresident = Tweeting.date > as.Date("2016-11-03")) %>%
+  group_by(PostPresident,Tweeting.hour) %>%
+  count() %>%
+  ggplot() +
+  geom_point(aes(x=as.numeric(Tweeting.hour),y=n,color=PostPresident),alpha=.4) +
+  labs(x="Hour",y="Number of Tweets",title="Tweeting by Trump: Hour of Day (EST)",color="Is President?") +
+  scale_x_continuous(n.breaks = 13, limits = c(0,23))
+```
+
+What do you observe?  
+
+But is it right to use the overall frequency? Do we prefer the proportion of tweets that were set at each hour pre/post presidency?
+
+Let's use `mutate` to compute the proportion of tweets that occur at each hour in each period and then plot those using `color` to denote the pre/post time period.
+
+```{r}
+tweets %>% 
+  mutate(PostPresident = Tweeting.date > as.Date("2016-11-03")) %>%
+  group_by(PostPresident,Tweeting.hour) %>%
+  count() %>%
+  ungroup(Tweeting.hour) %>%
+  mutate(Prop = n/sum(n)) %>%
+  ggplot() +
+  geom_point(aes(x=as.numeric(Tweeting.hour),y=Prop,color=PostPresident),alpha=.4) +
+  labs(x="Hour (EST)",y="Percentage of Tweets in Period",title="Tweeting by Trump: Hour of Day (EST)",color="Is President?") + 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  scale_x_continuous(n.breaks = 13, limits = c(0,23))
+```
+
+Hmm.  A very different characterization!  Always think about what the right calculation is.  R will do what you tell it -- usually ;) -- but you need to think about what you are asking it to do!  
+
+We could also go deeper and look at variation by year.  Here is a graph of the overall frequency. (Can you do the same for proportions?)
+
+```{r}
+tweets %>% 
+  group_by(Tweeting.year,Tweeting.hour) %>%
+  count() %>%
+  ggplot() +
+  geom_point(aes(x=as.numeric(Tweeting.hour),y=n,color=Tweeting.year),alpha=.4) +
+  labs(x="Hour",y="Number of Tweets",title="Tweeting by Trump: Hour of Day (EST)",color="Year") +
+  scale_x_continuous(n.breaks = 13, limits = c(0,23))
+```
+
+Can you graph the proportion of tweets per hour per year?  How does that change your characterization.  In you opinion, which is the more appropriate measure?  The number of tweets or the proportion of tweets?  Why or why not?
+
+```{r}
+tweets %>% 
+  group_by(Tweeting.year,Tweeting.hour) %>%
+  count() %>%
+  ungroup(Tweeting.hour) %>%
+  mutate(Prop = n/sum(n)) %>%
+  ggplot() +
+  geom_point(aes(x=as.numeric(Tweeting.hour),y=Prop,color=Tweeting.year),alpha=.4) +
+  labs(x="Hour (EST)",y="Percentage of Tweets in Period",title="Tweeting by Trump: Hour of Day (EST)",color="Year") + 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  scale_x_continuous(n.breaks = 13, limits = c(0,23))
+```
+
+
+Here we put everything on the same graph, but maybe it makes sense to create separate graphs - one for each value that we are using to define the `color`.  To do this we just need to use a `facet_wrap` to create a buynch of graphs that will "wrap around" the screen starting from the lowest value of the facet defined after the `~` and arranged in a grid with `nrow=4` (Try different values here!).  We have defined `scales = "free_y"` to let the graphs vary in the scales of the y-axis (because the frequencies vary).  We could also choose `"fixed"` to give every graph the same x and y limits, or `"free_x"` to use the same y-axis scale and allow the x-axis to vary.  `scale="free"` allows both the x and y axes to vary.  Experiment with what happens if you change the scale.  Why did I do what we did?
+
+```{r}
+tweets %>% 
+  group_by(Tweeting.year,Tweeting.hour) %>%
+  count() %>%
+  ggplot() +  
+  facet_wrap(~ Tweeting.year, scales = "free_y", nrow = 4) +
+  geom_point(aes(x=as.numeric(Tweeting.hour),y=n,color=Tweeting.year),alpha=.4) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size=5)) +
+  labs(x="Hour",y="Number of Tweets",title="Tweeting by Trump: Hour of Day (UTC)",color="Year") +
+  scale_x_continuous(n.breaks = 13, limits = c(0,23))
+```
+
+First try to do the same thing with the tweeting behavior Pre/Post Presidency.  Can you use the `facet_wrap` to create that visualization?  Which visualization do you prefer?
+
+```{r}
+# INSERT CODE HERE
+```
+
+
+Now see if you can pull this together by plotting the time of tweeting by year but graphing the proportions this time. How should we define the `scales` in this case?  
+
+```{r}
+# INSERT CODE HERE
+```
+
+
+# [OPTIONAL] Data Wrangling Text
+
+You can skip this section and just load in the data in the next section, but this is if you want to know what I did to get the data from above ready for the analyses we do below.  It involves working with the string variable `content` and deleting elements of that string to leave us only word "tokens."
+
+OK so that is what we can do at the level of the tweet.  To analyze the content of the tweet we need to transform the string of each tweet into "tokens" (words) that we can then analyze. The first part is often the hardest -- data-wrangling is typically 85\% of the issue in data science. Rather than give you the cleaned data, here is a sense of what you need to do to make it work.  Do not worry about understanding the content at this point.
+
+The following is included for the interested student to get a sense of what is required to convert the `content` into tokens.  Recall that our "data" looks like this:
+
+```{r}
+tweets$content[1]
+```
+
+And we need to transform that into something we can analyse!  This takes some work...
+
+```{r, warning=FALSE, message=FALSE,eval=FALSE}
+library(qdapRegex)
+library(tm)
+library(tidytext)
+library(SnowballC)
+```
+
+
+First we are going to strip out all of the url and twitter-formatted url from the tweet text using some pre-defined functions.
+
+
+```{r,eval=FALSE}
+tweets <- tweets %>%
+  mutate(content = rm_twitter_url(content),
+         content = rm_url(content),
+         document = id)
+```
+
+Now we are going to write a function that takes as an argument a string (`x`) and then uses multiple functions to remove strings satisfying certain conditions.
+
+First we are going to process the string `content` to remove combinations of letters/numbers that are not words.  To do so we are going to define a function called `clean_tweets` and then apply it to the `content` variable in `tweets` tibble.
+```{r,eval=FALSE}
+clean_tweets <- function(x) {
+  x %>%
+    # Remove mentions e.g. "@my_account"
+    str_remove_all("@[[:alnum:]_]{4,}") %>%
+    # Remove mentions e.g. "@ my_account"
+    str_remove_all("@ [[:alnum:]_]{4,}") %>%
+    # Remove hashtags
+    str_remove_all("#[[:alnum:]_]+") %>%
+    # Remove hashtags
+    str_remove_all("# [[:alnum:]_]+") %>%
+    # Remove twitter references
+    str_remove_all("twitter[[:alnum:]_]+") %>%
+    # Remove twitter pics references
+    str_remove_all("pictwitter[[:alnum:]_]+") %>%
+    # Replace "&" character reference with "and"
+    str_replace_all("&amp;", "and") %>%
+    # Remove punctuation, using a standard character class
+    str_remove_all("[[:punct:]]") %>%
+    # Remove "RT: " from beginning of retweets
+    str_remove_all("^RT:? ") %>%
+    # Replace any newline characters with a space
+    str_replace_all("\\\n", " ") %>%
+    # Make everything lowercase
+    str_to_lower() %>%
+    # Remove any trailing whitespace around the text
+    str_trim("both")
+}
+# Now apply this function to the `content` of `tweets`
+tweets$content <- clean_tweets(tweets$content)
+```
+
+Now that we have pre-processed the `content` string lets do some more more wrangling to extract word "tokens" from this string and then also remove the tokens that are not meaningful words.  Let's also define the object `reg` containing all the various characters that an be used.
+
+```{r,eval=FALSE}
+reg <- "([^A-Za-z\\d#@']|'(?![A-Za-z\\d#@]))"
+tweet_words <- tweets %>%
+  filter(!str_detect(content, '^"')) %>%
+  unnest_tokens(word, content, token = "regex", pattern = reg)  %>%
+  filter(!word %in% stop_words$word,str_detect(word, "[a-z]")) %>%
+  mutate(word = str_replace_all(word, "\\d+", "")) %>%    # drop numbers
+  mutate(word = str_replace_all(word, "twitter[A-Za-z\\d]+|&amp;", "")) %>%
+  mutate(word = str_replace_all(word, "pictwitter[A-Za-z\\d]+|&amp;", "")) %>%
+  mutate(word = str_replace_all(word, "pic[A-Za-z\\d]+|&amp;", "")) %>%
+  mutate(word = str_replace_all(word, "pic", "")) %>%
+  mutate(word = str_replace_all(word, "againpic[A-Za-z\\d]+|&amp;", "")) %>%
+ # mutate(word = wordStem(word)) %>%
+  mutate(document = id) %>%
+  select(-id) %>%
+  filter(word != "")   # drop any empty strings
+```
+
+Now use the `anti_join` to remove all `stop_words` to focus on the words with "content."
+
+```{r,eval=FALSE}
+data("stop_words", package = "tidytext")
+tweet_words <- anti_join(tweet_words, stop_words, by = "word")
+```
+
+# Back to Reality
+
+We can also just read in the already-wrangled data `tweet_words` and proceed from here. 
+
+```{r}
+tweet_words <- read_rds(file="https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/Trump_tweet_words.Rds")
+```
+
+So what are the most commonly tweeted word stems?
+
+```{r}
+tweet_words %>% 
+  count(word) %>%
+  arrange(-n)
+```
+
+Let's plot the 20 most frequently used words in descending order using a barplot.
+
+```{r}
+tweet_words %>%
+  count(word, sort = TRUE) %>%
+  head(20) %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(word, n)) +
+  geom_bar(stat = "identity") +
+  ylab("Occurrences") +
+  scale_y_continuous(label=comma) +
+  coord_flip()
+```
+
+Interesting. But we want to know how twitter use changed, if at all, over time and in response to being elected president.  So let's start by defining a variation that is `PostPresident` defined to be tweets after being projected as the winner of the 2016 Presidential election.
+
+NOTE: You could also look at other variation (e.g., years, pre/post certain events, etc.). There are lots of opportunities to expand/refine this! Try some!
+
+```{r}
+tweet_words <- tweet_words %>%
+  mutate(PostPresident = Tweeting.date > as.Date("2016-11-03"))
+```
+
+To compare lets compare the top 10 word stems that were tweeted pre-presidency.
+
+```{r}
+tweet_words %>%
+    filter(PostPresident == FALSE) %>%
+    select(word) %>%
+    count(word) %>%
+    top_n(10, wt= n) %>%
+    arrange(-n)
+```
+
+And the top 10 stems tweeted post-presidency.
+
+```{r}
+tweet_words %>%
+  filter(PostPresident == TRUE) %>%
+  select(word) %>%
+  count(word) %>%
+  top_n(10, wt= n) %>%
+  arrange(-n) 
+```
+
+Putting together in a nicer table using `group_by`.
+
+```{r}
+tweet_words %>%
+  group_by(PostPresident) %>%
+  select(word) %>%
+  count(word) %>%
+  top_n(10, wt= n) %>%
+  arrange(-n)   %>%
+  summarise(top_words = str_c(word, collapse = ", ")) 
+```
+
+And now graphing them using a `wordcloud`.  (Why are we setting a seed?)
+
+```{r}
+library(wordcloud)
+set.seed(42)
+tweet_words %>%
+  filter(PostPresident == FALSE) %>%
+  select(word) %>%
+  count(word) %>% 
+  { wordcloud(.$word, .$n, max.words = 100) }
+```
+
+```{r}
+tweet_words %>%
+  filter(PostPresident == TRUE) %>%
+  select(word) %>%
+  count(word) %>% 
+  { wordcloud(.$word, .$n, max.words = 100) }
+```
+
+But what about variation over time?  Lots of events happened every year and looking at all tweets before 2016 compared to all of the tweets after Election Day 2016 may lose important nuance and variation.  So let's look at the 10 most frequently tweeted words each year.
+
+```{r}
+tweet_words %>%
+  group_by(Tweeting.year) %>%
+  select(word) %>%
+  count(word) %>%
+  top_n(10, wt= n) %>%
+  arrange(-n)   %>%
+  summarise(top_words = str_c(word, collapse = ", ")) %>%
+  knitr::kable()
+```
+
+An now, how about by hour?  What is on President Trump's mind, on average, at every hour of the day?
+
+```{r}
+# INSERT CODE HERE
+```
+
+Pushing ahead, we could also do hour by pre/post presidency (or year) to see how the content changed.  Or perhaps how activity varies across parts of the day by creating periods of time based on the hours (e.g., "late-night", "early morning", "normal work-day").  Here is where you as a data-scientist can propose (and defend!) categorizations that are useful for understanding the variation in the data.
+
+# Comparing Word Use Pre/Post Using Log Odds Ratio
+
+So far we have focused on frequency of word use, but another way to make this comparison is to look at the relative "odds" that each word is used pre/post presidency.  After all, "Trump" is used by Trump both before and after his presidency so perhaps that is not a great indicator of content.  We could instead consider the relative rate at which a word is used Post-Presidency relative to Pre-presidency.
+
+We are going to count each word stem use pre and post-presidency, then select only those words that were used at least 5 times, then `spread` the data so that if a word appears Pre-Presidency but not Post-Presidency (or visa-versa) we will create a matching word with the filled in value of 0, then we are going to ungroup the data so that the observation is now a word rather than a word-timing combination (look to see how the tibble changes before and after the ungroup() by running these code snippets separately to see).  Then we are going to `mutate_each` to compute the fraction of times a word is used relative to all words (the `.` indicates the particular value of each variable -- note that we are adding a `+ 1` to each of those values to avoid errors when taking the log later).  We then compute the `ratio` by computing the relative frequency of each word used pre and post presidency and take the log of that ratio because of extreme outliers before arranging the tibble in decreasing value of ratio
+
+So let's compute the log odds ratio for each word pre and post presidency.
+
+```{r, warning=FALSE}
+prepost_ratios <- tweet_words %>%
+  count(word, PostPresident) %>%
+  filter(sum(n) >= 5) %>%
+  spread(PostPresident, n, fill = 0) %>%
+  ungroup() %>%
+  mutate_each(funs((. + 1) / sum(. + 1)), -word) %>%    
+  mutate(ratio = `TRUE` / `FALSE`) %>%
+  mutate(logratio = log(ratio)) %>%
+  arrange(-logratio)
+```
+
+
+Now let's plot the top 15 most distinctive words (according to the log-ratio we just computed) that were tweeted before and after Trump was elected president.
+
+```{r, warning=FALSE}
+prepost_ratios %>%
+  group_by(logratio > 0) %>%
+  top_n(15, abs(logratio)) %>%
+  ungroup() %>%
+  mutate(word = reorder(word, logratio)) %>%
+  ggplot(aes(word, logratio, fill = logratio < 0)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  ylab("Post-President/Pre-President log ratio") +
+  scale_fill_manual(name = "", labels = c("President", "Pre-President"),
+                    values = c("red", "lightblue"))
+```
+
+You could look at other splits.  Pre-post his first impeachment?  2016 versus 2017?  Note that the log-ratio is a comparison of a binary condition. 
+
+# $k$-means
+How else can we summarize/describe data? Cluster Analysis via `kmeans`? 
+
+But using what data?  Should we focus on the number of words being used?  The proportion of times a word is used in a particular document?  Or some other transformation that tries to account for how frequently a word is used in a particular document relative to how frequently it is used in the overall corpus?  
+
+We are going to use the text analysis function `bind_tf_idf` that will take a document-term matrix and compute the fraction of times each word is used in each document (`tf` = "term frequency").  It also computes a transformation called tf-idf that balances how frequently a word is used relative to its uniqueness in a document. 
+
+For word `w` in document `d` we can compute the tf-idf using:
+\[
+tf-idf(w,d) = tf(w,d) \times log \left( \frac{N}{df(w)}\right) 
+\]
+where `tf` is the term frequency (word count/total words), `df(w)` is the number of documents in the corpus that contain the word, and `N` is the number of documents in the corpus.  The inverse-document-frequency `idf` for each word `w` is therefore the number of documents in the corpus `N` over the number of documents containing the word.
+
+NOTE: what is a document? In theory, a document is a tweet. However, tweets are so short that most words only appear once. Furthermore, there are a LOT of tweets written by Trump over his time on the platform. Instead, we will treat a DAY (`Tweeting.date`) as our "document". Be aware what this implies! We are assuming that Trump's tweets written on a given day are about the same thing. This is obviously not always true, but it is a reasonable assumption to start with.
+
+So let us create a new document-term-matrix object that also includes the `tf`, `idf` and `tf_idf` associated with each word.  
+
+```{r}
+# Create the dtm with Tweeting.date as the "document".
+dtm <- tweet_words %>%
+  count(Tweeting.date,word) %>%
+  group_by(word) %>%
+  mutate(tot_n = sum(n)) %>% 
+  ungroup() %>%
+  filter(tot_n > 20) # Drop words that appear less than 20 total time across the entire data
+
+require(tidytext)
+dtm.tfidf <- bind_tf_idf(tbl = dtm, term = word, document = Tweeting.date, n = n) # Calculate TF-IDF
+dtm.tfidf  %>%
+  select(word,tf_idf) %>%
+  distinct() %>%
+  arrange(-tf_idf) %>%
+  slice(1:10)
+```
+
+
+So `kmeans` took a matrix where each column was a different variable that we were interested in using to characterize patterns but the data we have is arranged in a one-term-per-document-per-row.  To transform the data into the format we require we need to "recast" the data so that each word is a separate variable -- meaning that the number of variables is the number of of unique word stems.
+
+
+```{r}
+castdtm <- cast_dtm(data = dtm.tfidf, document = Tweeting.date, term = word, value = tf_idf)
+```
+
+And now we can run $k$-means on this object! How many `centers` (clusters or $K$) should we choose? This all depends on how many different things we think Trump talks about. For now, we will just use 50. However, recall that we should create an "elbow" plot like we did in the previous lecture, and choose $k$ based on where the reductions in errors are smaller. (NB: this may take some time on your computer if it is low on memory.)
+
+```{r}
+set.seed(42)
+km_out <- kmeans(castdtm, 
+                 centers = 50, # 50 "topics"
+                 nstart = 5) # Set nstart = 5 to make sure this doesn't take forever!
+```
+
+So how many documents are associated with each cluster?
+
+```{r}
+table(km_out$cluster)
+```
+
+So let's tidy it up to see the centroids -- here mean frequency-- associated with each word in each cluster.
+
+```{r}
+require(broom)
+tidy(km_out)
+```
+
+Very hard to summarize given that there are 3180 columns!  (Good luck trying to graph that!)
+
+How can we summarize?  Want to `gather()` to convert the data to **long** form.
+
+```{r}
+km_out_tidy <- tidy(km_out) %>%
+  gather(word,mean_tfidf,-size,-cluster,-withinss) %>% # Convert to long data (don't add "size", "cluster", and "withinss" to the new "word" column! These are part of the tidy() output!)
+  mutate(mean_tfidf = as.numeric(mean_tfidf)) # Calculate average TF-IDF
+km_out_tidy %>%
+  filter(word=="apprentice") %>%
+  print(n=50)
+```
+
+This tells us that the word "apprentice" is only weakly associated with topic ("cluster") 7 (0.00285), but is strongly associated with topic 3 (2.58). We can also see how many documents (i.e., days) are associated with each topic. Topic 2 only appears once, while topic 13 appears 3,066 times.
+
+Let's try plotting just the third topic to better understand what it is about. To do this, we want to look at the top 10 highest scoring words according to `mean_tfidf`.
+
+```{r}
+km_out_tidy %>%
+  filter(cluster %in% 13) %>%
+  group_by(cluster) %>%
+  arrange(-mean_tfidf) %>%
+  slice(1:10)
+```
+This appears to be about domestic politics and elections! For those who are familiar with Trump's time in office, he would frequently talk about former President Obama and his 2016 opponent Hillary Clinton.
+
+We can turn this into a plot for easier visualization (and look at multiple topics at once).
+
+```{r}
+km_out_tidy %>%
+  filter(cluster %in% 1:9) %>%
+  group_by(cluster) %>%
+  arrange(-mean_tfidf) %>%
+  slice(1:10) %>%
+  ggplot(aes(x = mean_tfidf,y = reorder(word,mean_tfidf),
+             fill = factor(cluster))) + 
+  geom_bar(stat = 'identity') + 
+  facet_wrap(~cluster,scales = 'free') + 
+  labs(title = 'k-means Clusters',
+       subtitle = 'Clustered by TF-IDF',
+       x = 'Centroid',
+       y = NULL,
+       fill = 'Cluster ID')
+```
+
+We can also assign each topic to the "documents" it is associated with. To do this, we need to create a new dataset as follows:
+- Get the document names from the castdtm object. These are stored in the `dimnames` variable under `Docs`.
+- Get the cluster (topics) for each document from the `km_out` object. These are stored in the `cluster` variable.
+- `R` automatically converted the document names to character representations of the numeric version of the data. We need to convert these back to dates using `as.Date()` combined with `as.numeric()`. Since these are stored as raw numbers, we must specify the `origin = "1970-01-01"` in order for the `as.Date()` function to work properly.
+
+```{r}
+doc_cluster <- data.frame(Tweeting.date = castdtm$dimnames$Docs, # Get the document names from the castdtm object.
+           cluster = km_out$cluster) %>% # Get the topics from thr km_out object
+  as_tibble() %>%
+  mutate(Tweeting.date = as.Date(as.numeric(Tweeting.date),origin = '1970-01-01')) # Convert the document names back to date formats
+
+doc_cluster
+```
+So topics 18 and 12 were the focus of Trump's tweets on his first two days on the platform, followed by multiple days where he emphasized topic 6.
+
+Let's plot these to make it easier to see patterns.
+
+```{r}
+doc_cluster %>%
+  ggplot(aes(x = Tweeting.date,y = factor(cluster))) + 
+  geom_tile() + 
+  labs(title = 'Topics by Date',
+       subtitle = 'Donald Trump Twitter Account',
+       x = 'Date Tweeted',
+       y = 'Topic Number')
+```
+
+There are basically 3 (maybe 4?) core topics from our data. Topic 7 is Trump's main focus prior to 2016 when he starts campaigning. Then it shifts to topic 13 throughout the campaign and during his presidency. Let's look at these two topics!
+
+```{r}
+km_out_tidy %>%
+  filter(cluster %in% c(7,13)) %>%
+  group_by(cluster) %>%
+  arrange(-mean_tfidf) %>%
+  slice(1:10) %>%
+  mutate(topic = ifelse(cluster == 13,'2: Campaign & Pres.','1: Pre-campaign')) %>%
+  ggplot(aes(x = mean_tfidf,y = reorder(word,mean_tfidf),
+             fill = factor(cluster))) + 
+  geom_bar(stat = 'identity') + 
+  facet_wrap(~topic,scales = 'free') + 
+  labs(title = 'k-means Clusters',
+       subtitle = 'Clustered by TF-IDF',
+       x = 'Centroid',
+       y = NULL,
+       fill = 'Cluster ID')
+```
+
+Amazing! Using just $k$-means with a bag-of-words of Trump's tweets, we have a clear idea of what he talked about during different periods!
+
+# Clustering: Part III
+
+We are going to start from the prepared `Trump_tweet_words.Rds` file from last time. Let's load it in, along with a bunch of useful packages for text analysis.
+
+```{r}
+require(tidyverse)
+require(tidytext)
+require(scales)
+tweet_words <- read_rds(file="https://github.com/rweldzius/PSC7000_F2024/raw/main/Data/Trump_tweet_words.Rds") %>% # Note you can add data manipulations directly to the code that opens the file!
+  mutate(PostPresident = Tweeting.date > "2016-11-03")
+
+```
+
+# Comparing Word Use Pre/Post Using Log Odds Ratio
+
+So far we have focused on frequency of word use, but another way to make this comparison is to look at the relative "odds" that each word is used pre/post presidency.  After all, "Trump" is used by Trump both before and after his presidency so perhaps that is not a great indicator of content.  We could instead consider the relative rate at which a word is used Post-Presidency relative to Pre-presidency.
+
+We are going to count each word stem used pre and post-presidency, then select only those words that were used at least 5 times, then `spread` the data so that if a word appears Pre-Presidency but not Post-Presidency (or visa-versa) we will create a matching word with the filled in value of 0, then we are going to ungroup the data so that the observation is now a word rather than a word-timing combination (look to see how the tibble changes before and after the ungroup() by running these code snippets separately to see).  Then we are going to `mutate_each` to compute the fraction of times a word is used relative to all words (the `.` indicates the particular value of each variable -- note that we are adding a `+ 1` to each of those values to avoid errors when taking the log later).  We then compute the `ratio` by computing the relative frequency of each word used pre and post presidency and take the log of that ratio because of extreme outliers before arranging the tibble in decreasing value of ratio.
+
+So let's compute the log odds ratio for each word pre and post presidency.
+
+```{r, warning=FALSE}
+prepost_ratios <- tweet_words %>%
+  count(word, PostPresident) %>%
+  filter(sum(n) >= 5) %>%
+  spread(PostPresident, n, fill = 0) %>%
+  ungroup() %>%
+  mutate_each(funs((. + 1) / sum(. + 1)), -word) %>%    
+  mutate(ratio = `TRUE` / `FALSE`) %>%
+  mutate(logratio = log(ratio)) %>%
+  arrange(-logratio)
+```
+
+
+Now let's plot the top 15 most distinctive words (according to the log-ratio we just computed) that were tweeted before and after Trump was elected president.
+
+```{r, warning=FALSE}
+prepost_ratios %>%
+  group_by(logratio > 0) %>%
+  top_n(15, abs(logratio)) %>%
+  ungroup() %>%
+  mutate(word = reorder(word, logratio)) %>% 
+  ggplot(aes(word, logratio, fill = logratio < 0)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  ylab("Post-President/Pre-President log ratio") +
+  scale_fill_manual(name = "", labels = c("President", "Pre-President"),
+                    values = c("red", "lightblue"))
+```
+
+You could look at other splits.  Pre-post his first impeachment?  2016 versus 2017?  Note that the log-ratio is a comparison of a binary condition. 
+
+# Sentiment Analysis
+
+Everything we have done so far is "basic" in the sense that we are looking at frequencies and proportions. We have not done anything particularly fancy (apart from perhaps defining the log odds-ratio but even that is just applying a function to our data).
+
+A prominent tool used to analyze text is called "sentiment analysis."  Unlike clustering algorithms that we discussed earlier that were unsupervised, "sentiment analysis" is an analysis that classifies the meaning/sentiment of text based on a dictionary of words that are assumed to be true.  That is, we are using an object with assumed meaning to learn about the characteristics of a text in terms of concepts that are predefined and predetermined.  
+
+Sentiment analysis sounds like it is very complex, and it is because of the complexity of language and how the meaning/sentiment of words can change based on context.
+
+Analyzing sentiment requires using a dictionary of predefined sentiment and then using the frequency (or a similar measure) of words with sentiment to classify a text. If we have information on the sentiment of a tweet (perhaps via crowdsourcing) then we can use the methods of prior classes to try to determine how close other tweets are to the tweets that have been identified as belonging to each sentiment -- i.e., we can use features of a tweet to classify it given the relationship of known tweets.
+
+If we do not have this predefined tweet-level sentiment, we can characterize sentiment by counting the number of times a set of predefined words are used and then using the resulting distributions to interpret the "sentiment" of the text.  Note that it is always preferable to use the former to account for the contextual meaning of language, but characterizing the frequency of sentiments can also be of interest.
+
+There are several dictionaries of sentiment, but we are going to use the [NRC Word-Emotion Association](http://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm) lexicon created by, and published in Saif M. Mohammad and Peter Turney. (2013), "Crowdsourcing a Word-Emotion Association Lexicon," Computational Intelligence, 29(3): 436-465. This is available from the tidytext package, which associates words with 10 sentiments: **positive**, **negative**, **anger**, **anticipation**, **disgust**, **fear**, **joy**, **sadness**, **surprise**, and **trust**.
+
+As an aside, the way the sentiment was created was by showing a bunch of people a series of words and then asking them what emotion they associated with each word.  The responses of regular people were then aggregated to determine whether each word was associated with each emotion (by effectively looking at the extent to which individuals associated the same emotion with each word).  This is what we mean by "crowd-sourcing" -- using people to collect data for us.  Note that we could create our own DSCI 1000 sentiment index.  All we would need to do is to have each of you indicate the emotion(s) you associate with a series of words.  For example, when you see `ggplot` do you feel **positive**, **negative**, **anger**, **anticipation**, **disgust**, **fear**, **joy**, **sadness**, **surprise**, or **trust**?  (Multiple emotions are allowed.)
+
+So let's load the NRC sentiment library in and take a look at what it looks like by calling `nrc` to the console. (NB: you may need to answer a question in your console after running the chunk below. Answer "yes" by typing 1 in the console and hitting ENTER. If you are unable to knit the HW it is probably because you have to run this chunk first.)
+
+```{r, warning=FALSE}
+library(tidytext)
+library(textdata)
+nrc <- get_sentiments("nrc")
+nrc
+```
+
+Let's get overall sentiment as a fraction of words used in tweets grouped by PostPresidency (could also group by `Tweeting.year` or `Tweeting.hour`).
+
+Start by defining the relative frequency of each word being used pre/post presidency conditional on being tweeted at least 5 times.
+
+```{r}
+word_freq <- tweet_words %>%
+  group_by(PostPresident) %>%
+  count(word) %>%
+  filter(sum(n) >= 5) %>%
+  mutate(prop = prop.table(n))
+```  
+
+Now we use `inner_join` to select only the words in `tweet_words` that are contained in the NRC sentiment analysis word list.  Note that `inner_join` keeps only the observations that are common to both `tweet_words` and `nrc` so it is going to keep just the words that have an associated sentiment.  Note that if we stem the word tokens this would be problematic!
+
+```{r}
+word_freq_sentiment <- word_freq %>%
+    inner_join(nrc, by = "word") 
+```
+
+Note that the proportion `prop` that we calculated above will no longer sum to 1 because: 1. we dropped words outside of the NRC word list with the `inner_join`, 2. each word can appear in multiple sentiments.  That said, the proportion is still meaningful as a measure of the relative importance of each word, even if the interpretation of the value is somewhat problematic.  
+
+Now let's plot the top most typically used words in each sentiment.
+
+```{r}
+word_freq_sentiment %>%
+  group_by(sentiment) %>%
+  top_n(10, n) %>%
+  ungroup() %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(word, n)) +
+  facet_wrap(~ sentiment, scales = "free", nrow = 3) + 
+  geom_bar(stat = "identity") +
+  coord_flip()
+```
+
+
+One way to measure sentiment is simply the number of positive sentiments - the number of negative sentiments.
+
+Let's go back to our original tibble where each observation was a word, use `inner_join` to extract sentiments and then create a new tibble `tweet_sentiment_summary` that summarizes the sentiment of each tweet.
+
+```{r}
+tweet_sentiment <- tweet_words %>%
+    inner_join(nrc, by = "word") 
+  
+tweet_sentiment_summary <- tweet_sentiment %>%
+  group_by(PostPresident, sentiment) %>%
+  count(document,sentiment) %>%
+  pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>% 
+  mutate(sentiment = positive - negative)
+```
+
+Note the use of `pivot_wider` here.  This transforms a "long" tibble (many rows) into a "wide" tibble (many columns).  Now each observation is a tweet (instead of a word in a tweet).
+
+If we wanted to see how many total words were used in the all of the tweets we observed pre-post presidency we can summarize.
+
+```{r}
+tweet_sentiment_summary  %>%
+  group_by(PostPresident) %>%
+  mutate(ntweet = 1) %>%
+  summarize(across(-document, sum)) 
+```
+
+We can plot the distribution of sentiment scores pre/post presidency as follows.  Note that the `position` controls where the bars for each `fill` are placed. (Try running it without `position` to see the default.)  The `aes` of `geom_bar` is defined so as to plot the proportion rather than the frequency.  Here we have told ggplot to calculate the proportion for us.
+
+```{r}
+  tweet_sentiment_summary %>%
+  ggplot(aes(x = sentiment, fill=PostPresident)) + 
+  geom_bar(aes(y = ..prop..), position=position_dodge()) +
+  scale_y_continuous(labels = percent) + 
+  labs(y= "Proportion of Tweets", x = "Sentiment Score: Positive - Negative", fill="Is President?")
+```
+
+As before, we could also use `facet_wrap` here.  How to think about nrow here.  Should it be 1 or 2?  What is the comparison you want to make - comparing across x-axis or y-axis?  Note also that we chose `scales="fixed"` this time.  Why is this important?
+
+```{r}
+tweet_sentiment_summary %>%
+  ggplot(aes(x = sentiment)) + 
+  facet_wrap(~ PostPresident, scales = "fixed", nrow = 2) +
+  geom_bar(aes(y = ..prop..)) +
+  scale_y_continuous(labels = percent) + 
+  labs(y= "Proportion of Tweets", x = "Sentiment Score: Positive - Negative")
+```
+
+Can also see how it varies by hour.  To do this we need to go back to the original tibble to `group_by` `Tweeting.hour`.
+
+```{r}
+tweet_sentiment %>%
+  group_by(PostPresident,Tweeting.hour,sentiment) %>%
+  count(document,sentiment) %>%
+  pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>% 
+  mutate(sentiment = positive - negative) %>%
+  summarize(AvgSentiment = mean(sentiment)) %>%
+  ggplot(aes(y = AvgSentiment, x= as.integer(Tweeting.hour), color=PostPresident)) + 
+  geom_point() +
+  labs(x = "Tweeting Hour (EST)", y = "Average Tweet Sentiment: Positive - Negative", color = "Is President?") +
+  scale_x_continuous(n.breaks = 13, limits = c(0,23))
+```
+
+
+We can also dive in deeper and focus on particular sentiments.  What is the distribution of the number of "angry" words being used in each tweet?  Was Trump getting "angrier" over time?
+
+```{r}
+  tweet_sentiment_summary %>%
+  ggplot(aes(x = anger, fill=PostPresident)) + 
+  geom_bar(aes(y = ..prop..), position=position_dodge()) +
+  scale_y_continuous(labels = percent) + 
+  labs(y= "Proportion of Tweets", x = "Number of `Angry` Words in Tweet", fill="Is President?")
+```
+
+Or angrier based on the time of day post-presidency?
+
+```{r}
+tweet_sentiment %>%
+  filter(PostPresident==TRUE, sentiment == "anger") %>%
+  group_by(Tweeting.hour) %>%
+  count(document,sentiment) %>%
+  summarize(AvgAnger = mean(n)) %>%
+  ggplot(aes(y = AvgAnger, x= as.integer(Tweeting.hour))) + 
+  geom_point() +
+  labs(x = "Average Tweeting Hour (EST)", y = "Avg. Number of Angry Words") +
+  scale_x_continuous(n.breaks = 13, limits = c(0,23))
+```
+
+And how about which words are most distinctively used in each sentiment (using log-odds ratio)?
+
+```{r}
+prepost_ratios %>%
+  inner_join(nrc, by = "word") %>%
+  filter(!sentiment %in% c("positive", "negative")) %>%
+  mutate(sentiment = reorder(sentiment, -logratio),
+         word = reorder(word, -logratio)) %>%
+  group_by(sentiment) %>%
+  top_n(10, abs(logratio)) %>%
+  ungroup() %>%
+  ggplot(aes(word, logratio, fill = logratio < 0)) +
+  facet_wrap(~ sentiment, scales = "free", nrow = 2) +
+  geom_bar(stat = "identity") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(x = "", y = "Post / Pre log ratio") +
+  scale_fill_manual(name = "", labels = c("Post", "Pre"),
+                    values = c("red", "lightblue"))
+```
+
+Now you can blow the doors off of this!  
+
+How does the sentiment change over time?  At various times of the day?
+
+Note also that this is very basic stuff.  Instead of defining sentiment at the token level and trying to aggregate up we can define it at the tweet level and then use the methods we talked about last time to try to classify tweet-level sentiments by determining how close each tweet is to the tweets classified according to each sentiment.  This kind of "supervised" learning would require a tweet-level measure of sentiment that we could then predict using features as before (e.g., words, time of day, date). To do so we could build a prediction model and predict the tweet.
+
+We can also try to use the most-frequently used sentiment to classify each tweet and see the most frequent "sentiment" associated with each tweet. If, for example, we were to classify the sentiment of each tweet using the modal sentiment (i.e., the most frequently appearing sentiment) we would get the following.
+
+
+```{r}
+tweet_sentiment %>%
+  filter(sentiment != "positive" & sentiment != "negative") %>%
+  group_by(document) %>%
+  count(sentiment) %>%
+  top_n(1,n) %>%     # select the most frequently appearing sentiment
+  group_by(sentiment) %>%
+  count() %>%
+  ungroup() %>%
+  mutate(PctSentiment = n/sum(n))
+```
+
+What do you think about this?
+
+Now let's graph the proportion of tweets according to the modal sentiment over time.
+
+
+```{r}
+tweet_sentiment %>%
+  filter(sentiment != "positive" & sentiment != "negative") %>%
+  group_by(Tweeting.year,document) %>%
+  count(sentiment) %>%
+  top_n(1,n) %>%
+  group_by(Tweeting.year,sentiment) %>%
+  count() %>%
+  ungroup(sentiment) %>%
+  mutate(PctSentiment = n/sum(n)) %>%
+  ggplot(aes(x=Tweeting.year, y = PctSentiment, color = sentiment)) +
+  geom_point() + 
+  labs(x = "Year", y = "Pct. Tweets with Modal Sentiment", color = "Model Tweet Sentiment") + 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1))
+```
+
+
+You can literally do a thousand descriptive things with sentiment! 
+
+
