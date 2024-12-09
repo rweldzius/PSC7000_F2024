@@ -202,7 +202,7 @@ Villanova University makes every reasonable effort to allow members of the commu
 | 11/18/24  | Linear Regression   |   | [Lecture 5](https://rweldzius.github.io/PSC7000_F2024/Lectures/psc7000_lecture_5_slides.html)  | [HW5](https://github.com/rweldzius/PSC7000_F2024/blob/main/Homeworks/psc7000_hw_5.Rmd) | [PS5](https://github.com/rweldzius/PSC7000_F2024/blob/main/Psets/psc7000_pset_5.Rmd) [PS5_AK](https://rweldzius.github.io/PSC7000_F2024/Psets/psc7000_pset_5_AK.html)   |
 | 11/25/24  | Multivariate & Logistic Regression  |   | [Lecture 6](https://rweldzius.github.io/PSC7000_F2024/Lectures/psc7000_lecture_6_slides.html)  | [HW6](https://github.com/rweldzius/PSC7000_F2024/blob/main/Homeworks/psc7000_hw_6.Rmd) | [PS6](https://github.com/rweldzius/PSC7000_F2024/blob/main/Psets/psc7000_pset_6.Rmd)   |
 | 12/2/24  | Conference  |   |   |   |   |
-| 12/9/24  |  Conference |   |   |   |   |
+| 12/9/24  |  Conference |   |   |  [HW7 (extra credit)](https://github.com/rweldzius/PSC7000_F2024/blob/main/Homeworks/psc7000_hw_7_EC.Rmd) | [PS7 (extra credit)](https://github.com/rweldzius/PSC7000_F2024/blob/main/Psets/psc7000_pset_7_EC.Rmd)  |
 | 12/16/24  | Final Projects Due  |   |   |   |   |
 
 [Back to ToC](#table-of-contents)
