@@ -1,4 +1,4 @@
-# PSC 7000-01: Research Concepts & Methods (Fall 2024)
+# PSC 7000-01: Research Concepts & Methods
 
 ## Table of Contents
 
